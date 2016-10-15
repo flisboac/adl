@@ -1,0 +1,11 @@
+build
+.cproject
+.project
+.settings
+*.o
+*.a
+*.so
+*.dll
+*.obj
+*.out
+*.lib
