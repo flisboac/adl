@@ -1,0 +1,132 @@
+\documentclass[
+	% -- opções da classe memoir --
+	12pt,				% tamanho da fonte
+	openright,			% capítulos começam em pág ímpar (insere página vazia caso preciso)
+	twoside,			% para impressão em recto e verso. Oposto a oneside
+	a4paper,			% tamanho do papel. 
+	% -- opções da classe abntex2 --
+	chapter=TITLE,		% títulos de capítulos convertidos em letras maiúsculas
+	%section=TITLE,		% títulos de seções convertidos em letras maiúsculas
+	%subsection=TITLE,	% títulos de subseções convertidos em letras maiúsculas
+	%subsubsection=TITLE,% títulos de subsubseções convertidos em letras maiúsculas
+	% -- opções do pacote babel --
+	english,			% idioma adicional para hifenização
+	french,				% idioma adicional para hifenização
+	spanish,			% idioma adicional para hifenização
+	brazil				% o último idioma é o principal do documento
+	]{abntex2}
+
+% Tudo é UTF-8.
+\usepackage[utf8]{inputenc}
+
+
+% ---
+% Informações de dados para CAPA e FOLHA DE ROSTO
+% ---
+\titulo{Solucionando Restrições Lógicas em GPUs}
+\autor{Flávio Lisbôa da C. Costa}
+\local{Universidade Veiga de Almeida\\Rio de Janeiro, Brasil}
+\data{2016}
+\orientador{(Quem será o meu orientador?)}
+\coorientador{(Sem co-orientador...)}
+\instituicao{
+  Universidade Veiga de Almeida -- UVA
+  \par
+  Bacharelado em Ciência da Computação
+}
+\tipotrabalho{Monografia}
+\preambulo{
+    Monografia apresentada como requisito final à conclusão
+    do curso em Bacharel em Ciência da Computação.
+}
+% ---
+
+
+% ---
+% Pacotes e Estilos
+% ---
+\usepackage{mono}
+% ---
+
+
+% ---
+% informações do PDF
+% ---
+\makeatletter
+\hypersetup{
+     	%pagebackref=true,
+		pdftitle={\@title}, 
+		pdfauthor={\@author},
+    	pdfsubject={\imprimirpreambulo},
+	    pdfcreator={LaTeX with abnTeX2},
+		pdfkeywords={abnt}{latex}{abntex}{abntex2}{trabalho acadêmico}, 
+		colorlinks=true,       		% false: boxed links; true: colored links
+    	linkcolor=blue,          	% color of internal links
+    	citecolor=blue,        		% color of links to bibliography
+    	filecolor=magenta,      		% color of file links
+		urlcolor=blue,
+		bookmarksdepth=4
+}
+\makeatother
+% ---
+
+
+% ---
+% compila o indice
+% ---
+\makeindex
+% ---
+
+
+% ----
+% Início do documento
+% ----
+\begin{document}
+
+
+% Seleciona o idioma do documento (conforme pacotes do babel)
+%\selectlanguage{english}
+\selectlanguage{brazil}
+
+
+% ----------------------------------------------------------
+% ELEMENTOS PRÉ-TEXTUAIS
+% ----------------------------------------------------------
+%\pretextual
+\include{./tex/pre-01.00-capa}
+\include{./tex/pre-02.00-folha-rosto}
+%\include{./tex/pre-03.00-ficha-bibliografica}
+%\include{./tex/pre-04.00-errata.tex}
+\include{./tex/pre-05.00-folha-aprovacao}
+\include{./tex/pre-06.00-dedicatoria}
+\include{./tex/pre-07.00-agradecimentos}
+\include{./tex/pre-08.00-epigrafe}
+\include{./tex/pre-09.00-resumos}
+\include{./tex/pre-10.00-listas}
+\include{./tex/pre-11.00-sumario}
+
+
+% ----------------------------------------------------------
+% ELEMENTOS TEXTUAIS
+% ----------------------------------------------------------
+\textual
+
+\include{./tex/textual-01.00-introducao}
+\include{./tex/textual-02.00-fundamentacao}
+\include{./tex/textual-03.00-metodologia}
+\include{./tex/textual-04.00-desenvolvimento}
+\include{./tex/textual-05.00-resultados}
+\include{./tex/textual-06.00-conclusao}
+
+% ----------------------------------------------------------
+% ELEMENTOS PÓS-TEXTUAIS
+% ----------------------------------------------------------
+\postextual
+\include{./tex/pos-01.00-referencias}
+\include{./tex/pos-02.00-glossario}
+\include{./tex/pos-03.00-apendices}
+\include{./tex/pos-04.00-anexos}
+\include{./tex/pos-05.00-indices}
+
+\end{document}
+% ----
