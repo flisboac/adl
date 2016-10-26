@@ -1,5 +1,5 @@
 MONO_ROOT_DIR=.
-#MONO_BUILD_DIR=$(MONO_ROOT_DIR)/out
+MONO_BUILD_DIR=$(MONO_ROOT_DIR)/out
 MONO_TEX_DIR=$(MONO_ROOT_DIR)/tex
 MONO_IMG_DIR=$(MONO_ROOT_DIR)/img
 
@@ -21,5 +21,5 @@ clean:
 distclean:
 	pushd . && cd "$(MONO_ROOT_DIR)" && $(LATEX_DISTCLEAN) && popd
 	pushd . && cd "$(MONO_TEX_DIR)" && $(LATEX_DISTCLEAN) && popd
-	$(RMDIR) "$(MONO_ROOT_DIR)"
+	$(RMDIR) "$(MONO_BUILD_DIR)"
 
