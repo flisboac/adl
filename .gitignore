@@ -30,3 +30,5 @@ build
 *.a
 *.lib
 
+.kdev4
+*.kdev4

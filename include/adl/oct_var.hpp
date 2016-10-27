@@ -8,65 +8,43 @@
 namespace adl {
 
 template <typename T>
-class base_var {
+class base_oct_var {
 public:
 	constexpr explicit inline operator bool() const
 		{ return valid(); }
 	constexpr explicit inline operator int() const
 		{ return to_int(); }
 	constexpr explicit inline operator size_t() const
-		{ return index(); }
+		{ return static_cast<const T*>(this)->index(); }
 
-	inline bool operator!() const
+	constexpr inline bool operator!() const
 		{ return !valid(); }
-	inline bool operator==(const T& rhs) const
+	constexpr inline bool operator==(const T& rhs) const
 		{ return static_cast<const T*>(this)->_value == rhs._value; }
-	inline bool operator==(int rhs) const
+	constexpr inline bool operator==(int rhs) const
 		{ return static_cast<const T*>(this)->_value == rhs; }
-	inline bool operator!=(const T& rhs) const
+	constexpr inline bool operator!=(const T& rhs) const
 		{ return !(*this == rhs); }
-	inline bool operator!=(int rhs) const
+	constexpr inline bool operator!=(int rhs) const
 		{ return !(*this == rhs); }
-	inline bool operator<(const T& rhs) const
+	constexpr inline bool operator<(const T& rhs) const
 		{ return compare(rhs) < 0; }
-	inline bool operator<(int rhs) const
+	constexpr inline bool operator<(int rhs) const
 		{ return compare(rhs) < 0; }
 
-	inline T operator+() const
-		{ return T(+static_cast<const T*>(this)->_value); }
-	inline T operator-() const
-		{ return T(-static_cast<const T*>(this)->_value); }
-	inline T& operator++()
-		{ return ((*this)++, static_cast<T&>(*this)); }
-	inline T operator++(int) {
-		return T(negated()
-				? static_cast<T*>(this)->_value--
-				: static_cast<T*>(this)->_value++);
-	}
-	inline T& operator--()
-		{ return ((*this)--, static_cast<T&>(*this)); }
-	inline T operator--(int) {
-		return T(negated()
-				? static_cast<T*>(this)->_value++
-				: static_cast<T*>(this)->_value--);
-	}
 
 	constexpr inline bool valid() const
 		{ return static_cast<const T*>(this)->_value != 0; }
-	inline bool negated() const
-		{ return static_cast<const T*>(this)->_value < 0; }
-	constexpr inline T normalize() const
-		{ return T(abs(static_cast<const T*>(this)->_value)); }
-	constexpr inline size_t index() const
-		{ return normalize().to_int() - 1; }
-	inline int compare(const T& rhs) const
+	constexpr inline int compare(const T& rhs) const
 		{ return compare(rhs._value); }
-	inline int compare(int rhs) const {
-		const int a = modulus(to_int());
-		const int b = modulus(rhs);
-		const int ax = is_neg(to_int());
-		const int bx = is_neg(rhs);
-		return ((a > b) - (a < b)) + (ax - bx);
+	constexpr inline int compare(int rhs) const {
+		//const int a = modulus(to_int());
+		//const int b = modulus(rhs);
+		//const int ax = is_neg(to_int());
+		//const int bx = is_neg(rhs);
+		return ((modulus(to_int()) > modulus(rhs)) -
+            (modulus(to_int()) < modulus(rhs))) +
+            (is_neg(to_int()) - is_neg(rhs));
 	}
 	constexpr inline int to_int() const
 		{ return static_cast<const T*>(this)->_value; }
@@ -116,9 +94,9 @@ class octdiff_var;
 ///
 /// @see adl::oct_cons
 /// @see adl::octdiff_var
-class oct_var : public base_var<oct_var> {
+class oct_var : public base_oct_var<oct_var> {
 public:
-	friend class base_var;
+	friend class base_oct_var<oct_var>;
 	constexpr oct_var() {}
 	explicit constexpr oct_var(int value) : _value(value) {}
 	constexpr oct_var(const oct_var& rhs) : _value(rhs._value) {}
@@ -126,59 +104,110 @@ public:
 	inline oct_var& operator=(const oct_var& rhs) { return (_value=(rhs.to_int()), *this); }
 	inline oct_var& operator=(oct_var&& rhs) { return (_value=(rhs.to_int()), *this); }
 	inline oct_var& operator=(int rhs) { return (_value = rhs, *this); }
+	constexpr inline oct_var operator+() const
+		{ return oct_var(_value); }
+	constexpr inline oct_var operator-() const
+		{ return oct_var(-_value); }
+	constexpr inline bool negated() const
+		{ return _value < 0; }
+	constexpr inline oct_var normalize() const
+		{ return oct_var(modulus(_value)); }
+	inline oct_var& operator++()
+		{ return ((*this)++, (*this)); }
+	inline oct_var operator++(int) {
+		return oct_var(valid()
+            ? negated()
+				? _value--
+				: _value++
+            : 0
+        );
+	}
+	inline oct_var& operator--()
+		{ return ((*this)--, (*this)); }
+	inline oct_var operator--(int) {
+		return oct_var(valid()
+            ? negated()
+				? _value++
+				: _value--
+            : 0
+        );
+	}
+	constexpr inline bool same_var(const oct_var& rhs) const
+		{ return normalize() == rhs.normalize(); }
+	constexpr inline size_t index() const
+		{ return normalize().to_int() - 1; }
 
-    inline operator octdiff_var() const;
-    inline octdiff_var to_diff() const;
+    constexpr inline operator octdiff_var() const;
+    constexpr inline octdiff_var to_diff() const;
 
 protected:
     int _value { 0 };
 };
 
 
-class octdiff_var : public base_var<octdiff_var> {
+class octdiff_var : public base_oct_var<octdiff_var> {
 public:
-	friend class base_var;
+	friend class base_oct_var<octdiff_var>;
 	constexpr octdiff_var() {}
-	explicit constexpr octdiff_var(int value) : _value(value) {}
+	explicit constexpr octdiff_var(int value) : _value(!is_neg(value) ? value : 0) {}
 	constexpr octdiff_var(const octdiff_var& rhs) : _value(rhs._value) {}
 	constexpr octdiff_var(octdiff_var&& rhs) : _value(rhs._value) {}
 	inline octdiff_var& operator=(const octdiff_var& rhs) { return (_value=(rhs.to_int()), *this); }
 	inline octdiff_var& operator=(octdiff_var&& rhs) { return (_value=(rhs.to_int()), *this); }
-	inline octdiff_var& operator=(int rhs) { return (_value = rhs, *this); }
+	inline octdiff_var& operator=(int rhs) { return (_value = !is_neg(rhs) ? rhs : 0, *this); }
 
-    inline operator oct_var() const;
-    inline bool negative() const
+    constexpr inline operator oct_var() const;
+    constexpr inline bool same_oct_var(octdiff_var rhs) const {
+    	return to_oct().same_var(rhs.to_oct());
+    }
+    constexpr inline bool negative() const
     	{ return _value % 2 == 0; }
-    inline bool positive() const
+    constexpr inline bool positive() const
     	{ return !negative(); }
-    inline octdiff_var swap() const {
+    constexpr inline octdiff_var swap() const {
     	return negative()
-    			? octdiff_var(negated() ? _value+1 : _value-1)
-				: octdiff_var(negated() ? _value-1 : _value+1);
+    			? octdiff_var(_value-1)
+				: octdiff_var(_value+1);
 	}
-    inline oct_var to_oct() const;
+	inline octdiff_var& operator++()
+		{ return ((*this)++, (*this)); }
+	inline octdiff_var operator++(int) {
+		return oct_var(valid() ? _value++ : 0);
+	}
+	inline octdiff_var& operator--()
+		{ return ((*this)--, (*this)); }
+	inline octdiff_var operator--(int) {
+		return oct_var(valid() ? _value-- : 0);
+	}
+	constexpr inline size_t index() const
+		{ return this->to_int() - 1; }
+    constexpr inline oct_var to_oct() const;
 
 protected:
     int _value { 0 };
 };
 
 
-inline octdiff_var oct_var::to_diff() const {
-	return negated()
+constexpr inline octdiff_var oct_var::to_diff() const {
+	return valid()
+        ? negated()
 			? octdiff_var((-_value - 1) * 2 + 2)
-			: octdiff_var(( _value - 1) * 2 + 1);
+			: octdiff_var(( _value - 1) * 2 + 1)
+        : octdiff_var::invalid();
 }
-inline oct_var::operator octdiff_var() const
+constexpr inline oct_var::operator octdiff_var() const
 	{ return to_diff(); }
 
 
 
-inline oct_var octdiff_var::to_oct() const {
-	return negative()
-				? oct_var(-((normalize().to_int() - 2) / 2 + 1))
-				: oct_var(  (normalize().to_int() - 1) / 2 + 1 );
+constexpr inline oct_var octdiff_var::to_oct() const {
+	return valid()
+        ? negative()
+            ? oct_var(-((to_int() - 2) / 2 + 1))
+            : oct_var(  (to_int() - 1) / 2 + 1 )
+        : oct_var::invalid();
 }
-inline octdiff_var::operator oct_var() const
+constexpr inline octdiff_var::operator oct_var() const
 	{ return to_oct(); }
 
 
@@ -193,23 +222,36 @@ constexpr static octdiff_var make_octdiff_var(int var = 0) {
 
 
 template <typename T>
-std::string var_name(T var) {
+static inline std::string var_name(T var) {
 	return std::string("x") + std::to_string(var.to_int());
 }
 template <typename T>
-std::string var_name(T var, const std::string& base) {
+static inline std::string var_name(T var, const std::string& base) {
 	return base + std::to_string(var.to_int());
 }
 template <>
-std::string var_name<octdiff_var>(octdiff_var var, const std::string& base) {
+inline std::string var_name<octdiff_var>(octdiff_var var, const std::string& base) {
 	return var.positive()
 			? base + std::to_string(var.to_int()) + std::string("__pos")
 			: base + std::to_string(var.to_int()) + std::string("__neg");
 }
 template <>
-std::string var_name<octdiff_var>(octdiff_var var) {
+inline std::string var_name<octdiff_var>(octdiff_var var) {
 	const std::string base = "x";
 	return var_name(var, base);
+}
+
+
+namespace literals {
+
+	constexpr inline oct_var operator "" _ov(unsigned long long int varId) {
+		return oct_var(varId);
+	}
+
+	constexpr inline octdiff_var operator "" _dv(unsigned long long int varId) {
+		return octdiff_var(varId);
+
+	}
 }
 
 
