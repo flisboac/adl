@@ -7,6 +7,7 @@
 
 namespace adl {
 
+
 template <typename T>
 class base_oct_var {
 public:
@@ -135,7 +136,7 @@ public:
 	constexpr inline bool same_var(const oct_var& rhs) const
 		{ return normalize() == rhs.normalize(); }
 	constexpr inline size_t index() const
-		{ return normalize().to_int() - 1; }
+		{ return valid() ? normalize().to_int() - 1 : (size_t) -1; }
 
     constexpr inline operator octdiff_var() const;
     constexpr inline octdiff_var to_diff() const;
@@ -180,7 +181,7 @@ public:
 		return oct_var(valid() ? _value-- : 0);
 	}
 	constexpr inline size_t index() const
-		{ return this->to_int() - 1; }
+		{ return valid() ? to_int() - 1 : (size_t) -1; }
     constexpr inline oct_var to_oct() const;
 
 protected:
@@ -250,7 +251,6 @@ namespace literals {
 
 	constexpr inline octdiff_var operator "" _dv(unsigned long long int varId) {
 		return octdiff_var(varId);
-
 	}
 }
 

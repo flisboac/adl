@@ -533,7 +533,6 @@ TEST_CASE( "octdiff_var and oct_var", "[oct][oct/var]" ) {
 	ov_test.test_all();
 	od_test.test_all();
 
-
 	SECTION( "comparisons between oct_var and octdiff_var" ) {
 		const octdiff_var odv1(1), odv2(2), odv3(3), odv4(4);
 		const oct_var ov1(1), ov2(-1), ov3(2);
