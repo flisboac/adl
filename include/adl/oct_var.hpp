@@ -7,7 +7,6 @@
 
 namespace adl {
 
-
 template <typename T>
 class base_oct_var {
 public:
