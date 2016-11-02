@@ -36,6 +36,9 @@ public:
 				_xj = var_type::invalid(),
 				*this);
 	}
+	constexpr inline bool operator<(const thisclass_& rhs) const {
+        return _xi < rhs._xi && _xj < rhs._xj;
+    }
 	constexpr inline const var_type& xi() const
 		{ return _xi; }
 	inline thisclass_& xi(const var_type& v)
@@ -162,6 +165,10 @@ constexpr inline adl::oct_vexpr operator-(const adl::oct_var& xi, const adl::oct
     return xj.negated()
         ? adl::oct_vexpr(xi, -xj)
         : adl::oct_vexpr(xi, xj);
+}
+
+constexpr inline adl::octdiff_vexpr operator-(const adl::octdiff_var& xi, const adl::octdiff_var& xj) {
+    return adl::octdiff_vexpr(xi, xj);
 }
 
 template <typename V>

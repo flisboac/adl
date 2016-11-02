@@ -8,7 +8,7 @@
 namespace adl {
 
 template <typename T>
-class base_oct_var {
+class oct_var_base_ {
 public:
 	constexpr explicit inline operator bool() const
 		{ return valid(); }
@@ -38,10 +38,6 @@ public:
 	constexpr inline int compare(const T& rhs) const
 		{ return compare(rhs._value); }
 	constexpr inline int compare(int rhs) const {
-		//const int a = modulus(to_int());
-		//const int b = modulus(rhs);
-		//const int ax = is_neg(to_int());
-		//const int bx = is_neg(rhs);
 		return ((modulus(to_int()) > modulus(rhs)) -
             (modulus(to_int()) < modulus(rhs))) +
             (is_neg(to_int()) - is_neg(rhs));
@@ -94,9 +90,9 @@ class octdiff_var;
 ///
 /// @see adl::oct_cons
 /// @see adl::octdiff_var
-class oct_var : public base_oct_var<oct_var> {
+class oct_var : public oct_var_base_<oct_var> {
 public:
-	friend class base_oct_var<oct_var>;
+	friend class oct_var_base_<oct_var>;
 	constexpr oct_var() {}
 	explicit constexpr oct_var(int value) : _value(value) {}
 	constexpr oct_var(const oct_var& rhs) : _value(rhs._value) {}
@@ -145,9 +141,9 @@ protected:
 };
 
 
-class octdiff_var : public base_oct_var<octdiff_var> {
+class octdiff_var : public oct_var_base_<octdiff_var> {
 public:
-	friend class base_oct_var<octdiff_var>;
+	friend class oct_var_base_<octdiff_var>;
 	constexpr octdiff_var() {}
 	explicit constexpr octdiff_var(int value) : _value(!is_neg(value) ? value : 0) {}
 	constexpr octdiff_var(const octdiff_var& rhs) : _value(rhs._value) {}

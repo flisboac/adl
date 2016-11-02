@@ -38,6 +38,8 @@ public:
         { return _e == rhs._e; }
     constexpr inline bool operator!=(const thisclass_& rhs) const
         { return !(*this == rhs); }
+    constexpr inline bool operator<(const thisclass_& rhs) const
+        { return _e < rhs._e; }
 	inline thisclass_& invalidate() {
 		return (_e.invalidate(), *this);
 	}
