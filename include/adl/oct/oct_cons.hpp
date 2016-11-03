@@ -36,9 +36,11 @@ public:
 
 	inline thisclass_& from_octdiff_i(const octdiff_cons<T>& cons);
 	inline thisclass_& from_octdiff_j(const octdiff_cons<T>& cons);
-	constexpr inline std::array<octdiff_cons<T>, 2> to_octdiff() const;
+	constexpr inline typename octdiff_cons<T>::pair to_octdiff() const;
 	constexpr inline octdiff_cons<T> to_octdiff_i() const;
 	constexpr inline octdiff_cons<T> to_octdiff_j() const;
+
+    constexpr inline operator typename octdiff_cons<T>::pair() const;
 
     constexpr static inline thisclass_ invalid()
         { return thisclass_(); }
@@ -62,19 +64,31 @@ constexpr inline adl::oct::oct_cons<V> operator>=(adl::oct::oct_vexpr e, V c) {
 }
 
 template <typename V>
-constexpr inline adl::oct::oct_cons<V> operator<=(const adl::oct::oct_var& x, V c) {
+constexpr inline adl::oct::oct_cons<V> operator<=(adl::oct::oct_var x, V c) {
     return adl::oct::oct_vexpr(x) <= c;
 }
 
 
 template <typename V>
-constexpr inline adl::oct::oct_cons<V> operator>=(const adl::oct::oct_var& x, V c) {
+constexpr inline adl::oct::oct_cons<V> operator>=(adl::oct::oct_var x, V c) {
     return adl::oct::oct_vexpr(x) >= c;
 }
 
 
 #include "adl/oct/octdiff_cons.hpp"
 
+
+template <typename T>
+constexpr inline adl::oct::oct_cons<T>::operator typename octdiff_cons<T>::pair() const {
+    using namespace adl::oct;
+    return to_octdiff();
+}
+
+template <typename T>
+constexpr inline typename adl::oct::octdiff_cons<T>::pair adl::oct::oct_cons<T>::to_octdiff() const {
+    using namespace adl::oct;
+    return to_octdiff_i();
+}
 
 template <typename T>
 inline adl::oct::oct_cons<T>& adl::oct::oct_cons<T>::from_octdiff_i(const adl::oct::octdiff_cons<T>& cons) {
@@ -113,11 +127,6 @@ constexpr inline adl::oct::octdiff_cons<T> adl::oct::oct_cons<T>::to_octdiff_j()
 	return superclass_::valid() && !single_var()
 			? octdiff_cons<T>(superclass_::xj(), -superclass_::xi(), superclass_::c())
 			: octdiff_cons<T>();
-}
-template <typename T>
-constexpr inline std::array<adl::oct::octdiff_cons<T>, 2> adl::oct::oct_cons<T>::to_octdiff() const {
-    using namespace adl::oct;
-	return { to_octdiff_i(), to_octdiff_j() };
 }
 
 

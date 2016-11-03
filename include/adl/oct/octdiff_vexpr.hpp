@@ -3,28 +3,25 @@
 
 #include <cstddef>
 
-#include "adl/oct/oct_vexpr_base_.hpp"
 #include "adl/oct/octdiff_var.hpp"
+#include "adl/oct/oct_vexpr_base_.hpp"
 
 namespace adl {
 namespace oct {
 
 template <typename T> class octdiff_cons;
 
-typedef oct_vexpr_base<octdiff_var> octdiff_vexpr;
-
-template <>
-class oct_vexpr_base<octdiff_var>: public oct_vexpr_base_<octdiff_var> {
+class octdiff_vexpr: public oct_vexpr_base_<octdiff_var> {
 private:
-    using thisclass_ = oct_vexpr_base<octdiff_var>;
+    using thisclass_ = octdiff_vexpr;
     using superclass_ = oct_vexpr_base_<octdiff_var>;
 
 public:
-	constexpr oct_vexpr_base() = default;
-	constexpr oct_vexpr_base(var_type xi, var_type xj) : superclass_::oct_vexpr_base_(xi, xj) {}
-	constexpr explicit oct_vexpr_base(var_type x) : superclass_::oct_vexpr_base_(x) {}
-	constexpr oct_vexpr_base(const thisclass_& rhs) = default;
-	constexpr oct_vexpr_base(thisclass_&& rhs) = default;
+	constexpr octdiff_vexpr() = default;
+	constexpr octdiff_vexpr(var_type xi, var_type xj) : superclass_::oct_vexpr_base_(xi, xj) {}
+	constexpr explicit octdiff_vexpr(var_type x) : superclass_::oct_vexpr_base_(x) {}
+	constexpr octdiff_vexpr(const thisclass_& rhs) = default;
+	constexpr octdiff_vexpr(thisclass_&& rhs) = default;
 	inline thisclass_& operator=(const thisclass_& rhs) = default;
 	inline thisclass_& operator=(thisclass_&& rhs) = default;
 
@@ -46,10 +43,10 @@ public:
 		{ return _xj.swap(); }
 	template <typename V>
     constexpr inline octdiff_cons<V> to_cons(V c) const {
-        return oct_cons<V>(_xi, _xj, c);
+        return octdiff_cons<V>(_xi, _xj, c);
     }
     template <typename V>
-    constexpr inline oct_cons<V> operator<=(V c) const {
+    constexpr inline octdiff_cons<V> operator<=(V c) const {
         return to_cons(c);
     }
 
@@ -59,6 +56,8 @@ public:
 
 
 }}
+
+#include "adl/oct/octdiff_cons.hpp"
 
 constexpr inline adl::oct::octdiff_vexpr operator-(const adl::oct::octdiff_var& xi, const adl::oct::octdiff_var& xj) {
     return adl::oct::octdiff_vexpr(xi, xj);

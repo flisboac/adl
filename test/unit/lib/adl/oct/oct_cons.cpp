@@ -153,8 +153,8 @@ public:
             const octdiff_cons<T> dci = oc.to_octdiff_i(), dcj = oc.to_octdiff_j();
 
             // Answer consistency
-            REQUIRE( (dc[0] == dci && dc[0].c() == dci.c()) );
-            REQUIRE( (dc[1] == dcj && dc[1].c() == dcj.c()) );
+            REQUIRE( (dc.first() == dci && dc.first().c() == dci.c()) );
+            REQUIRE( (dc.second() == dcj && dc.second().c() == dcj.c()) );
 
             REQUIRE( (dci.xi() == xi_p && dci.xj() == xj_p) );
             REQUIRE( (dci.c() == c) );
@@ -168,8 +168,8 @@ public:
             const octdiff_cons<T> dci = oc.to_octdiff_i(), dcj = oc.to_octdiff_j();
 
             // Answer consistency
-            REQUIRE( (dc[0] == dci && dc[0].c() == dci.c()) );
-            REQUIRE( (dc[1] == dcj && dc[1].c() == dcj.c()) );
+            REQUIRE( (dc.first() == dci && dc.first().c() == dci.c()) );
+            REQUIRE( (dc.second() == dcj && dc.second().c() == dcj.c()) );
 
             REQUIRE( (dci.xi() == xi_p && dci.xj() == xj_n) );
             REQUIRE( (dci.c() == c) );
@@ -183,8 +183,8 @@ public:
             const octdiff_cons<T> dci = oc.to_octdiff_i(), dcj = oc.to_octdiff_j();
 
             // Answer consistency
-            REQUIRE( (dc[0] == dci && dc[0].c() == dci.c()) );
-            REQUIRE( (dc[1] == dcj && dc[1].c() == dcj.c()) );
+            REQUIRE( (dc.first() == dci && dc.first().c() == dci.c()) );
+            REQUIRE( (dc.second() == dcj && dc.second().c() == dcj.c()) );
 
             REQUIRE( (dci.xi() == xi_n && dci.xj() == xj_p) );
             REQUIRE( (dci.c() == c) );
@@ -198,8 +198,8 @@ public:
             const octdiff_cons<T> dci = oc.to_octdiff_i(), dcj = oc.to_octdiff_j();
 
             // Answer consistency
-            REQUIRE( (dc[0] == dci && dc[0].c() == dci.c()) );
-            REQUIRE( (dc[1] == dcj && dc[1].c() == dcj.c()) );
+            REQUIRE( (dc.first() == dci && dc.first().c() == dci.c()) );
+            REQUIRE( (dc.second() == dcj && dc.second().c() == dcj.c()) );
 
             REQUIRE( (dci.xi() == xi_n && dci.xj() == xj_n) );
             REQUIRE( (dci.c() == c) );
@@ -213,8 +213,8 @@ public:
             const octdiff_cons<T> dci = oc.to_octdiff_i(), dcj = oc.to_octdiff_j();
 
             // Answer consistency
-            REQUIRE( (dc[0] == dci && dc[0].c() == dci.c()) );
-            REQUIRE( (dc[1] == dcj && dc[1].c() == dcj.c()) );
+            REQUIRE( (dc.first() == dci && dc.first().c() == dci.c()) );
+            REQUIRE( (dc.second() == dcj && dc.second().c() == dcj.c()) );
 
             REQUIRE( (dci.xi() == xi_p && dci.xj() == xi_n) );
             REQUIRE( (dci.c() == c_2) );
@@ -227,8 +227,8 @@ public:
             const octdiff_cons<T> dci = oc.to_octdiff_i(), dcj = oc.to_octdiff_j();
 
             // Answer consistency
-            REQUIRE( (dc[0] == dci && dc[0].c() == dci.c()) );
-            REQUIRE( (dc[1] == dcj && dc[1].c() == dcj.c()) );
+            REQUIRE( (dc.first() == dci && dc.first().c() == dci.c()) );
+            REQUIRE( (dc.second() == dcj && dc.second().c() == dcj.c()) );
 
             REQUIRE( (dci.xi() == xi_n && dci.xj() == xi_p) );
             REQUIRE( (dci.c() == c_2) );

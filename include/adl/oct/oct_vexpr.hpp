@@ -3,28 +3,25 @@
 
 #include <cstddef>
 
-#include "adl/oct/oct_vexpr_base_.hpp"
 #include "adl/oct/oct_var.hpp"
+#include "adl/oct/oct_vexpr_base_.hpp"
 
 namespace adl {
 namespace oct {
 
 template <typename T> class oct_cons;
 
-typedef oct_vexpr_base<oct_var> oct_vexpr;
-
-template <>
-class oct_vexpr_base<oct_var> : public oct_vexpr_base_<oct_var> {
+class oct_vexpr : public oct_vexpr_base_<oct_var> {
 private:
-    using thisclass_ = oct_vexpr_base<oct_var>;
+    using thisclass_ = oct_vexpr;
     using superclass_ = oct_vexpr_base_<oct_var>;
 
 public:
-	constexpr oct_vexpr_base() = default;
-	constexpr oct_vexpr_base(var_type xi, var_type xj) : superclass_::oct_vexpr_base_(xi, xj) {}
-	constexpr explicit oct_vexpr_base(var_type x) : superclass_::oct_vexpr_base_(x) {}
-	constexpr oct_vexpr_base(const thisclass_& rhs) = default;
-	constexpr oct_vexpr_base(thisclass_&& rhs) = default;
+	constexpr oct_vexpr() = default;
+	constexpr oct_vexpr(var_type xi, var_type xj) : superclass_::oct_vexpr_base_(xi, xj) {}
+	constexpr explicit oct_vexpr(var_type x) : superclass_::oct_vexpr_base_(x) {}
+	constexpr oct_vexpr(const thisclass_& rhs) = default;
+	constexpr oct_vexpr(thisclass_&& rhs) = default;
 	inline thisclass_& operator=(const thisclass_& rhs) = default;
 	inline thisclass_& operator=(thisclass_&& rhs) = default;
 
@@ -40,6 +37,16 @@ public:
 					|| !_xi.same_var(_xj) // ... it must be different from xi.
 				);
 	}
+	constexpr inline thisclass_ commute() const {
+        return !single_var()
+            ? thisclass_(_xj, _xi)
+            : thisclass_(_xi, _xj);
+    }
+    inline thisclass_& commute() {
+        return !single_var()
+            ? *this = thisclass_(_xj, _xi)
+            : *this;
+    }
 	template <typename V>
     constexpr inline oct_cons<V> to_cons(V c) const {
         using namespace adl::oct;
@@ -54,15 +61,17 @@ public:
 }}
 
 
-constexpr inline adl::oct::oct_vexpr operator+(const adl::oct::oct_var& xi, const adl::oct::oct_var& xj) {
+#include "adl/oct/oct_cons.hpp"
+
+
+constexpr inline adl::oct::oct_vexpr operator+(adl::oct::oct_var xi, adl::oct::oct_var xj) {
     return adl::oct::oct_vexpr(xi, xj);
 }
 
-constexpr inline adl::oct::oct_vexpr operator-(const adl::oct::oct_var& xi, const adl::oct::oct_var& xj) {
+constexpr inline adl::oct::oct_vexpr operator-(adl::oct::oct_var xi, adl::oct::oct_var xj) {
     return xj.negated()
         ? adl::oct::oct_vexpr(xi, -xj)
         : adl::oct::oct_vexpr(xi, xj);
 }
-
 
 #endif /* ADL__OCT__OCT_VEXPR_HPP__ */
