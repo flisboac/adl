@@ -1,12 +1,13 @@
 #include "catch.hpp"
-#include "adl/oct_var.hpp"
-#include "adl/oct_vexpr.hpp"
-#include "adl/oct_cons.hpp"
+
+#include "adl/oct/oct_var.hpp"
+#include "adl/oct/oct_vexpr.hpp"
+#include "adl/oct/oct_cons.hpp"
 
 // TODO unit tests for {oct,octdiff}_vexpr
 
 static void test() {
-    using namespace adl;
+    using namespace adl::oct;
 
     oct_var x1(1);
     oct_var x2(2);

@@ -1,5 +1,6 @@
-#include <adl/util.hpp>
 #include "catch.hpp"
+
+#include "adl/util.hpp"
 
 TEST_CASE( "abs function", "[oct][oct/var][helper]" ) {
 	using namespace adl;

@@ -26,21 +26,17 @@ endif()
 
 # Files
 
-file(GLOB LIB_HEADERS
+file(GLOB_RECURSE LIB_HEADERS
     ${INCLUDE_DIR}/*.hpp
-    ${INCLUDE_DIR}/**/*.hpp
 )
-file(GLOB LIB_SOURCES
+file(GLOB_RECURSE LIB_SOURCES
     ${LIB_SRC_DIR}/*.cpp
-    ${LIB_SRC_DIR}/**/*.cpp
 )
-file(GLOB EXEC_SOURCES
+file(GLOB_RECURSE EXEC_SOURCES
     ${EXE_SRC_DIR}/*.cpp
-    ${EXE_SRC_DIR}/**/*.cpp
 )
-file(GLOB LIB_TEST_SOURCES
+file(GLOB_RECURSE LIB_TEST_SOURCES
     ${LIB_UNIT_TEST_DIR}/*.cpp
-    ${LIB_UNIT_TEST_DIR}/**/*.cpp
 )
 
 set(SOURCE_FILES
