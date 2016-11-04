@@ -66,78 +66,69 @@ public:
 
         SECTION( "from octdiff_cons to oct_cons: xi - xj") {
             const octdiff_cons<T> dci(xi_p, xj_p, c);
-            const octdiff_cons<T> dcj(xj_n, xi_n, c);
+            const auto dcc = dci.conjunction();
+            const auto dcj = dcc.second();
             const oct_cons<T> occ(xi, -xj, c);
-            oct_cons<T> oc;
+            oct_cons<T> oc = dcc;
 
-            REQUIRE( (&(oc.from_octdiff_i(dci)) == &oc && oc.valid()) );
-            REQUIRE( (oc == occ && oc.c() == occ.c()) );
-
-            REQUIRE( (&(oc.from_octdiff_j(dcj)) == &oc && oc.valid()) );
+            INFO( "xi: " << ((int) oc.xi()) << ", xj: " << ((int) oc.xj()) << ", c: " << oc.c() );
+            REQUIRE( (oc.valid()) );
             REQUIRE( (oc == occ && oc.c() == occ.c()) );
         }
 
         SECTION( "from octdiff_cons to oct_cons: xi + xj") {
             const octdiff_cons<T> dci(xi_p, xj_n, c);
-            const octdiff_cons<T> dcj(xj_p, xi_n, c);
+            const auto dcc = dci.conjunction();
+            const auto dcj = dcc.second();
             const oct_cons<T> occ(xi, xj, c);
-            oct_cons<T> oc;
+            oct_cons<T> oc = dcc;
 
-            REQUIRE( (&(oc.from_octdiff_i(dci)) == &oc && oc.valid()) );
-            REQUIRE( (oc == occ && oc.c() == occ.c()) );
-
-            REQUIRE( (&(oc.from_octdiff_j(dcj)) == &oc && oc.valid()) );
+            REQUIRE( (oc.valid()) );
             REQUIRE( (oc == occ && oc.c() == occ.c()) );
         }
 
         SECTION( "from octdiff_cons to oct_cons: -xi - xj") {
             const octdiff_cons<T> dci(xi_n, xj_p, c);
-            const octdiff_cons<T> dcj(xj_n, xi_p, c);
+            const auto dcc = dci.conjunction();
+            const auto dcj = dcc.second();
             const oct_cons<T> occ(-xi, -xj, c);
-            oct_cons<T> oc;
+            oct_cons<T> oc = dcc;
 
-            REQUIRE( (&(oc.from_octdiff_i(dci)) == &oc && oc.valid()) );
-            REQUIRE( (oc == occ && oc.c() == occ.c()) );
-
-            REQUIRE( (&(oc.from_octdiff_j(dcj)) == &oc && oc.valid()) );
+            REQUIRE( (oc.valid()) );
             REQUIRE( (oc == occ && oc.c() == occ.c()) );
         }
 
         SECTION( "from octdiff_cons to oct_cons: -xi + xj = xj + xi") {
             const octdiff_cons<T> dci(xi_n, xj_n, c);
-            const octdiff_cons<T> dcj(xj_p, xi_p, c);
+            const auto dcc = dci.conjunction();
+            const auto dcj = dcc.second();
             const oct_cons<T> occ(-xi, xj, c);
-            oct_cons<T> oc;
+            oct_cons<T> oc = dcc;
 
-            REQUIRE( (&(oc.from_octdiff_i(dci)) == &oc && oc.valid()) );
-            REQUIRE( (oc == occ && oc.c() == occ.c()) );
-
-            REQUIRE( (&(oc.from_octdiff_j(dcj)) == &oc && oc.valid()) );
+            REQUIRE( (oc.valid()) );
             REQUIRE( (oc == occ && oc.c() == occ.c()) );
         }
 
         SECTION( "from octdiff_cons to oct_cons: xi") {
             const octdiff_cons<T> dci(xi_p, xi_n, c_2);
-            const octdiff_cons<T> dcj{};
+            const auto dcc = dci.conjunction();
+            const auto dcj = dcc.second();
             const oct_cons<T> occ(xi, c);
-            oct_cons<T> oc;
+            oct_cons<T> oc = dcc;
 
-            REQUIRE( (&(oc.from_octdiff_i(dci)) == &oc && oc.valid()) );
+            REQUIRE( (oc.valid()) );
             REQUIRE( (oc == occ && oc.c() == occ.c()) );
-
-            REQUIRE( (&(oc.from_octdiff_j(dcj)) == &oc && !oc.valid()) );
         }
 
         SECTION( "from octdiff_cons to oct_cons: xi") {
             const octdiff_cons<T> dci(xi_n, xi_p, c_2);
-            const octdiff_cons<T> dcj{};
+            const auto dcc = dci.conjunction();
+            const auto dcj = dcc.second();
             const oct_cons<T> occ(-xi, c);
-            oct_cons<T> oc;
+            oct_cons<T> oc = dcc;
 
-            REQUIRE( (&(oc.from_octdiff_i(dci)) == &oc && oc.valid()) );
+            REQUIRE( (oc.valid()) );
             REQUIRE( (oc == occ && oc.c() == occ.c()) );
-
-            REQUIRE( (&(oc.from_octdiff_j(dcj)) == &oc && !oc.valid()) );
         }
     }
 
@@ -150,11 +141,7 @@ public:
         SECTION( "from oct_cons to octdiff_cons: x1 - x2" ) {
             const oct_cons<T> oc(xi, -xj, c);
             const auto dc = oc.to_octdiff();
-            const octdiff_cons<T> dci = oc.to_octdiff_i(), dcj = oc.to_octdiff_j();
-
-            // Answer consistency
-            REQUIRE( (dc.first() == dci && dc.first().c() == dci.c()) );
-            REQUIRE( (dc.second() == dcj && dc.second().c() == dcj.c()) );
+            const octdiff_cons<T> dci = dc.first(), dcj = dc.second();
 
             REQUIRE( (dci.xi() == xi_p && dci.xj() == xj_p) );
             REQUIRE( (dci.c() == c) );
@@ -165,11 +152,7 @@ public:
         SECTION( "from oct_cons to octdiff_cons: x1 + x2" ) {
             const oct_cons<T> oc(xi, xj, c);
             const auto dc = oc.to_octdiff();
-            const octdiff_cons<T> dci = oc.to_octdiff_i(), dcj = oc.to_octdiff_j();
-
-            // Answer consistency
-            REQUIRE( (dc.first() == dci && dc.first().c() == dci.c()) );
-            REQUIRE( (dc.second() == dcj && dc.second().c() == dcj.c()) );
+            const octdiff_cons<T> dci = dc.first(), dcj = dc.second();
 
             REQUIRE( (dci.xi() == xi_p && dci.xj() == xj_n) );
             REQUIRE( (dci.c() == c) );
@@ -180,11 +163,7 @@ public:
         SECTION( "from oct_cons to octdiff_cons: -x1 - x2" ) {
             const oct_cons<T> oc(-xi, -xj, c);
             const auto dc = oc.to_octdiff();
-            const octdiff_cons<T> dci = oc.to_octdiff_i(), dcj = oc.to_octdiff_j();
-
-            // Answer consistency
-            REQUIRE( (dc.first() == dci && dc.first().c() == dci.c()) );
-            REQUIRE( (dc.second() == dcj && dc.second().c() == dcj.c()) );
+            const octdiff_cons<T> dci = dc.first(), dcj = dc.second();
 
             REQUIRE( (dci.xi() == xi_n && dci.xj() == xj_p) );
             REQUIRE( (dci.c() == c) );
@@ -195,11 +174,7 @@ public:
         SECTION( "from oct_cons to octdiff_cons: -x1 + x2 = x2 - x1" ) {
             const oct_cons<T> oc(-xi, xj, c);
             const auto dc = oc.to_octdiff();
-            const octdiff_cons<T> dci = oc.to_octdiff_i(), dcj = oc.to_octdiff_j();
-
-            // Answer consistency
-            REQUIRE( (dc.first() == dci && dc.first().c() == dci.c()) );
-            REQUIRE( (dc.second() == dcj && dc.second().c() == dcj.c()) );
+            const octdiff_cons<T> dci = dc.first(), dcj = dc.second();
 
             REQUIRE( (dci.xi() == xi_n && dci.xj() == xj_n) );
             REQUIRE( (dci.c() == c) );
@@ -210,11 +185,7 @@ public:
         SECTION( "from oct_cons to octdiff_cons: x1" ) {
             const oct_cons<T> oc(xi, c);
             const auto dc = oc.to_octdiff();
-            const octdiff_cons<T> dci = oc.to_octdiff_i(), dcj = oc.to_octdiff_j();
-
-            // Answer consistency
-            REQUIRE( (dc.first() == dci && dc.first().c() == dci.c()) );
-            REQUIRE( (dc.second() == dcj && dc.second().c() == dcj.c()) );
+            const octdiff_cons<T> dci = dc.first(), dcj = dc.second();
 
             REQUIRE( (dci.xi() == xi_p && dci.xj() == xi_n) );
             REQUIRE( (dci.c() == c_2) );
@@ -224,11 +195,7 @@ public:
         SECTION( "from oct_cons to octdiff_cons: -x1" ) {
             const oct_cons<T> oc(-xi, c);
             const auto dc = oc.to_octdiff();
-            const octdiff_cons<T> dci = oc.to_octdiff_i(), dcj = oc.to_octdiff_j();
-
-            // Answer consistency
-            REQUIRE( (dc.first() == dci && dc.first().c() == dci.c()) );
-            REQUIRE( (dc.second() == dcj && dc.second().c() == dcj.c()) );
+            const octdiff_cons<T> dci = dc.first(), dcj = dc.second();
 
             REQUIRE( (dci.xi() == xi_n && dci.xj() == xi_p) );
             REQUIRE( (dci.c() == c_2) );

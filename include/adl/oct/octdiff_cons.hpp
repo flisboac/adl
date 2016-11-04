@@ -113,11 +113,6 @@ public:
         return pair(*this, complement());
     }
 
-	inline thisclass_& from_oct_i(const oct_cons<T>& cons);
-	inline thisclass_& from_oct_j(const oct_cons<T>& cons);
-	constexpr inline oct_cons<T> to_oct_i() const;
-	constexpr inline oct_cons<T> to_oct_j() const;
-
     constexpr inline operator pair() const {
         return conjunction();
     }
@@ -135,31 +130,10 @@ template <typename T>
 constexpr inline adl::oct::octdiff_cons<T>::pair::operator adl::oct::oct_cons<T>() const {
     using namespace adl::oct;
     return valid() ?
-        single_cons()
+        !single_cons()
             ? oct_cons<T>(_first.xi().to_oct(), _first.xj().swap().to_oct(), _first.c())
             : oct_cons<T>(_first.xi().to_oct(), _first.c() / 2)
         : oct_cons<T>::invalid();
-}
-
-template <typename T>
-inline adl::oct::octdiff_cons<T>& adl::oct::octdiff_cons<T>::from_oct_i(const adl::oct::oct_cons<T>& cons) {
-    using namespace adl::oct;
-	return (this->operator=(cons.to_octdiff_i()), *this);
-}
-template <typename T>
-inline adl::oct::octdiff_cons<T>& adl::oct::octdiff_cons<T>::from_oct_j(const adl::oct::oct_cons<T>& cons) {
-    using namespace adl::oct;
-	return (this->operator=(cons.to_octdiff_j()), *this);
-}
-template <typename T>
-constexpr inline adl::oct::oct_cons<T> adl::oct::octdiff_cons<T>::to_oct_i() const {
-    using namespace adl::oct;
-	return oct_cons<T>().from_octdiff_i(*this);
-}
-template <typename T>
-constexpr inline adl::oct::oct_cons<T> adl::oct::octdiff_cons<T>::to_oct_j() const {
-    using namespace adl::oct;
-	return oct_cons<T>().from_octdiff_j(*this);
 }
 
 

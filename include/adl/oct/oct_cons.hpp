@@ -34,12 +34,7 @@ public:
 	constexpr inline bool single_var() const
 		{ return superclass_::_e.single_var(); }
 
-	inline thisclass_& from_octdiff_i(const octdiff_cons<T>& cons);
-	inline thisclass_& from_octdiff_j(const octdiff_cons<T>& cons);
 	constexpr inline typename octdiff_cons<T>::pair to_octdiff() const;
-	constexpr inline octdiff_cons<T> to_octdiff_i() const;
-	constexpr inline octdiff_cons<T> to_octdiff_j() const;
-
     constexpr inline operator typename octdiff_cons<T>::pair() const;
 
     constexpr static inline thisclass_ invalid()
@@ -87,46 +82,12 @@ constexpr inline adl::oct::oct_cons<T>::operator typename octdiff_cons<T>::pair(
 template <typename T>
 constexpr inline typename adl::oct::octdiff_cons<T>::pair adl::oct::oct_cons<T>::to_octdiff() const {
     using namespace adl::oct;
-    return to_octdiff_i();
-}
-
-template <typename T>
-inline adl::oct::oct_cons<T>& adl::oct::oct_cons<T>::from_octdiff_i(const adl::oct::octdiff_cons<T>& cons) {
-    using namespace adl::oct;
-	return (superclass_::invalidate(),
-        (cons.valid()
-			? !cons.single_oct_var()
-				? ( superclass_::c(cons.c()), superclass_::xi(cons.xi()), superclass_::xj(cons.xj().swap()) )
-				: ( superclass_::c(cons.c() / 2), superclass_::xi(cons.xi()) )
-			: *static_cast<superclass_*>(this)), // oh God, this is awful
-        *this
-	);
-}
-template <typename T>
-inline adl::oct::oct_cons<T>& adl::oct::oct_cons<T>::from_octdiff_j(const adl::oct::octdiff_cons<T>& cons) {
-    using namespace adl::oct;
-	return (superclass_::invalidate(),
-        (cons.valid() && !cons.single_oct_var()
-            ? ( superclass_::c(cons.c()), superclass_::xi(cons.xj().swap()), superclass_::xj(cons.xi()) )
-		    : *static_cast<superclass_*>(this)),
-        *this
-	);
-}
-template <typename T>
-constexpr inline adl::oct::octdiff_cons<T> adl::oct::oct_cons<T>::to_octdiff_i() const {
-    using namespace adl::oct;
-	return superclass_::valid()
-			? !single_var()
-                ? octdiff_cons<T>(superclass_::xi(), -superclass_::xj(), superclass_::c())
-                : octdiff_cons<T>(superclass_::xi(), -superclass_::xi(), 2 * superclass_::c())
-			: octdiff_cons<T>();
-}
-template <typename T>
-constexpr inline adl::oct::octdiff_cons<T> adl::oct::oct_cons<T>::to_octdiff_j() const {
-    using namespace adl::oct;
-	return superclass_::valid() && !single_var()
-			? octdiff_cons<T>(superclass_::xj(), -superclass_::xi(), superclass_::c())
-			: octdiff_cons<T>();
+    return (superclass_::valid()
+        ? !single_var()
+            ? octdiff_cons<T>(superclass_::xi(), -superclass_::xj(), superclass_::c())
+            : octdiff_cons<T>(superclass_::xi(), -superclass_::xi(), 2 * superclass_::c())
+        : octdiff_cons<T>()
+    ).conjunction();
 }
 
 

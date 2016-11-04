@@ -8,11 +8,12 @@ namespace oct {
 
 template <typename T>
 static inline std::string var_name(T var) {
-	return std::string("x") + std::to_string(var.to_int());
+	return std::string("x") + std::to_string((int) var);
 }
+
 template <typename T>
 static inline std::string var_name(T var, const std::string& base) {
-	return base + std::to_string(var.to_int());
+	return base + std::to_string((int) var);
 }
 
 }}
