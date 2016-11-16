@@ -7,11 +7,33 @@
 \setlength{\absparsep}{18pt} % ajusta o espaçamento dos parágrafos do resumo
 \begin{resumo}
 
-O campo de Interpretação Abstrata (IA) avançou muito desde a sua concepção nos anos 70. A IA é usada para aproximar o comportamento e modelar sistemas formais e computacionais. Ferramentas baseadas em conceitos de IA são usadas constantemente em frameworks de análise estática de programas, para realizar tarefas diversas como prever defeitos, provar a corretude ou ausência de bugs, encontrar falhas de segurança e inferir tipos de dados em ambientes de linguagens de programação. Um conceito crucial na área de IA é o do domínio abstrato. Muitos domínios numéricos foram criados e usados com sucesso para resolver problemas reais, como os domínios dos intervalos, das congruências e dos polígonos.
+O campo de Interpretação Abstrata (IA) avançou muito desde a sua concepção nos 
+anos 70. A IA é usada para aproximar o comportamento e modelar sistemas formais 
+e computacionais. Ferramentas baseadas em conceitos de IA são usadas 
+constantemente em \emph{frameworks} de análise estática de programas, para 
+realizar tarefas diversas como prever defeitos, provar a corretura ou ausência 
+de bugs, encontrar falhas de segurança e inferir tipos de dados em ambientes de 
+linguagens de programação. Um conceito crucial na área de IA é o do domínio 
+abstrato. Muitos domínios numéricos foram criados e usados com sucesso para 
+resolver problemas reais, como os domínios dos intervalos, das congruências e 
+dos polígonos.
 
-Um deles, no entanto, tem recebido destaque recentemente: o domínio dos octógonos. Criado em 2006 por Antoine Miné, é um domínio abstrato fracamente relacional, que merece destaque pela sua baixa complexidade computacional e pela razoável adequação do algoritmo ao paralelismo. Analisadores estáticos já foram criados com base neste domínio abstrato, e usados com sucesso, mas poucos deles até hoje exploraram a possibilidade de implementar os operadores octogonais de forma paralela em GPU. Considerando o custo cada vez mais baixo de placas de vídeo e de plataformas de GPGPU (General Processing GPU), torna-se relevante a exploração de possíveis implementações e adaptações dos algoritmos dos domínios dos octógonos para esta nova realidade.
+Um deles, no entanto, tem recebido destaque recentemente: o domínio dos 
+octógonos. Criado em 2006 por Antoine Miné, é um domínio abstrato fracamente 
+relacional, que merece destaque pela sua baixa complexidade computacional e 
+pela razoável adequação do algoritmo ao paralelismo. Analisadores estáticos já 
+foram criados com base neste domínio abstrato, e usados com sucesso, mas poucos 
+deles até hoje exploraram a possibilidade de implementar os operadores 
+octogonais de forma paralela em GPU. Considerando o custo cada vez mais baixo 
+de placas de vídeo e de plataformas de GPGPU (General Processing GPU), torna-se 
+relevante a exploração de possíveis implementações e adaptações dos algoritmos 
+dos domínios dos octógonos para esta nova realidade.
 
-O objetivo deste trabalho é implementar os algoritmos e operadores do domínio dos octógonos em GPU, utilizando o OpenCL. Comparações serão realizadas com outras duas implementações baseadas em CPU e SSE, a fim de concluir a adequação dos algoritmos e decidir em quais tipos de ocasião o uso de computação paralela em GPU se torna mais apropriado.
+O objetivo deste trabalho é implementar os algoritmos e operadores do domínio 
+dos octógonos em GPU, utilizando o OpenCL. Comparações serão realizadas com 
+outras duas implementações baseadas em CPU e SSE, a fim de concluir a adequação 
+dos algoritmos e decidir em quais tipos de ocasião o uso de computação paralela 
+em GPU se torna mais apropriado.
 
 \vspace{\onelineskip}
 

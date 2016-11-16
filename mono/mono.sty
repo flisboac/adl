@@ -17,7 +17,8 @@
 \usepackage[
     section=chapter,
     %numberedsection,
-    nonumberlist,
+    %nonumberlist,
+    nopostdot,
     xindy,
     acronym,
     symbols
@@ -90,7 +91,12 @@
     \glstocfalse
     \glsaddall
     \label{abreviaturas}
-    \printglossary[type=\acronymtype, style=list, title={Lista de Abreviaturas e Siglas}]
+    \printglossary[
+        type=\acronymtype,
+        style=list,
+        nonumberlist,
+        title={Lista de Abreviaturas e Siglas}
+    ]
     \pdfbookmark[0]{Lista de Abreviaturas e Siglas}{abreviaturas}
     %\cleardoublepage
 }
@@ -99,7 +105,12 @@
     \glstocfalse
     \glsaddall
     \label{simbolos}
-    \printglossary[type=\symboltype, style=list, title={Lista de Símbolos}]
+    \printglossary[
+        type=\symboltype,
+        style=list,
+        nonumberlist,
+        title={Lista de Símbolos}
+    ]
     \pdfbookmark[0]{Lista de Símbolos}{simbolos}
     \cleardoublepage
 }
@@ -108,7 +119,13 @@
     \glstocfalse
     \glsaddall
     \addcontentsline{toc}{chapter}{GLOSSÁRIO}
-    \printglossary[type=\glossarytype, style=listgroup, title={Glossário}, toctitle={GLOSSÁRIO}]
+    \printglossary[
+        type=\glossarytype,
+        style=listgroup,
+        title={Glossário},
+        toctitle={GLOSSÁRIO}
+    ]
+    %\printglossaries
     %\pdfbookmark[0]{Glossário}{toc}
     \cleardoublepage
 }
