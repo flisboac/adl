@@ -15,3 +15,13 @@
 *.synctex.*
 *.kilepr
 out
+*.acn
+*.acr
+*.alg
+*.blg
+*.glg
+*.glo
+*.gls
+*.slg
+*.sls
+*.xdy

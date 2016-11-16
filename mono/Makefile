@@ -8,6 +8,7 @@ RMDIR=rm -rf
 LATEX_BUILD=latexmk -pdf -dvi-
 LATEX_CLEAN=latexmk -c
 LATEX_DISTCLEAN=latexmk -C
+OUTPUT_DOC=mono.pdf
 
 STRAY_FILES=mono.bbl mono.brf
 
@@ -17,7 +18,7 @@ build:
 	pushd . && cd "$(MONO_ROOT_DIR)" && $(LATEX_BUILD) && popd
 
 clean:
-	pushd . && cd "$(MONO_ROOT_DIR)" && $(LATEX_CLEAN) && $(RM) $(STRAY_FILES) && popd
+	pushd . && cd "$(MONO_ROOT_DIR)" && $(LATEX_CLEAN) && popd
 	pushd . && cd "$(MONO_TEX_DIR)" && $(LATEX_CLEAN) && popd
 
 distclean:
