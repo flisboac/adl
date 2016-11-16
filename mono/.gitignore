@@ -8,6 +8,10 @@
 *.fls
 *.ilg
 *.ind
+*.bbl
+*.brf
+*.dvi
 *.fdb_latexmk
 *.synctex.*
+*.kilepr
 out

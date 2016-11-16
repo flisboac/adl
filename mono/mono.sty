@@ -4,31 +4,33 @@
 % ---
 % Pacotes básicos 
 % ---
-\usepackage{lmodern}			% Usa a fonte Latin Modern			
-\usepackage[T1]{fontenc}		% Selecao de codigos de fonte.
-\usepackage[utf8]{inputenc}		% Codificacao do documento (conversão automática dos acentos)
-\usepackage{lastpage}			% Usado pela Ficha catalográfica
-\usepackage{indentfirst}		% Indenta o primeiro parágrafo de cada seção.
-\usepackage{color}				% Controle das cores
-\usepackage{graphicx}			% Inclusão de gráficos
-\usepackage{microtype} 			% para melhorias de justificação
+\usepackage{lmodern}            % Usa a fonte Latin Modern			
+\usepackage[T1]{fontenc}        % Selecao de codigos de fonte.
+\usepackage[utf8]{inputenc}     % Codificacao do documento (conversão automática dos acentos)
+\usepackage{hyperref}
+\usepackage{lastpage}           % Usado pela Ficha catalográfica
+\usepackage{indentfirst}        % Indenta o primeiro parágrafo de cada seção.
+\usepackage{color}              % Controle das cores
+\usepackage{graphicx}           % Inclusão de gráficos
+\usepackage{microtype}          % para melhorias de justificação
+\usepackage{textcase}
+\usepackage[
+    section=chapter,
+    %numberedsection,
+    nonumberlist,
+    xindy,
+    acronym,
+    symbols
+    ]{glossaries}
 % ---
 
 
-
 % ---
-% Pacotes adicionais, usados apenas no âmbito do Modelo Canônico do abnteX2
+% Pacotes de citações, glossário, etc
 % ---
-\usepackage{lipsum}				% para geração de dummy text
-% ---
-
-
-% ---
-% Pacotes de citações
-% ---
-\usepackage[brazilian,hyperpageref]{backref}	 % Paginas com as citações na bibl
-\usepackage[alf]{abntex2cite}	% Citações padrão ABNT
-
+\usepackage[brazilian,hyperpageref]{backref}   % Paginas com as citações na bibl
+\usepackage[alf]{abntex2cite}                  % Citações padrão ABNT
+%\usepackage{biblatex}
 
 % --- 
 % CONFIGURAÇÕES DE PACOTES
@@ -74,3 +76,39 @@
 
 % Controle do espaçamento entre um parágrafo e outro:
 \setlength{\parskip}{0.2cm}  % tente também \onelineskip
+
+% Glossários maldito
+
+\newcommand{\symboltype}{symbols}
+\newcommand{\glossarytype}{main}
+
+% Not working.
+%\renewcommand{\glossarymark}[1]{}
+%\renewcommand{\glsglossarymark}[1]{}
+
+\newcommand{\imprimirabreviaturas}{
+    \glstocfalse
+    \glsaddall
+    \label{abreviaturas}
+    \printglossary[type=\acronymtype, style=list, title={Lista de Abreviaturas e Siglas}]
+    \pdfbookmark[0]{Lista de Abreviaturas e Siglas}{abreviaturas}
+    %\cleardoublepage
+}
+
+\newcommand{\imprimirsimbolos}{
+    \glstocfalse
+    \glsaddall
+    \label{simbolos}
+    \printglossary[type=\symboltype, style=list, title={Lista de Símbolos}]
+    \pdfbookmark[0]{Lista de Símbolos}{simbolos}
+    \cleardoublepage
+}
+
+\newcommand{\imprimirglossario}{
+    \glstocfalse
+    \glsaddall
+    \addcontentsline{toc}{chapter}{GLOSSÁRIO}
+    \printglossary[type=\glossarytype, style=listgroup, title={Glossário}, toctitle={GLOSSÁRIO}]
+    %\pdfbookmark[0]{Glossário}{toc}
+    \cleardoublepage
+}
