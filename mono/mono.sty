@@ -6,11 +6,14 @@
 % ---
 \usepackage{lmodern}            % Usa a fonte Latin Modern			
 \usepackage[T1]{fontenc}        % Selecao de codigos de fonte.
-\usepackage[utf8]{inputenc}     % Codificacao do documento (conversão automática dos acentos)
 \usepackage{hyperref}
+\usepackage{xstring}
+\usepackage[normalem]{ulem}
+\usepackage[autostyle]{csquotes} 
+\usepackage{enumitem}           % http://ctan.org/pkg/enumitem
 \usepackage{lastpage}           % Usado pela Ficha catalográfica
 \usepackage{indentfirst}        % Indenta o primeiro parágrafo de cada seção.
-\usepackage{color}              % Controle das cores
+\usepackage[usenames]{xcolor}   % Controle das cores
 \usepackage{graphicx}           % Inclusão de gráficos
 \usepackage{microtype}          % para melhorias de justificação
 \usepackage{textcase}
@@ -72,16 +75,23 @@
 % Espaçamentos entre linhas e parágrafos 
 % --- 
 
-% O tamanho do parágrafo é dado por:
-\setlength{\parindent}{1.3cm}
+% Indentação do parágrafo
+\setlength{\parindent}{2.0cm}
+% Espaçamento entre um parágrafo e outro:
+\setlength{\parskip}{1.5em}  % tente também \onelineskip
+% Espaçamento entre linhas
+\renewcommand{\baselinestretch}{1.25}
 
-% Controle do espaçamento entre um parágrafo e outro:
-\setlength{\parskip}{0.2cm}  % tente também \onelineskip
+\setlist[itemize]{noitemsep,topsep=0pt}
+\setlist[description]{topsep=0pt}
 
 % Glossários maldito
 
 \newcommand{\symboltype}{symbols}
 \newcommand{\glossarytype}{main}
+
+\defglsentryfmt[\acronymtype]{\dotuline{\mdseries{\emph{\glsgenentryfmt}}}}
+\defglsentryfmt[\glossarytype]{\dotuline{\emph{\glsgenentryfmt}}}
 
 % Not working.
 %\renewcommand{\glossarymark}[1]{}
@@ -121,7 +131,7 @@
     \addcontentsline{toc}{chapter}{GLOSSÁRIO}
     \printglossary[
         type=\glossarytype,
-        style=listgroup,
+        style=listhypergroup,
         title={Glossário},
         toctitle={GLOSSÁRIO}
     ]
@@ -129,3 +139,87 @@
     %\pdfbookmark[0]{Glossário}{toc}
     \cleardoublepage
 }
+
+\newcommand{\novoacronimo}[4]{
+    % #1: label
+    % #2: name
+    % #3: long name
+    % #4: description
+    \newacronym[
+        see={{gls-#1}}
+        ]{#1} % label
+        {#2} % name
+        {#3} % long name
+    \longnewglossaryentry{gls-#1}{
+        type=\glossarytype,
+        name={#3}
+    }{#4}
+    \newglossaryentry{acr-#1}{
+        type=\glossarytype,
+        name={#2},
+        see={gls-#1},
+        description={}
+        %description={\glssee[Veja:]{acr-IA}{gls-IA}}
+        %description={Vide \glsentrytext{gls-IA}}
+    }
+}
+
+
+\newcommand{\novosimbolo}[4]{
+    % #1: label
+    % #2: symbol
+    % #3: name/sort
+    % #4: brief description
+    % #5?: description
+    \@ifundefined{#1}{
+        \expandafter\newcommand\csname #1\endcsname{#2}
+    }{}
+    \longnewglossaryentry{#1}{
+        type=\symboltype,
+        %see={[Vide:]{gls-#1}},
+        name={#2},
+        sort={#3},
+        symbol={#2}
+    }{#4}
+    %\longnewglossaryentry{gls-#1}{
+    %    type=\glossarytype,
+    %    name={#4}
+    %}{#5}
+    %\newglossaryentry{sym-#1}{
+    %    type=\glossarytype,
+    %    name={#2},
+    %    see={gls-#1},
+    %    description={}
+    %    %description={\glssee[Veja:]{acr-IA}{gls-IA}}
+    %    %description={Vide \glsentrytext{gls-IA}}
+    %}
+}
+
+\newcommand{\novadefinicao}[3]{
+    % #1: label
+    % #2: nome
+    % #3: descrição
+    \longnewglossaryentry{#1}{
+        type=\glossarytype,
+        %see={[Vide:]{gls-#1}},
+        name={\uppercase{\StrLeft{#2}{1}}\StrGobbleLeft{#2}{1}},
+        text={#2}
+    }{#3}
+}
+
+\newcommand{\novadefinicaopl}[4]{
+    % #1: label
+    % #2: singular
+    % #3: plural
+    % #4: descrição
+    \longnewglossaryentry{#1}{
+        type=\glossarytype,
+        name={\uppercase{\StrLeft{#2}{1}}\StrGobbleLeft{#2}{1}},
+        text={#2},
+        plural={#3}
+    }{#4}
+}
+
+% ---
+% Ambientes
+% ---

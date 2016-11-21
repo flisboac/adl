@@ -1,42 +1,107 @@
 
-\newglossaryentry{pi}
-{
-  name={\ensuremath{\pi}},
-  description={ratio of circumference of circle to its diameter},
-  sort=pi,
-  type=\symboltype
-}
+% ---
+% S Í M B O L O S
+% ---
 
-\newglossaryentry{pi2}
-{
-  name={\ensuremath{\pi}2},
-  description={ratio of circumference of circle to its diameter},
-  sort=pi2,
-  type=\symboltype
-}
+\novosimbolo
+    {mypi} %label
+    {\ensuremath{\pi}} %symbol
+    {Pi} %name
+    {Razão entre a circunferência de um círculo e o seu diâmetro.} %brief
 
-\newacronym[
-    see={[Vide:]{gls-IA}}
-    ]{IA} % label
-    {IA} % name
-    {Interpretação Abstrata} % long name
-\newglossaryentry{gls-IA}{
-    type=\glossarytype,
-    name={Interpretação Abstrata},
-    description={
+
+% ---
+% A C R Ô N I M O S
+% ---
+
+\novoacronimo
+    {IA} %label
+    {IA} %symbol
+    {{Interpretação Abstrata}} %name
+    {
         A Interpretação Abstrata, geralmente abreviada como IA (ou AI na 
         literatura internacional), é uma teoria que formaliza aproximações 
         plausíveis da semântica de programas e sistemas computacionais. Mais 
         especificamente, trata do problema de obter informações sobre a 
         semântica de programas através de execuções parciais.
     }
-}
-\newglossaryentry{acr-IA}{
-    type=\glossarytype,
-    name={IA},
-    see={gls-IA},
-    description={}
-    %description={\glssee[Veja:]{acr-IA}{gls-IA}}
-    %description={Vide \glsentrytext{gls-IA}}
-}
 
+\novoacronimo
+    {TI}
+    {TI}
+    {{Tecnologia da Informação}}
+    {
+        Em uma forma mais ampla, pode-se definir a Tecnologia da 
+        Informação 
+        como o conjunto de técnicas, atividades e soluções voltadas à 
+        gerência, 
+        geração, uso, acesso, segurança e transmissão de dados e 
+        informação por 
+        meios computacionais.
+    }
+
+\novoacronimo
+    {STR}
+    {STR}
+    {{Sistema de Tempo Real}}
+    {
+        Sistemas nos quais há exigências temporais acerca da realização de suas 
+        tarefas. Não se trata de executar as tarefas no menor tempo possível, 
+        mas sim de executá-las \emph{dentro do tempo disponível}.
+    }
+
+% ---
+% D E F I N I Ç Õ E S
+% ---
+
+\novadefinicaopl
+    {sistema_critico}
+    {sistema crítico}
+    {sistemas críticos}
+    {
+        Vide seção \emph{\ref{introducao_sobre_criticidade}} (página 
+        \pageref{introducao_sobre_criticidade}).
+    }
+
+\novadefinicao
+    {dependabilidade}
+    {dependabilidade}
+    {
+        Termo que representa uma abordagem mais abrangente, em relação à 
+        caracterização da criticidade de sistemas. Explicando de forma sucinta, 
+        entende-se que a \emph{dependabilidade} de um sistema não 
+        seja definida apenas pelos seus aspectos técnicos, assim como 
+        ocorre com termos como \emph{confiabilidade}, muito usados 
+        hoje. \citeauthor{rushby_critical_1994} cita o trabalho de 
+        \citeonline{laprie_dependable_1985} para definir o conceito 
+        de \emph{dependabilidade}:
+        \blockquote{\textit{
+            O termo \emph{"dependabilidade"} é usado para escapar de 
+            significados técnicos especializados que hoje estão 
+            associados à termos como \emph{"confiabilidade"}. Também almeja-se 
+            ter um termo para uma abordagem que, no geral, possa adotar, 
+            incluir e unificar muitos problemas e técnicas que têm geralmente 
+            sido consideradas isoladamente -- como por exemplo, tolerância a 
+            falhas, confiabilidade, corretude, proteção, capacidade de 
+            sobrevivência e segurança.} \cite{rushby_critical_1994}
+        }
+    }
+
+\novadefinicao
+    {protecao}
+    {proteção contra falhas}
+    {
+        O termo original em inglês é \emph{safety}, que significa 
+        \emph{segurança}, se traduzido literalmente para o português. No 
+        entanto, há uma conotação forte do termo \emph{segurança} para questões 
+        que envolvem a \emph{segurança da informação}. Na literatura estudada, 
+        \emph{safety} possui um sentido diferente, mais voltado à 
+        \emph{segurança contra falhas}; sobre garantias de integridade do 
+        sistema, de pessoas, do meio ambiente, de propriedades e de ativos após 
+        a ocorrência de uma falha.
+        
+        Infelizmente, não foi encontrado nenhum termo na literatura brasileira 
+        com este significado específico. O uso desta expressão fica, portanto, 
+        exclusiva à esta monografia, apenas para explicitar a diferença em 
+        relação às terminologias que envolvem segurança da informação.
+    }

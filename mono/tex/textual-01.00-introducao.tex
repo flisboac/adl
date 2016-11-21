@@ -1,7 +1,113 @@
 
 \chapter[Introdução]{Introdução}
-    Primeira referência de palavra do glossário: \gls{IA}. Segunda referência:  
-    \gls{IA}.
+
+A sociedade de hoje é cada vez mais dependente da tecnologia. É possível ver 
+exemplos do uso da computação e da \gls{TI} para solucionar problemas diversos, 
+que vão desde simples aplicativos pessoais até complexos sistemas 
+informatizados à nível internacional.
+
+A tecnologia está disponível para facilitar nossas vidas, mas dado o seu papel 
+cada vez mais crucial na vida das pessoas, torna-se necessário garantir a 
+segurança, confiabilidade e corretura dos sistemas e softwares dos quais 
+dependemos: quanto mais crítico, mais deseja-se garantir uma margem de 
+confiança em relação à ausência ou resiliência a erros. Não 
+somente, pode se tornar necessário também, na ocorrência de um evento adverso, 
+implementar meios de recuperação ou contingência. Diversos autores versam sobre 
+teorias e práticas envolvendo o planejamento, execução e operação segura de 
+sistemas em vários âmbitos, e se utilizando de diversas visões sobre o tema -- 
+que muitas das vezes, se complementam.
+
+\section{Sobre sistemas de software}
+
+    \subsection{Definindo criticidade e falhas} 
+    \label{introducao_sobre_criticidade}
+
+    \citeonline{sommerville_software_2011} define um \gls{sistema_critico} como 
+    \emph{"um sistema de computador no qual falhas podem resultar em perdas 
+    significativas, seja no âmbito humano, econômico ou ambiental."} Na mesma 
+    obra, são caracterizados, ao longo dos capítulos, três tipos de sistemas 
+    (uma lista mais sucinta pode ser encontrada em 
+    \cite{sommerville_critical_2008}):
+    
+    \begin{description}
+        \item[Sistemas de segurança crítica]
+        \item[Sistemas de missão crítica]
+        \item[Sistemas de negócio crítico]
+    \end{description}
+    
+    No entanto, esta taxonomia não é universal. Necessidades específicas exigem 
+    modelos distintos; talvez por isto que a literatura existente acerca de 
+    sistemas críticos seja tão abrangente. \citeonline{rushby_critical_1994} 
+    explorou estes modelos de análise e categorização de 
+    \glspl{sistema_critico} de uma forma bem objetiva e clara, e elencou quatro 
+    deles:
+    
+    \begin{description}
+        \item[Pela \Gls{dependabilidade}] Um sistema confiável 
+        (segundo o presente conceito) é \emph{"aquele no qual a dependência 
+        pode ser justificadamente colocada em determinados aspectos da 
+        qualidade do serviço que ele entrega. A qualidade de um serviço inclui 
+        tanto a sua corretude (e.g. conformidade com os requisitos, 
+        especificações e expectativas) e a continuidade de sua entrega."}. Ou 
+        seja, um sistema que implementa perfeitamente a sua especificação, 
+        atende à todos os seus requisitos (funcionais e não-funcionais), e 
+        entrega seus serviços com garantida qualidade, então ele é um sistema 
+        confiável.
+    
+        \item[Pela \emph{Engenharia de \Gls{protecao}}] \emph{"A 
+        confiabilidade de um sistema diz respeito à incidência de falhas; já a 
+        \gls{protecao} se importa com a ocorrência de acidentes ou 
+        acontecimentos adversos -- eventos não planejados que resultam em 
+        mortes, injúrias, doenças, danos à (ou perda de) propriedade ou danos 
+        ao ambiente. Enquanto que falhas de sistema são definidas em termos dos 
+        serviços deste sistema, a \gls{protecao} é definida em termos das 
+        consequências externas ao sistema. Se os serviços de sistema são 
+        especificados incorretamente, então o sistema pode ser inseguro, apesar 
+        de perfeitamente confiável."}.
+        
+        \item[Pensando em \emph{Sistemas Seguros}] Esta abordagem tem
+        uma visão voltada à \emph{segurança da informação}, e a confiabilidade 
+        é descrita em termos de propriedades envolvendo garantias de 
+        privacidade e confidencialidade.
+        
+        \item[Pensando em \gls{STR}] \emph{"Um \gls{STR} é aquele cuja 
+        corretura depende não somente dos valores das suas saídas, mas também 
+        do tempo utilizado para a produzi-las. (...) Há dois problemas 
+        importantes sobre o desenvolvimento de um \gls{STR}: a derivação de 
+        restrições temporais, e a construção de uma estrutura de sistema (mais 
+        particularmente um regime de agendamento) que garanta a satisfação 
+        destas restrições."}
+    \end{description}
+    
+    De acordo com os modelos de \citeauthor{rushby_critical_1994}, o conceito 
+    de \emph{falha de sistema} pode variar de acordo com a forma como se 
+    qualifica um sistema, mas de uma forma geral, uma falha é \emph{qualquer 
+    evento adverso, e leva em consideração tão somente as descrições do 
+    sistema}. Falhas podem ser tratáveis (e.g. falha ao iniciar uma conexão a 
+    um banco de dados) ou não (e.g. queda de energia); já a \emph{gravidade} de 
+    uma falha está relacionada com as suas \emph{consequências} (e.g. uma queda 
+    de energia em um aparelho médico poderia custar uma vida, mas a reconexão 
+    ao banco de dados poderia ser retentada em um momento posterior). É por 
+    estes motivos, e para evitar prejuízos, que se torna prudente adotar uma 
+    prática ou metodologia de prevenção e mitigação de erros.    
+    \cite{sommerville_critical_2008} cita uma série de métodos e dá exemplos 
+    excelentes sobre a aplicação deles
+
+    
+    \subsection{Consequências das falhas de software}
+    
+    A não adoção de conceitos e práticas que garantam estas características de 
+    segurança minimamente necessárias à softwares de missão crítica ou de 
+    grande volume tem consequências muitas vezes desastrosas.
+    
+    \subsection{Dificuldades em garantir a ausência de erros}
+    
+    (Ver onde eu li isso: Sommerville estima que 50\% do custo para o 
+    desenvolvimento de software vem dos esforços para garantir a qualidade e 
+    adequação)
+
+    \subsection{A importância dos métodos formais}
+        
     \section{Objetivo}
     \section{Justificativa}
     \section{Organização do trabalho}

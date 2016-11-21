@@ -15,4 +15,236 @@
   file = {chawdhary et al - simple and efficient algorithms for octagons (2014, springer).conference paper.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Academic/Formal Systems/chawdhary et al - simple and efficient algorithms for octagons (2014, springer).conference paper.pdf:application/pdf}
 }
 
+@article{mine_octagon_2006,
+  title = {The Octagon Abstract Domain},
+  volume = {19},
+  abstract = {This article presents the octagon abstract domain, a relational numerical abstract domain for static analysis by abstract interpretation. It allows representing conjunctions of constraints of the form $\pm$X $\pm$ Y $\leq$ c where X and Y range among program variables and c is a constant in Z, Q, or R automatically inferred. Abstract elements are represented using modified Difference Bound Matrices and we use a normalization algorithm loosely based on the shortest-path closure to compute canonical representations and construct best-precision abstract transfer functions. We achieve a quadratic memory cost per abstract element and a cubic worst-case time cost per abstract operation, with respect to the number of program variables. In terms of cost and precision, our domain is in between the well-known fast but imprecise interval domain and the costly polyhedron domain. We show that it is precise enough to treat interesting examples requiring relational invariants, and hence, out of the reach of the interval domain. We also present a packing strategy that allows scaling our domain up to large programs by tuning the amount of relationality. The octagon domain was incorporated into the Astr{\'e}e industrial-strength static analyzer and was key in proving the absence of run-time errors in large critical embedded flight control software for Airbus planes.},
+  timestamp = {2016-09-07T18:04:12Z},
+  number = {1},
+  urldate = {2016-09-07},
+  url = {http://link.springer.com/article/10.1007/s10990-006-8609-1},
+  journal = {Higher-order and symbolic computation},
+  author = {Min{\'e}, Antoine},
+  year = {2006},
+  keywords = {_model,abstract interpretation,numerical abstract domains,relational numerical invariants,static analysis},
+  pages = {31--100},
+  file = {mine - the octagon abstract domain (2006).journal article.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Academic/Formal Systems/Abstract Interpretation/mine - the octagon abstract domain (2006).journal article.pdf:application/pdf}
+}
+
+@phdthesis{mine_weakly_2004,
+  type = {PhD Thesis},
+  title = {Weakly {{Relational Numerical Abstract Domains}}},
+  abstract = {The goal of this thesis is to design techniques related to the automatic analysis of computer programs. One major application is the creation of tools to discover bugs before they actually happen, an important goal in a time when critical yet complex tasks are performed by computers. We will work in the Abstract Interpretation framework, a theory of sound approximation of program semantics. We will focus, in particular, on numerical abstract domains that specialise in the automatic discovery of properties of the numerical variables of programs. In this thesis, we introduce new numerical abstract domains: the zone abstract domain (that can discover invariants of the form X - Y $\leq$ c), the zone congruence domain (X $\equiv$ Y + a [b]), and the octagon domain ($\pm$X $\pm$ Y $\leq$ c), among others. These domains rely on the classical notions of potential graphs, difference bound matrices, and algorithms for the shortest-path closure computation. They are in-between, in terms of cost and precision, between non-relational domains (such as the interval domain), that are very imprecise, and classical relational domains (such as the polyhedron domain), that are very costly. We will call them ``weakly relational''. We also introduce some methods to apply relational domains to the analysis of floating-point numbers, which was previously only possible using imprecise, non-relational domains. Finally, we introduce so-called ``linearisation'' and ``symbolic constant propagation'' generic methods to enhance the precision of any numerical domain, for only a slight increase in cost. The techniques presented in this thesis have been integrated within Astr{\'e}e, an analyser for critical embedded software, and were instrumental in proving the absence of run-time errors in fly-by-wire softwares used in Airbus A340 and A380 planes. Experimental results show the usability of our methods in the context of real-life applications.},
+  timestamp = {2016-09-07T22:09:04Z},
+  url = {https://www-apr.lip6.fr/~mine/these/these-color.pdf},
+  school = {{\'E}cole Normale Sup{\'e}rieure de Paris, D{\'e}partement d'Informatique},
+  author = {Min{\'e}, Antoine},
+  month = dec,
+  year = {2004},
+  keywords = {_model,abstract domains,abstract interpretation,Octagon domain},
+  file = {mine - weakly relational numerical abstract domains (2004, ecole normale superieure de paris, departement dinformatique).thesis.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Academic/Formal Systems/Abstract Interpretation/mine - weakly relational numerical abstract domains (2004, ecole normale superieure de paris, departement dinformatique).thesis.pdf:application/pdf}
+}
+
+@article{wong_role_2009,
+  title = {The Role of Software in Recent Catastrophic Accidents},
+  abstract = {Software is increasingly used to monitor and control safety-critical devices and processes, in areas such as medicine, transportation, nuclear power generation, aeronautics, etc. Consequently however, an error in the software, or an error in its use, can have devastating effects that are not just financial, but can often also lead to the loss of life. In this article we review 15 recent catastrophic accidents and identify the roles that were played by software in causing them, as well as the useful lessons that can be learned from them.},
+  timestamp = {2016-11-17T06:29:45Z},
+  urldate = {2016-11-17},
+  url = {http://paris.utdallas.edu/IEEE-RS-ATR/document/2009/2009-17.pdf},
+  journal = {IEEE Reliability Society 2009 Annual Technology Report},
+  author = {Wong, W. Eric and Debroy, Vidroha and Restrepo, Andrew},
+  year = {2009},
+  keywords = {_survey,catastrophic accidents,safety-critical software systems,Software safety},
+  file = {wong et al - the role of software in recent catastrophic accidents (2009).journal article.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/wong et al - the role of software in recent catastrophic accidents (2009).journal article.pdf:application/pdf}
+}
+
+@inproceedings{wong_recent_2010,
+  title = {Recent {{Catastrophic Accidents}}: {{Investigating How Software}} Was {{Responsible}}},
+  isbn = {978-1-4244-7435-6},
+  shorttitle = {Recent {{Catastrophic Accidents}}},
+  doi = {10.1109/SSIRI.2010.38},
+  abstract = {Areas crucial to life such as medicine, transportation, nuclear-energy research and industry, aeronautics, and others, all make use of software in one way or another. However, the application of software to such domains means that the software may now become safety-critical such that an error in the software or an error in its use could have devastating consequences. This paper reviews 14 recent accidents, several of which resulted in the loss of life in addition to time and money, and identifies the role(s) that software played as an important causative factor. The useful lessons which can be learned from the accidents are also presented, which can then act as principles and guidelines to avoid the recurrence of similar accidents in the future.},
+  timestamp = {2016-11-17T06:25:27Z},
+  urldate = {2016-11-17},
+  url = {http://ieeexplore.ieee.org/document/5502861/},
+  publisher = {{IEEE}},
+  author = {Wong, W. Eric and Debroy, Vidroha and Surampudi, Adithya and Kim, HyeonJeong and Siok, Michael F.},
+  year = {2010},
+  keywords = {_survey,catastrophic accidents,mishaps,safety-critical software systems,Software safety},
+  pages = {14--22},
+  file = {wong et al - recent catastrophic accidents (2010, ieee).conference paper.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/wong et al - recent catastrophic accidents (2010, ieee).conference paper.pdf:application/pdf}
+}
+
+@article{pontes_contributions_2014,
+  title = {Contributions of Model Checking and {{CoFI}} Methodology to the Development of Space Embedded Software},
+  volume = {19},
+  issn = {1382-3256, 1573-7616},
+  doi = {10.1007/s10664-012-9215-y},
+  abstract = {The role of embedded software in the last space accidents highlights the importance of verification and validation techniques for the development of space embedded software. In this context, this work analyses the contribution of two verification techniques applied to the onboard data handling software of space products. The first technique is model checking. The system is modeled by a set of timed automata and the verification of safety and liveness properties is performed using UPPAAL model checker. The verified model is then used to generate the embedded software. The second technique analyzed in this work is model based approach for the generation of test cases. The Conformance and Fault Injection (CoFI) testing methodology is used to guide the development of a set of Finite State Machine (FSM) models from the software specification. The test suite is automatically generated from the FSM models. The contributions of the two methodologies are analyzed based on the results provided by an experiment. Two software products are used as case study, each one implementing two services of the Packet Utilization Standard (PUS). These services represent the functionalities offered by a satellite onboard data handling computer. One of the products is developed with the aid of model checking, while the other is developed according to the practices currently used at the Instituto Nacional de Pesquisas Espaciais (INPE). Both software products are tested by the CoFI methodology. The experiment highlights the advantages and vulnerable points of model checking. It also demonstrates that the main contribution of CoFI testing methodology is to highlight problems related to situations that have not been considered in the software specification, such as the occurrence of inopportune events. This analysis helps to understand how different techniques can be integrated in the design of critical embedded software.},
+  language = {en},
+  timestamp = {2016-11-17T06:34:39Z},
+  number = {1},
+  urldate = {2016-11-17},
+  url = {http://link.springer.com/10.1007/s10664-012-9215-y},
+  journal = {Empirical Software Engineering},
+  author = {Pontes, Rodrigo Pastl and V{\'e}ras, Paulo Claudino and Ambrosio, Ana Maria and Villani, Em{\'\i}lia},
+  month = feb,
+  year = {2014},
+  keywords = {_survey,Embedded software,Model based testing,Model checking,Packet Utilization Standard (PUS),Software verification,Space application,Verification},
+  pages = {39--68}
+}
+
+@article{zaminkar_customization_2016,
+  title = {Customization of {{Rational Unified Process}} ({{RUP}}) {{Methodology}} for {{Safety}}-{{Critical Systems}}},
+  volume = {11},
+  issn = {1828-6011, 1828-6003},
+  doi = {10.15866/irecos.v11i6.9184},
+  abstract = {A model is presented here for the customization of RUP methodology in the critical safety systems. The RUP methodology is studied and applied as a reference for the customization. A  comprehensive study  for the  research and the identification  of the  critical safety systems is conducted. The expansion of critical  safety systems and their necessary  involvement in different phases and stages regarding product development is essential. There exists much methodology to expand safe software for safety-critical systems based on objective orientation, which can be used in  customization of  RUP. The  Eclipse Process  framework is  introduced for  the customization studied in the presented paper.},
+  timestamp = {2016-11-17T06:40:25Z},
+  number = {6},
+  urldate = {2016-11-17},
+  url = {http://www.praiseworthyprize.org/jsm/index.php?journal=irecos\&page=article\&op=view\&path[]=18950},
+  journal = {International Review on Computers and Software (IRECOS)},
+  author = {Zaminkar, Mina and Reshadinezhad, Mohammad Reza},
+  month = jun,
+  year = {2016},
+  keywords = {_model,Critical Safety Systems,Customization,IEC 61508 Standard,Safety Software,Sensitive-Safety},
+  pages = {566},
+  file = {zaminkar, reshadinezhad - customization of rational unified process (rup) methodology for safety-critical (2016).journal article.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/zaminkar, reshadinezhad - customization of rational unified process (rup) methodology for safety-critical (2016).journal article.pdf:application/pdf}
+}
+
+@article{wears_safeware:_2008,
+  title = {``{{Safeware}}'': Safety-Critical Computing and Health Care Information Technology},
+  shorttitle = {``{{Safeware}}''},
+  abstract = {Information technology (IT) is highly promoted as a mechanism for advancing safety in health care. Ironically, little attention has been paid to the issues of safety in health care IT. Computer scientists have extensively studied the problem of assured performance in safety-critical computing systems. They have developed a conceptual approach and set of techniques for use in settings where incorrect or aberrant operation (or results from correct operation that are aberrant in context) might endanger users, the public, or the environment. However, these methods are not commonly used in health care IT, which generally has been developed without specific consideration of the special factors and unique requirements for safe operations. This article provides a brief introduction for health care professionals and informaticians to what has been called ``safeware,'' a comprehensive approach to hazard analysis, design, operation, and maintenance of both hardware and software systems. This approach considers the entire joint sociotechnical system (including its operators) over its entire lifecycle, from conception through operation and on to decommissioning. Adoption of safeware methods should enhance the trustworthiness of future health IT.},
+  timestamp = {2016-11-18T03:29:45Z},
+  urldate = {2016-11-18},
+  url = {http://www.ncbi.nlm.nih.gov/books/NBK43774/?report=reader},
+  author = {Wears, Robert L. and Leveson, Nancy G.},
+  year = {2008},
+  file = {wears, leveson - safeware (2008).journal article.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/wears, leveson - safeware (2008).journal article.pdf:application/pdf}
+}
+
+@article{rushby_critical_1994,
+  title = {Critical System Properties: Survey and Taxonomy},
+  volume = {43},
+  issn = {09518320},
+  shorttitle = {Critical System Properties},
+  doi = {10.1016/0951-8320(94)90065-5},
+  abstract = {Computer systems are increasingly employed in circumstances where their failure (or even their correct operation, if they are built to flawed requirements) can have serious consequences. There is a surprising diversity of opinion concerning the properties that such ``critical systems'' should possess, and the best methods to develop them. The dependability approach grew out of the tradition of ultra-reliable and fault-tolerant systems, while the safety approach grew out of the tradition of hazard analysis and system safety engineering. Yet another tradition is found in the security community, and there are further specialized approaches in the tradition of real-time systems. In this report, I examine the critical properties considered in each approach, and the techniques that have been developed to specify them and to ensure their satisfaction. Since systems are now being constructed that must satisfy several of these critical system properties simultaneously, there is particular interest in the extent to which techniques from one tradition support or conflict with those of another, and in whether certain critical sys- tem properties are fundamentally compatible or incompatible with each other. As a step toward improved understanding of these issues, I suggest a taxonomy, based on Perrow's analysis, that considers the complexity of component interactions and tightness of coupling as primary factors.},
+  language = {en},
+  timestamp = {2016-11-18T04:17:36Z},
+  number = {2},
+  urldate = {2016-11-18},
+  url = {http://linkinghub.elsevier.com/retrieve/pii/0951832094900655},
+  journal = {Reliability Engineering \& System Safety},
+  author = {Rushby, John},
+  month = jan,
+  year = {1994},
+  keywords = {_survey,_text,Critical Safety Systems,Software safety,Software taxonomy,Software verification},
+  pages = {189--219},
+  file = {rushby - critical system properties (1994).journal article.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/rushby - critical system properties (1994).journal article.pdf:application/pdf}
+}
+
+@misc{sommerville_critical_2008,
+  title = {Critical Systems},
+  timestamp = {2016-11-18T04:28:48Z},
+  urldate = {2016-11-18},
+  url = {https://ifs.host.cs.st-andrews.ac.uk/Books/SE9/Web/Dependability/CritSys.html},
+  journal = {Systems, software and technology: Ian Sommerville's professional blog and website},
+  author = {Sommerville, Ian},
+  year = {2008},
+  file = {Critical systems:/home/flisboac/Dropbox/Libraries/Zotero/Data/storage/AAH4I2QS/CritSys.html:text/html}
+}
+
+@book{sommerville_software_2011,
+  address = {Boston},
+  edition = {9},
+  title = {Software Engineering},
+  isbn = {978-0-13-703515-1 978-0-13-705346-9},
+  lccn = {QA76.758 .S657 2011},
+  abstract = {Intended for introductory and advanced courses in software engineering.
+
+The ninth edition of Software Engineering presents a broad perspective of software engineering, focusing on the processes and techniques fundamental to the creation of reliable, software systems. Increased coverage of agile methods and software reuse, along with coverage of 'traditional' plan-driven software engineering, gives readers the most up-to-date view of the field currently available. Practical case studies, a full set of easy-to-access supplements, and extensive web resources make teaching the course easier than ever.},
+  language = {en},
+  timestamp = {2016-11-18T04:34:18Z},
+  publisher = {{Pearson}},
+  author = {Sommerville, Ian},
+  year = {2011},
+  note = {OCLC: ocn462909026},
+  keywords = {Software engineering},
+  file = {1429431793.203Software Engineering by Somerville.pdf:/home/flisboac/Downloads/1429431793.203Software Engineering by Somerville.pdf:application/pdf}
+}
+
+@inproceedings{laprie_dependable_1985,
+  address = {Ann Arbor, MI},
+  title = {Dependable Computing and Fault Tolerance: {{Concepts}} and Terminology},
+  volume = {15},
+  shorttitle = {Dependable Computing and Fault Tolerance},
+  timestamp = {2016-11-18T07:47:46Z},
+  publisher = {{IEEE Computer Society}},
+  author = {Laprie, J. C.},
+  month = jun,
+  year = {1985},
+  keywords = {_model,Computing,Fault tolerance,Software engineering,Terminology},
+  pages = {2--11},
+  file = {laprie - dependable computing and fault tolerance (1985, ieee computer society).conference paper.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/laprie - dependable computing and fault tolerance (1985, ieee computer society).conference paper.pdf:application/pdf}
+}
+
+@inproceedings{kuhn_cost_2002,
+  title = {Cost {{Effective Use}} of {{Formal Methods}} in {{Verification}} and {{Validation}}},
+  abstract = {Formal methods offer the promise of significant improvements in verification and validation, and may be the only approach capable of demonstrating the absence of undesirable system behavior. But it is widely recognized that these methods are expensive, and their use has been limited largely to high-risk areas such as security and safety. This paper focuses on cost-effective applications of formal techniques in V\&V, particularly recent developments such as automatic test generation and use of formal methods for analyzing requirements and conceptual models without a full-blown formal verification. We also discuss experience with requiring the use of formal techniques in standards for commercial software.},
+  timestamp = {2016-11-18T12:42:18Z},
+  urldate = {2016-11-18},
+  url = {http://csrc.nist.gov/staff/Kuhn/kuhn-chandramouli-butler-02.pdf},
+  booktitle = {Foundations' 02 {{Workshop}}},
+  author = {Kuhn, D. Richard and Chandramouli, Ramaswamy and Butler, Ricky W.},
+  year = {2002},
+  pages = {22--23},
+  file = {kuhn-chandramouli-butler-02.pdf:/home/flisboac/Downloads/kuhn-chandramouli-butler-02.pdf:application/pdf}
+}
+
+@inproceedings{matichuk_empirical_2015,
+  address = {Florence, Italy},
+  series = {ICSE '15},
+  title = {Empirical {{Study Towards}} a {{Leading Indicator}} for {{Cost}} of {{Formal Software Verification}}},
+  isbn = {978-1-4799-1934-5},
+  abstract = {Formal verification can provide the highest degree of software assurance. Demand for it is growing, but there are still few projects that have successfully applied it to sizeable, real-world systems. This lack of experience makes it hard to predict the size, effort and duration of verification projects. In this paper, we aim to better understand possible leading indicators of proof size. We present an empirical analysis of proofs from the landmark formal verification of the seL4 microkernel and the two largest software verification proof developments in the Archive of Formal Proofs. Together, these comprise 15,018 individual lemmas and approximately 215,000 lines of proof script. We find a consistent quadratic relationship between the size of the formal statement of a property, and the final size of its formal proof in the interactive theorem prover Isabelle. Combined with our prior work, which has indicated that there is a strong linear relationship between proof effort and proof size, these results pave the way for effort estimation models to support the management of large-scale formal verification projects.},
+  timestamp = {2016-11-18T12:55:59Z},
+  url = {http://dl.acm.org/citation.cfm?id=2818754.2818842},
+  booktitle = {Proceedings of the 37th {{International Conference}} on {{Software Engineering}} - {{Volume}} 1},
+  publisher = {{IEEE Press}},
+  author = {Matichuk, Daniel and Murray, Toby and Andronick, June and Jeffery, Ross and Klein, Gerwin and Staples, Mark},
+  year = {2015},
+  pages = {722--732},
+  numpages = {11},
+  acmid = {2818842}
+}
+
+@inproceedings{bersani_cost_2016,
+  title = {The {{Cost}} of {{Formal Verification}} in {{Adaptive CPS}}: {{An Example}} of a {{Virtualized Server Node}}},
+  doi = {10.1109/HASE.2016.46},
+  abstract = {Cyber-physical systems (CPS) are large scale systems highly integrated with the physical environment. Given the changing nature of physical environments, CPS must be able to adapt on-line to new situations while preserving their correct operation. Correctness by construction relies on using formal tools, which suffer from a considerable computational overhead especially if executed on-line. As the current system model of a CPS may change to adapt to the environment, the new system model has to be verified at run-time prior to its execution to ensure that the system properties are preserved. CPS development has mainly concentrated on the design-time aspects, existing only few contributions that support on-line adaptation. We undertake a practical exercise to research on the pros and cons of formal tools to support dynamic changes at run-time. We formalize the semantics of the adaptation logic of an autonomic manager (OLIVE) that performs on-line verification for a specific application, i.e., a dynamic virtualized server system. We explore the realization of the autonomic manager using formal tools based on CLTLoc to express functional and non-functional properties of the managed system. The on-line verification manager services requests from mobile clients that might require a change in both the running software components and server services. To establish if the adaptation preserves the temporal constraints provided in the specification, i.e., to decide whether a new client request can be serviced in the modified system, the on-line verification manager employs CLTLoc satisfiability checking. In this scenario, we then provide empirical results showing the temporal costs of our approach.},
+  timestamp = {2016-11-18T12:58:37Z},
+  booktitle = {2016 {{IEEE}} 17th {{International Symposium}} on {{High Assurance Systems Engineering}} ({{HASE}})},
+  author = {Bersani, M. M. and Garc{\'\i}a-Valls, M.},
+  month = jan,
+  year = {2016},
+  keywords = {adaptation logic of an autonomic manager,Adaptation models,adaptive CPS,CLTLoc,Computational modeling,Computer architecture,Cyber-physical systems,cyberphysical systems,dynamic virtualized server system,formal tools,large scale systems,linear temporal logic,mobile clients,mobile computing,Monitoring,OLIVE,online formal verification,Program verification,real-time,real-time systems,resource management,Servers,server services,Software,software components,temporal constraints,Verification,virtualisation,virtualization,virtualized server node},
+  pages = {39--46}
+}
+
+@inproceedings{aspinall_towards_2016,
+  title = {Towards {{Formal Proof Metrics}}},
+  timestamp = {2016-11-18T13:14:23Z},
+  urldate = {2016-11-18},
+  url = {http://link.springer.com/chapter/10.1007/978-3-662-49665-7_19},
+  booktitle = {International {{Conference}} on {{Fundamental Approaches}} to {{Software Engineering}}},
+  publisher = {{Springer}},
+  author = {Aspinall, David and Kaliszyk, Cezary},
+  year = {2016},
+  pages = {325--341},
+  file = {proofmetrics.pdf:/home/flisboac/Downloads/proofmetrics.pdf:application/pdf}
+}
+
 
