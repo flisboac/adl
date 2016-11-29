@@ -16,3 +16,9 @@ push @generated_exts, 'acn', 'acr', 'alg';
 push @generated_exts, 'slo', 'sls', 'slg';
 $clean_ext .= ' %R.ist %R.xdy %R.bbl %R.brf';
 
+# Todonotes
+$clean_ext .= ' %R.tdo';
+
+# Coisa do Texstudio. O projeto usa Latexmk.
+$clean_ext .= ' %R.run.xml';
+

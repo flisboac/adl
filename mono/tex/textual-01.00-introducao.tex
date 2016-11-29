@@ -12,12 +12,14 @@ segurança, confiabilidade e corretura dos sistemas e softwares dos quais
 dependemos: quanto mais crítico, mais deseja-se garantir uma margem de 
 confiança em relação à ausência ou resiliência a erros. Não 
 somente, pode se tornar necessário também, na ocorrência de um evento adverso, 
-implementar meios de recuperação ou contingência. Diversos autores versam sobre 
-teorias e práticas envolvendo o planejamento, execução e operação segura de 
-sistemas em vários âmbitos, e se utilizando de diversas visões sobre o tema -- 
-que muitas das vezes, se complementam.
+implementar meios de recuperação ou contingência.
 
 \section{Sobre sistemas de software}
+
+    Diversos autores versam sobre teorias e práticas envolvendo o planejamento, 
+    execução e operação segura de sistemas em vários âmbitos, e se utilizando 
+    de diversas visões sobre o tema -- que muitas das vezes, se complementam. É 
+    comum 
 
     \subsection{Definindo criticidade e falhas} 
     \label{introducao_sobre_criticidade}
@@ -30,85 +32,236 @@ que muitas das vezes, se complementam.
     \cite{sommerville_critical_2008}):
     
     \begin{description}
-        \item[Sistemas de segurança crítica]
-        \item[Sistemas de missão crítica]
-        \item[Sistemas de negócio crítico]
+        \item[Sistemas de segurança crítica:] \emph{"Um sistema no qual falhas 
+        possam resultar em ferimentos físicos, perda de vidas ou sérios danos 
+        ambientais." Exemplo: um sistema de monitoramento e controle de uma 
+        usina nuclear.}
+        
+        \item[Sistemas de missão crítica:] \emph{"Um sistema no qual falhas 
+        possam causar o insucesso de alguma atividade crucial baseada em 
+        objetivos." Exemplo: um sistema de navegação e controle aéreo.}
+        
+        \item[Sistemas de negócio crítico:] \emph{"Um sistema no qual falhas 
+        possam resultar em altíssimos custos a um negócio que utiliza tal 
+        sistema." Exemplo: um sistema de troca de ações na bolsa de valores. }
     \end{description}
     
-    No entanto, esta taxonomia não é universal. Necessidades específicas exigem 
-    modelos distintos; talvez por isto que a literatura existente acerca de 
-    sistemas críticos seja tão abrangente. \citeonline{rushby_critical_1994} 
-    explorou estes modelos de análise e categorização de 
-    \glspl{sistema_critico} de uma forma bem objetiva e clara, e elencou quatro 
-    deles:
+    Esta taxonomia é simples, direta e amplamente aplicável, mas não é 
+    universal. Também não é definido com clareza o conceito de falha. Ademais, 
+    necessidades específicas exigem modelos distintos e uma visão de 
+    criticidade que se adeque melhor ao contexto no qual o sistema está 
+    inserido. Talvez por isto que a literatura existente acerca de sistemas 
+    críticos seja tão rica e abrangente em terminologia e conteúdo. 
+    \citeonline{rushby_critical_1994} explorou alguns modelos de análise e 
+    categorização de outros autores, no tema de \glspl{sistema_critico}, de uma 
+    forma bem objetiva e clara. Quatro destes modelos são descritos, em termos 
+    da confiabilidade atribuída à um sistema:
     
     \begin{description}
-        \item[Pela \Gls{dependabilidade}] Um sistema confiável 
+        \item[Pela \Gls{dependabilidade}:] Um sistema confiável 
         (segundo o presente conceito) é \emph{"aquele no qual a dependência 
         pode ser justificadamente colocada em determinados aspectos da 
         qualidade do serviço que ele entrega. A qualidade de um serviço inclui 
-        tanto a sua corretude (e.g. conformidade com os requisitos, 
+        tanto a sua corretura (e.g. conformidade com os requisitos, 
         especificações e expectativas) e a continuidade de sua entrega."}. Ou 
-        seja, um sistema que implementa perfeitamente a sua especificação, 
-        atende à todos os seus requisitos (funcionais e não-funcionais), e 
-        entrega seus serviços com garantida qualidade, então ele é um sistema 
-        confiável.
+        seja, o sistema é confiável se ele implementa perfeitamente a sua 
+        especificação, atende à todos os seus requisitos e entrega seus 
+        serviços com garantida qualidade, independente das consequências de uma 
+        eventual falha.
     
-        \item[Pela \emph{Engenharia de \Gls{protecao}}] \emph{"A 
+        \item[Pela \emph{Engenharia de \Gls{protecao}}:] \emph{"A 
         confiabilidade de um sistema diz respeito à incidência de falhas; já a 
         \gls{protecao} se importa com a ocorrência de acidentes ou 
         acontecimentos adversos -- eventos não planejados que resultam em 
         mortes, injúrias, doenças, danos à (ou perda de) propriedade ou danos 
-        ao ambiente. Enquanto que falhas de sistema são definidas em termos dos 
-        serviços deste sistema, a \gls{protecao} é definida em termos das 
-        consequências externas ao sistema. Se os serviços de sistema são 
-        especificados incorretamente, então o sistema pode ser inseguro, apesar 
-        de perfeitamente confiável."}.
+        ao ambiente."} As falhas de sistema são definidas em termos dos 
+        serviços e da descrição deste sistema, enquanto que a \gls{protecao} é 
+        definida em termos das consequências externas ao sistema e à forma como 
+        ele reage à elas. Pode-se ter um sistema perfeitamente confiável em 
+        termos da adequação aos seus requisitos, mas igualmente inseguro em 
+        relação ao tratamento e consequências de seus erros.
         
-        \item[Pensando em \emph{Sistemas Seguros}] Esta abordagem tem
+        \item[Pensando em \emph{Sistemas Seguros}:] Esta abordagem tem
         uma visão voltada à \emph{segurança da informação}, e a confiabilidade 
-        é descrita em termos de propriedades envolvendo garantias de 
+        é descrita em termos de propriedades que envolvem garantias de 
         privacidade e confidencialidade.
         
-        \item[Pensando em \gls{STR}] \emph{"Um \gls{STR} é aquele cuja 
+        \item[Pensando em \gls{STR}:] \emph{"Um \gls{STR} é aquele cuja 
         corretura depende não somente dos valores das suas saídas, mas também 
         do tempo utilizado para a produzi-las. (...) Há dois problemas 
         importantes sobre o desenvolvimento de um \gls{STR}: a derivação de 
         restrições temporais, e a construção de uma estrutura de sistema (mais 
         particularmente um regime de agendamento) que garanta a satisfação 
-        destas restrições."}
+        destas restrições."} A literatura descreve formas diversas de 
+        qualificação e tipificação de um \gls{STR}, mas em um âmbito geral, as 
+        consequências do não cumprimento das restrições temporais de um 
+        \gls{STR} podem ser desastrosas, pois as aplicações baseadas em um 
+        \gls{STR} comumente atuam em ambientes críticos e que exigem respostas 
+        imediatas e tempos de execução minimamente delimitados (e.g. sistemas 
+        de controle de vôo, sistemas de automação, sistemas de monitoramento de 
+        saúde).
     \end{description}
     
     De acordo com os modelos de \citeauthor{rushby_critical_1994}, o conceito 
-    de \emph{falha de sistema} pode variar de acordo com a forma como se 
-    qualifica um sistema, mas de uma forma geral, uma falha é \emph{qualquer 
-    evento adverso, e leva em consideração tão somente as descrições do 
-    sistema}. Falhas podem ser tratáveis (e.g. falha ao iniciar uma conexão a 
-    um banco de dados) ou não (e.g. queda de energia); já a \emph{gravidade} de 
-    uma falha está relacionada com as suas \emph{consequências} (e.g. uma queda 
-    de energia em um aparelho médico poderia custar uma vida, mas a reconexão 
-    ao banco de dados poderia ser retentada em um momento posterior). É por 
-    estes motivos, e para evitar prejuízos, que se torna prudente adotar uma 
-    prática ou metodologia de prevenção e mitigação de erros.    
-    \cite{sommerville_critical_2008} cita uma série de métodos e dá exemplos 
-    excelentes sobre a aplicação deles
-
+    de \emph{falha de sistema} pode variar de acordo com a metodologia de
+    qualificação um sistema, mas de uma forma geral, podemos concluir que uma 
+    falha é \emph{qualquer evento adverso segundo as descrições do sistema}, 
+    sejam elas previstas ou simplesmente desvios à especificação. Falhas podem 
+    ser tratáveis (e.g. falha ao iniciar uma conexão a um banco de dados) ou 
+    não (e.g. queda de energia); já a \emph{gravidade} de uma falha está 
+    relacionada com as suas \emph{consequências} (e.g. uma queda de energia em 
+    um aparelho médico poderia custar uma vida, mas a reconexão ao banco de 
+    dados poderia ser retentada em um momento posterior).
+    
+    Para efeitos de discussão do que vem a seguir, utilizaremos as definições 
+    de sistemas críticos assim como descritos em 
+    \citeonline{sommerville_software_2011} e as conclusões acerca de falhas de 
+    software extraídas com base na leitura de \citeonline{rushby_critical_1994}.
+    
     
     \subsection{Consequências das falhas de software}
     
     A não adoção de conceitos e práticas que garantam estas características de 
-    segurança minimamente necessárias à softwares de missão crítica ou de 
-    grande volume tem consequências muitas vezes desastrosas.
+    segurança minimamente necessárias à softwares críticos ou de 
+    grande volume tem consequências muitas vezes desastrosas. 
+    Em \citeonline{wong_recent_2010} e \citeonline{wong_role_2009}, são 
+    listados alguns dos acidentes mais trágicos ou danosos envolvendo sistemas 
+    críticos, onde o software teve participação ou culpa sobre o ocorrido.
     
-    \subsection{Dificuldades em garantir a ausência de erros}
+    \TODO{Tradução e referências extras de todos os itens.}
+    \begin{description}
+        \item[O Caso Patriot.] Arábia Saudita, 25 de Fevereiro de 1991. 
+        
+        
+        \item[Panes no Aeroporto de Los Angeles.] Los Angeles, Setembro de 
+        2004.
+        
+        \item[Dosagens erradas de radiação.] Instituto Nacional de 
+        Oncologia do Panamá, Março de 2011.
+        
+        \item[Falta de energia nos EUA e Canadá.] Nordeste dos EUA e Sudeste do 
+        Canadá, 14 de Agosto de 2003.
+    \end{description} 
     
-    (Ver onde eu li isso: Sommerville estima que 50\% do custo para o 
-    desenvolvimento de software vem dos esforços para garantir a qualidade e 
-    adequação)
+    Casos como os citados anteriormente nos alertam para a importância de se 
+    adotar uma prática ou metodologia de prevenção e mitigação de falhas, 
+    tenham elas origem em software ou não. \cite{sommerville_critical_2008} 
+    cita uma série de métodos e dá exemplos excelentes sobre a aplicação deles.
+
 
     \subsection{A importância dos métodos formais}
-        
-    \section{Objetivo}
-    \section{Justificativa}
+     
+    \TODO{Ver capítulo e página onde eu li isso: 
+    \citeonline{sommerville_critical_2008} estima que 50\% do custo para o 
+    desenvolvimento de software vem dos esforços para garantir a qualidade e 
+    adequação}
+    
+    \TODO{Buscar referências: Métodos formais podem reduzir custos e dar 
+    garantias que não podem ser totalmente provadas por métodos de teste 
+    tradicionais.}
+    
+    \TODO{Importância do domínio dos octógonos: Mostrar o uso do domínio dos 
+    octógonos no mercado, e como ele é melhor em relação à outros domínios para 
+    determinados tipos de análise estática/interpretação abstrata.}
+    
+    
+    \section{A relevância da GPGPU}
+    
+    \TODO{Presença das GPUs no mercado: smartphones, computadores, etc. 
+    Apresentar gráficos.}
+    
+    \TODO{Importância do GPGPU: como empresas estão usando plataformas de GPGPU 
+    (CUDA/OpenCL/DirectCompute/RenderScript Compute) para implementar 
+    inteligência artificial.}
+    
+    \TODO{GPGPU na ciência: Como o OpenCL/CUDA/GPGPU tem ganhado espaço na 
+    ciência.}
+    
+    \TODO{Como o GPGPU é subutilizado para implementação de ferramentas de 
+    Interpretação Abstrata.}
+    
+    
+    \section{Objetivo do trabalho}
+    
+    O objetivo deste trabalho é implementar os operadores e algoritmos do 
+    domínio dos octógonos, primariamente em \gls{GPU} utilizando o 
+    \gls{OpenCL}, mas também em \gls{CPU}. Almeja-se fazer uma comparação de 
+    tempo de execução e uso de recursos entre implementações dos algoritmos em 
+    \gls{CPU} e em \gls{GPU} com diversos tamanhos de problema (e.g. número de 
+    variáveis, número de restrições), e avaliar a possibilidade e casos em que 
+    o uso da \gls{GPU} se justifique.
+    
+    O produto final do projeto será uma biblioteca, que funcionará tanto em 
+    \gls{CPU} quanto em \gls{GPU}, e que terá interfaces em C++ para que seja 
+    possível a sua utilização de forma embarcada em outros softwares (e.g. 
+    processos, aplicações, serviços, outras bibliotecas, outras linguagens de 
+    programação). O projeto fará uso de técnicas de desenvolvimento e testes 
+    como o \gls{TDD} e o \gls{BDD}, para garantir a corretura das 
+    implementações dos algoritmos.
+    
+    Sabe-se que a publicação seminal para o domínio dos octógonos é a da tese 
+    de \citeonline{mine_weakly_2004}, que foi a obra que definiu pela primeira 
+    vez este domínio abstrato. No entanto, para este trabalho, o embasamento 
+    teórico virá primariamente de \citeonline{chawdhary_simple_2014}, pois são 
+    descritas otimizações que serão importantes para o bom funcionamento dos 
+    algoritmos em \gls{GPU} em alguns casos.
+    
+    
+        \subsection{Justificativa}
+    
+        Este projeto foi iniciado na Universidade de Kent, Inglaterra, como um 
+        projeto de pesquisa a ser realizado no período das férias de verão de 
+        2014. No entanto, mesmo com o bom andamento, o projeto não foi 
+        finalizado até o fim do período. O objetivo era utilizá-lo para criar 
+        ferramentas de análise estática, e assim verificar falhas de segurança 
+        em arquivos executáveis em formatos de máquina (binários); faria parte 
+        da pesquisa do pós-doutorando Aziem Chawdhary \footnote{Website: 
+        \url{http://www.chawdhary.co.uk/about.html}}, e baseia-se em um artigo 
+        escrito por ele e seu orientador.
+    
+        De qualquer forma, há boa oportunidade para o uso do produto final (a 
+        biblioteca) do projeto em outras aplicações. Há implementações dos 
+        domínios dos octógonos em \gls{CPU}, mas não se tem nenhum relato da de 
+        pesquisas ou implementações dos algoritmos em \gls{CPU}. Dada a 
+        relevância e presença cada vez maiores de plataformas como o 
+        \gls{GPGPU} -- não só no mercado mas também no meio científico -- e a 
+        adequação dos algoritmos para o paralelismo, pesquisas na área podem 
+        trazer melhorias. Em especial, a verificação das condições de grandes 
+        sistemas em tempo de execução pode se utilizar de técnicas de \gls{IA} 
+        e paralelismo -- o que pode, inclusive, ser um tema a se explorar no 
+        futuro.
+    
+    
     \section{Organização do trabalho}
-    Citação normal: \cite{chawdhary_simple_2014}. Citação online: \citeonline{chawdhary_simple_2014}.
+    
+    Esta introdução tem como intuito demonstrar a importância da verificação, 
+    validação e garantias da segurança de sistemas críticos. Também foram 
+    demonstradas algumas das ferramentas e metodologias utilizadas para se 
+    atingir este objetivo, com uma atenção especial dada à \gls{IA} -- mais 
+    especificamente, ao domínio dos octógonos -- e às formas nas quais ela é 
+    utilizada em aplicações reais.
+    
+    No capítulo \ref{fundamentacao_ia}, o campo de \gls{IA} e a literatura 
+    acerca do domínio dos octógonos será exposta em maiores detalhes. Já no 
+    capítulo \ref{fundamentacao_cl}, serão introduzidos os conceitos básicos de 
+    paralelismo computacional, bem como a descrição, arquitetura e exemplos de 
+    uso do \gls{OpenCL}. Estes dois capítulos servem como a fundamentação 
+    teórica e prática para os que seguem.
+    
+    No capítulo \ref{metodologia}, será exposta a metodologia de pesquisa, 
+    organização do projeto e outras informações importantes que pautarão a 
+    discussão do desenvolvimento do projeto como um todo.
+    
+    No capítulo \ref{resultados} serão apresentados os resultados obtidos com 
+    os testes, que serão utilizados no capítulo \ref{conclusao} para extrair as 
+    conclusões finais.
+    
+    Este documento fará uso de terminologia altamente técnica ao longo do seu 
+    desenvolvimento. Havendo qualquer dúvida acerca de um termo, sigla ou 
+    símbolo, basta referir-se à:
+    
+    \begin{itemize}
+        \item Lista de Símbolos, na página \pageref{pre:simbolos};
+        \item Lista de Abreviaturas, na página \pageref{pre:abreviaturas}; ou
+        \item Glossário, na página \pageref{pos:glossario}.
+    \end{itemize} 

@@ -17,6 +17,7 @@
 \usepackage{graphicx}           % Inclusão de gráficos
 \usepackage{microtype}          % para melhorias de justificação
 \usepackage{textcase}
+\usepackage[portuguese,colorinlistoftodos,shadow]{todonotes}
 \usepackage[
     section=chapter,
     %numberedsection,
@@ -28,13 +29,19 @@
     ]{glossaries}
 % ---
 
+% Para o (ex) tags customizadas
+%\usepackage{ifmtarg}
+%\usepackage{soul}
+%\usepackage{transparent}
+%\usepackage{tcolorbox}
 
 % ---
 % Pacotes de citações, glossário, etc
 % ---
 \usepackage[brazilian,hyperpageref]{backref}   % Paginas com as citações na bibl
+%\usepackage[backend=biber]{biblatex}
 \usepackage[alf]{abntex2cite}                  % Citações padrão ABNT
-%\usepackage{biblatex}
+
 
 % --- 
 % CONFIGURAÇÕES DE PACOTES
@@ -98,9 +105,11 @@
 %\renewcommand{\glsglossarymark}[1]{}
 
 \newcommand{\imprimirabreviaturas}{
-    \glstocfalse
-    \glsaddall
-    \label{abreviaturas}
+    \glstocfalse%
+    \glsaddall%
+    \setglossarypreamble[\acronymtype]{%
+        \label{pre:abreviaturas}%
+    }
     \printglossary[
         type=\acronymtype,
         style=list,
@@ -114,7 +123,9 @@
 \newcommand{\imprimirsimbolos}{
     \glstocfalse
     \glsaddall
-    \label{simbolos}
+    \setglossarypreamble[\symboltype]{%
+        \label{pre:simbolos}%
+    }
     \printglossary[
         type=\symboltype,
         style=list,
@@ -129,6 +140,9 @@
     \glstocfalse
     \glsaddall
     \addcontentsline{toc}{chapter}{GLOSSÁRIO}
+    \setglossarypreamble[\glossarytype]{%
+        \label{pos:glossario}%
+    }
     \printglossary[
         type=\glossarytype,
         style=listhypergroup,
@@ -219,6 +233,23 @@
         plural={#3}
     }{#4}
 }
+
+% ---
+% TODOs
+% ---
+
+\presetkeys{todonotes}{inline}{}
+\newcommand{\TODO}[1]{%
+    \todo[color=red!30,linecolor=red,bordercolor=red]{%
+        \textcolor{red}{%
+            \textbf{\colorbox{red}{\textcolor{red!10}{TODO}}}%
+            \@ifnotmtarg{#1}{%
+                { #1}%
+            }{}%
+        }%
+    }{}%
+}
+
 
 % ---
 % Ambientes
