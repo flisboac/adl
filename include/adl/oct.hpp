@@ -7,7 +7,7 @@ namespace adl {
 namespace oct {
 }}
 
-#include "adl/oct/util.hpp"
+#include "adl/oct/oct.hpp"
 
 #include "adl/oct/oct_var.hpp"
 #include "adl/oct/octdiff_var.hpp"

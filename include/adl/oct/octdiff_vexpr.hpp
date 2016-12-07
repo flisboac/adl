@@ -17,31 +17,31 @@ private:
     using superclass_ = oct_vexpr_base_<octdiff_var>;
 
 public:
-	constexpr octdiff_vexpr() = default;
-	constexpr octdiff_vexpr(var_type xi, var_type xj) : superclass_::oct_vexpr_base_(xi, xj) {}
-	constexpr explicit octdiff_vexpr(var_type x) : superclass_::oct_vexpr_base_(x) {}
-	constexpr octdiff_vexpr(const thisclass_& rhs) = default;
-	constexpr octdiff_vexpr(thisclass_&& rhs) = default;
-	inline thisclass_& operator=(const thisclass_& rhs) = default;
-	inline thisclass_& operator=(thisclass_&& rhs) = default;
+    constexpr octdiff_vexpr() = default;
+    constexpr octdiff_vexpr(var_type xi, var_type xj) : superclass_::oct_vexpr_base_(xi, xj) {}
+    constexpr explicit octdiff_vexpr(var_type x) : superclass_::oct_vexpr_base_(x) {}
+    constexpr octdiff_vexpr(const thisclass_& rhs) = default;
+    constexpr octdiff_vexpr(thisclass_&& rhs) = default;
+    inline thisclass_& operator=(const thisclass_& rhs) = default;
+    inline thisclass_& operator=(thisclass_&& rhs) = default;
 
-	constexpr explicit inline operator bool() const
-		{ return valid(); }
-	constexpr inline bool operator !() const
-		{ return !valid(); }
-	constexpr inline bool valid() const {
-		return _xi.valid() && _xj.valid() // Must contain two valid difference variabless...
-				//&& !_xi.same_var(_xj)     // ... different between each other, despite teir occurrence (negated or not)
-				&& (!_xi.same_oct_var(_xj)// ... referring to different octagonal vars
-						|| _xi.negative() != _xj.negative()); // ... or to equal octagonal vars with difference occurrences (negation)
-	}
-	constexpr inline bool single_oct_var() const
-		{ return _xi.same_oct_var(_xj); }
-	constexpr inline const var_type xI() const
-		{ return _xi.swap(); }
-	constexpr inline const var_type xJ() const
-		{ return _xj.swap(); }
-	template <typename V>
+    constexpr explicit inline operator bool() const
+        { return valid(); }
+    constexpr inline bool operator !() const
+        { return !valid(); }
+    constexpr inline bool valid() const {
+        return _xi.valid() && _xj.valid() // Must contain two valid difference variabless...
+                //&& !_xi.same_var(_xj)     // ... different between each other, despite teir occurrence (negated or not)
+                && (!_xi.same_oct_var(_xj)// ... referring to different octagonal vars
+                        || _xi.negative() != _xj.negative()); // ... or to equal octagonal vars with difference occurrences (negation)
+    }
+    constexpr inline bool single_oct_var() const
+        { return _xi.same_oct_var(_xj); }
+    constexpr inline const var_type xI() const
+        { return _xi.swap(); }
+    constexpr inline const var_type xJ() const
+        { return _xj.swap(); }
+    template <typename V>
     constexpr inline octdiff_cons<V> to_cons(V c) const {
         return octdiff_cons<V>(_xi, _xj, c);
     }
@@ -50,14 +50,17 @@ public:
         return to_cons(c);
     }
 
-    constexpr static inline oct_vexpr_base<var_type> invalid()
-        { return oct_vexpr_base<var_type>(); }
+    constexpr static inline octdiff_vexpr invalid();
 };
 
 
 }}
 
 #include "adl/oct/octdiff_cons.hpp"
+
+constexpr inline adl::oct::octdiff_vexpr adl::oct::octdiff_vexpr::invalid() {
+    return octdiff_vexpr();
+}
 
 constexpr inline adl::oct::octdiff_vexpr operator-(const adl::oct::octdiff_var& xi, const adl::oct::octdiff_var& xj) {
     return adl::oct::octdiff_vexpr(xi, xj);

@@ -21,7 +21,7 @@ public:
         superclass::constructor();
 
         SECTION( "octdiff_var: negative int construction is not accepted (undefined behaviour)" ) {
-			const octdiff_var odv1(-1);
+            const octdiff_var odv1(-1);
 
             REQUIRE( (odv1.to_int() != -1) );
         }
@@ -42,34 +42,34 @@ public:
 
     inline void same_oct_var() {
 
-		SECTION( "octdiff_var: same-oct-var comparison" ) {
-			const octdiff_var ov1(1), ov2(2), ov3(3);
+        SECTION( "octdiff_var: same-oct-var comparison" ) {
+            const octdiff_var ov1(1), ov2(2), ov3(3);
 
-			REQUIRE( (ov1.same_oct_var(ov2)) );
-			REQUIRE( (!ov2.same_oct_var(ov3)) );
-		}
+            REQUIRE( (ov1.same_oct_var(ov2)) );
+            REQUIRE( (!ov2.same_oct_var(ov3)) );
+        }
     }
 
     inline void positive_negative() {
 
-		SECTION( "octdiff_var: positive and negative" ) {
-			const octdiff_var odv1(1), odv2(2);
+        SECTION( "octdiff_var: positive and negative" ) {
+            const octdiff_var odv1(1), odv2(2);
 
-			REQUIRE( ( odv1.positive()) );
-			REQUIRE( (!odv1.negative()) );
-			REQUIRE( ( odv2.negative()) );
-			REQUIRE( (!odv2.positive()) );
-		}
+            REQUIRE( ( odv1.positive()) );
+            REQUIRE( (!odv1.negative()) );
+            REQUIRE( ( odv2.negative()) );
+            REQUIRE( (!odv2.positive()) );
+        }
     }
 
     inline void swap() {
 
-		SECTION( "octdiff_var: swap" ) {
-			const octdiff_var odv1(7), odv2(8);
+        SECTION( "octdiff_var: swap" ) {
+            const octdiff_var odv1(7), odv2(8);
 
-			REQUIRE( (8 == (int) odv1.swap()) );
-			REQUIRE( (7 == (int) odv2.swap()) );
-		}
+            REQUIRE( (8 == (int) odv1.swap()) );
+            REQUIRE( (7 == (int) odv2.swap()) );
+        }
     }
 
     inline void oct_var_cast() {
@@ -104,8 +104,8 @@ public:
 
 TEST_CASE( "octdiff_var", "[oct][oct/var]" ) {
 
-	oct_var_test<octdiff_var> od_test;
-	od_test.test_all();
+    oct_var_test<octdiff_var> od_test;
+    od_test.test_all();
 }
 
 }}}

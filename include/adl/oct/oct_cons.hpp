@@ -23,18 +23,18 @@ public:
     using vexpr_type = typename superclass_::vexpr_type;
     using var_type = typename superclass_::var_type;
 
-	constexpr oct_cons() = default;
-	constexpr oct_cons(var_type xi, var_type xj, T c) : superclass_::oct_cons_base_(xi, xj, c) {}
-	constexpr oct_cons(var_type x, T c) : superclass_::oct_cons_base_(x, c) {}
-	constexpr oct_cons(const thisclass_& rhs) = default;
-	constexpr oct_cons(thisclass_&& rhs) = default;
-	inline thisclass_& operator=(const thisclass_& rhs) = default;
-	inline thisclass_& operator=(thisclass_&& rhs) = default;
+    constexpr oct_cons() = default;
+    constexpr oct_cons(var_type xi, var_type xj, T c) : superclass_::oct_cons_base_(xi, xj, c) {}
+    constexpr oct_cons(var_type x, T c) : superclass_::oct_cons_base_(x, c) {}
+    constexpr oct_cons(const thisclass_& rhs) = default;
+    constexpr oct_cons(thisclass_&& rhs) = default;
+    inline thisclass_& operator=(const thisclass_& rhs) = default;
+    inline thisclass_& operator=(thisclass_&& rhs) = default;
 
-	constexpr inline bool single_var() const
-		{ return superclass_::_e.single_var(); }
+    constexpr inline bool single_var() const
+        { return superclass_::_e.single_var(); }
 
-	constexpr inline typename octdiff_cons<T>::pair to_octdiff() const;
+    constexpr inline typename octdiff_cons<T>::pair to_octdiff() const;
     constexpr inline operator typename octdiff_cons<T>::pair() const;
 
     constexpr static inline thisclass_ invalid()

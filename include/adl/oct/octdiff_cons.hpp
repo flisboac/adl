@@ -89,20 +89,20 @@ public:
         octdiff_cons<T> _second;
     };
 
-	constexpr octdiff_cons() = default;
-	constexpr octdiff_cons(var_type xi, var_type xj, T c) : superclass_::oct_cons_base_(xi, xj, c) {}
-	constexpr octdiff_cons(var_type x, T c) : superclass_::oct_cons_base_(x, c) {}
-	constexpr octdiff_cons(const thisclass_& rhs) = default;
-	constexpr octdiff_cons(thisclass_&& rhs) = default;
-	inline thisclass_& operator=(const thisclass_& rhs) = default;
-	inline thisclass_& operator=(thisclass_&& rhs) = default;
+    constexpr octdiff_cons() = default;
+    constexpr octdiff_cons(var_type xi, var_type xj, T c) : superclass_::oct_cons_base_(xi, xj, c) {}
+    constexpr octdiff_cons(var_type x, T c) : superclass_::oct_cons_base_(x, c) {}
+    constexpr octdiff_cons(const thisclass_& rhs) = default;
+    constexpr octdiff_cons(thisclass_&& rhs) = default;
+    inline thisclass_& operator=(const thisclass_& rhs) = default;
+    inline thisclass_& operator=(thisclass_&& rhs) = default;
 
-	constexpr inline bool single_oct_var() const
-		{ return superclass_::_e.single_oct_var(); }
-	constexpr inline const var_type xI() const
-		{ return superclass_::_e.xI(); }
-	constexpr inline const var_type xJ() const
-		{ return superclass_::_e.xJ(); }
+    constexpr inline bool single_oct_var() const
+        { return superclass_::_e.single_oct_var(); }
+    constexpr inline const var_type xI() const
+        { return superclass_::_e.xI(); }
+    constexpr inline const var_type xJ() const
+        { return superclass_::_e.xJ(); }
 
     constexpr inline octdiff_cons<T> complement() const {
         return !single_oct_var()

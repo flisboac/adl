@@ -11,7 +11,7 @@ public:
     using cons_type = typename superclass::cons_type;
 
     inline void test_all() {
-		superclass::test_all();
+        superclass::test_all();
 
         swapped_variables();
         single_oct_var();
@@ -19,8 +19,8 @@ public:
         to_oct();
     }
 
-	inline void valid() {
-		superclass::valid();
+    inline void valid() {
+        superclass::valid();
 
         SECTION( "octdiff_cons: constraints involving the same oct_var must be valid only if the original oct_var's have different sign" ) {
             const cons_type c1(var_type(1), var_type(2), 3);
@@ -33,15 +33,15 @@ public:
 
     // ---
 
-	inline void swapped_variables() {
+    inline void swapped_variables() {
 
-		SECTION( "swapped difference variables' getters" ) {
-			var_type x(1), y(2);
-			cons_type c1(x, y, 0);
+        SECTION( "swapped difference variables' getters" ) {
+            var_type x(1), y(2);
+            cons_type c1(x, y, 0);
 
-			REQUIRE( (c1.xI() == x.swap()) );
-			REQUIRE( (c1.xJ() == y.swap()) );
-		}
+            REQUIRE( (c1.xI() == x.swap()) );
+            REQUIRE( (c1.xJ() == y.swap()) );
+        }
     }
 
     inline void single_oct_var() {
@@ -66,8 +66,8 @@ public:
 
 
 TEST_CASE( "octdiff_cons", "[oct][oct/cons]" ) {
-	octdiff_cons_test<> octdiff_cons_test;
-	octdiff_cons_test.test_all();
+    octdiff_cons_test<> octdiff_cons_test;
+    octdiff_cons_test.test_all();
 }
 
 }}}

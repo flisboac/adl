@@ -11,26 +11,26 @@ public:
     using cons_type = typename superclass::cons_type;
 
     inline void test_all() {
-		superclass::test_all();
+        superclass::test_all();
 
         single_var();
         to_octdiff();
         from_octdiff();
     }
 
-	inline void assumptions() {
-		using namespace adl;
-		superclass::assumptions();
+    inline void assumptions() {
+        using namespace adl;
+        superclass::assumptions();
 
-		REQUIRE( (std::is_constructible<cons_type, var_type, int>::value) );
-	}
+        REQUIRE( (std::is_constructible<cons_type, var_type, int>::value) );
+    }
 
     virtual inline void constructor() {
         superclass::constructor();
     }
 
-	inline void valid() {
-		superclass::valid();
+    inline void valid() {
+        superclass::valid();
 
         SECTION( "oct_cons: single-var constraint with a valid variable must be valid" ) {
             const cons_type c1(var_type(1), 3);
@@ -206,10 +206,10 @@ public:
 
 
 TEST_CASE( "oct_cons", "[oct][oct/cons]" ) {
-	using namespace adl;
+    using namespace adl;
 
-	oct_cons_test<> oct_cons_test;
-	oct_cons_test.test_all();
+    oct_cons_test<> oct_cons_test;
+    oct_cons_test.test_all();
 }
 
 }}}

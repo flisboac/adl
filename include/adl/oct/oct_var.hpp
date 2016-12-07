@@ -3,8 +3,8 @@
 
 #include <cstddef>
 
-#include "adl/util.hpp"
-#include "adl/oct/util.hpp"
+#include "adl/adl.hpp"
+#include "adl/oct/oct.hpp"
 #include "adl/oct/oct_var_base_.hpp"
 
 namespace adl {
@@ -52,46 +52,46 @@ class octdiff_var;
 /// @see adl::octdiff_var
 class oct_var : public oct_var_base_<oct_var> {
 public:
-	friend class oct_var_base_<oct_var>;
-	constexpr oct_var() {}
-	explicit constexpr oct_var(int value) : _value(value) {}
-	constexpr oct_var(const oct_var& rhs) : _value(rhs._value) {}
-	constexpr oct_var(oct_var&& rhs) : _value(rhs._value) {}
-	inline oct_var& operator=(const oct_var& rhs) { return (_value=(rhs.to_int()), *this); }
-	inline oct_var& operator=(oct_var&& rhs) { return (_value=(rhs.to_int()), *this); }
-	inline oct_var& operator=(int rhs) { return (_value = rhs, *this); }
-	constexpr inline oct_var operator+() const
-		{ return oct_var(_value); }
-	constexpr inline oct_var operator-() const
-		{ return oct_var(-_value); }
-	constexpr inline bool negated() const
-		{ return _value < 0; }
-	constexpr inline oct_var normalize() const
-		{ return oct_var(adl::modulus(_value)); }
-	inline oct_var& operator++()
-		{ return ((*this)++, (*this)); }
-	inline oct_var operator++(int) {
-		return oct_var(valid()
+    friend class oct_var_base_<oct_var>;
+    constexpr oct_var() {}
+    explicit constexpr oct_var(int value) : _value(value) {}
+    constexpr oct_var(const oct_var& rhs) : _value(rhs._value) {}
+    constexpr oct_var(oct_var&& rhs) : _value(rhs._value) {}
+    inline oct_var& operator=(const oct_var& rhs) { return (_value=(rhs.to_int()), *this); }
+    inline oct_var& operator=(oct_var&& rhs) { return (_value=(rhs.to_int()), *this); }
+    inline oct_var& operator=(int rhs) { return (_value = rhs, *this); }
+    constexpr inline oct_var operator+() const
+        { return oct_var(_value); }
+    constexpr inline oct_var operator-() const
+        { return oct_var(-_value); }
+    constexpr inline bool negated() const
+        { return _value < 0; }
+    constexpr inline oct_var normalize() const
+        { return oct_var(adl::modulus(_value)); }
+    inline oct_var& operator++()
+        { return ((*this)++, (*this)); }
+    inline oct_var operator++(int) {
+        return oct_var(valid()
             ? negated()
-				? _value--
-				: _value++
+                ? _value--
+                : _value++
             : 0
         );
-	}
-	inline oct_var& operator--()
-		{ return ((*this)--, (*this)); }
-	inline oct_var operator--(int) {
-		return oct_var(valid()
+    }
+    inline oct_var& operator--()
+        { return ((*this)--, (*this)); }
+    inline oct_var operator--(int) {
+        return oct_var(valid()
             ? negated()
-				? _value++
-				: _value--
+                ? _value++
+                : _value--
             : 0
         );
-	}
-	constexpr inline bool same_var(const oct_var& rhs) const
-		{ return normalize() == rhs.normalize(); }
-	constexpr inline size_t index() const
-		{ return valid() ? normalize().to_int() - 1 : (size_t) -1; }
+    }
+    constexpr inline bool same_var(const oct_var& rhs) const
+        { return normalize() == rhs.normalize(); }
+    constexpr inline size_t index() const
+        { return valid() ? normalize().to_int() - 1 : (size_t) -1; }
 
     constexpr inline operator octdiff_var() const;
     constexpr inline octdiff_var to_diff() const;
@@ -102,14 +102,14 @@ protected:
 
 
 constexpr static oct_var make_oct_var(int var = 0) {
-	return oct_var(var);
+    return oct_var(var);
 }
 
 namespace literals {
 
-	constexpr inline oct_var operator "" _ov(unsigned long long int varId) {
-		return oct_var(varId);
-	}
+    constexpr inline oct_var operator "" _ov(unsigned long long int varId) {
+        return oct_var(varId);
+    }
 }
 
 
@@ -121,15 +121,15 @@ namespace literals {
 
 
 constexpr inline adl::oct::octdiff_var adl::oct::oct_var::to_diff() const {
-	return valid()
+    return valid()
         ? negated()
-			? octdiff_var((-_value - 1) * 2 + 2)
-			: octdiff_var(( _value - 1) * 2 + 1)
+            ? octdiff_var((-_value - 1) * 2 + 2)
+            : octdiff_var(( _value - 1) * 2 + 1)
         : octdiff_var::invalid();
 }
 
 constexpr inline adl::oct::oct_var::operator adl::oct::octdiff_var() const
-	{ return to_diff(); }
+    { return to_diff(); }
 
 
 
