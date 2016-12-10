@@ -26,12 +26,6 @@ public:
         { return (_xi == rhs._xi && _xj == rhs._xj); }
     constexpr inline bool operator!=(const thisclass_& rhs) const
         { return !(*this == rhs); }
-    inline thisclass_& invalidate() {
-        return (_xi = var_type::invalid(),
-            _xj = var_type::invalid(),
-            *this
-        );
-    }
     constexpr inline bool operator<(const thisclass_& rhs) const {
         return _xi < rhs._xi && _xj < rhs._xj;
     }
@@ -43,6 +37,11 @@ public:
         { return _xj; }
     inline thisclass_& xj(const var_type& v)
         { return (_xj = v, *this); }
+
+protected:
+    inline void _invalidate() {
+        _xi = var_type::invalid(), _xj = var_type::invalid();
+    }
 
 protected:
     var_type _xi;

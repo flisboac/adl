@@ -48,8 +48,8 @@ class octdiff_var;
 /// Follows an ordered set as an example:
 ///     { 1, -1, 2, -2, 3, -3, ... }
 ///
-/// @see adl::oct_cons
-/// @see adl::octdiff_var
+/// @see `oct_cons`
+/// @see `octdiff_var`
 class oct_var : public oct_var_base_<oct_var> {
 public:
     friend class oct_var_base_<oct_var>;
@@ -101,7 +101,7 @@ protected:
 };
 
 
-constexpr static oct_var make_oct_var(int var = 0) {
+constexpr static inline oct_var make_oct_var(int var = 0) {
     return oct_var(var);
 }
 

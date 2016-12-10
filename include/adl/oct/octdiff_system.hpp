@@ -22,6 +22,17 @@ public:
     }
 };
 
+template <typename T>
+inline octdiff_system<T> operator,(
+        typename octdiff_system<T>::cons_type op1,
+        typename octdiff_system<T>::cons_type op2
+) {
+    octdiff_system<T> system;
+    system.insert(op1);
+    system.insert(op2);
+    return system;
+}
+
 }}
 
 #endif /* ADL__OCT__OCTDIFF_SYSTEM_HPP__ */

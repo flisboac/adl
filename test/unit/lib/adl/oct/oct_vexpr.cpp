@@ -1,20 +1,47 @@
 #include "catch.hpp"
 
+#include "./oct_vexpr_base_.hpp"
+
 #include "adl/oct/oct_var.hpp"
 #include "adl/oct/oct_vexpr.hpp"
-#include "adl/oct/oct_cons.hpp"
 
-// TODO unit tests for {oct,octdiff}_vexpr
+namespace adl { namespace test { namespace oct {
+using namespace ::adl::oct;
 
-static void test() {
-    using namespace adl::oct;
+class oct_vexpr_test : public oct_vexpr_base_test_<oct_vexpr> {
+public:
+    using superclass = oct_vexpr_base_test_<oct_vexpr>;
 
-    oct_var x1(1);
-    oct_var x2(2);
+    inline void test_all() {
+        superclass::test_all();
+    }
 
-    auto c1 = x1 <= 0.1;
-    auto c2 = x1 + x2 <= 10;
-    auto c3 = x1 - x2 <= 10;
-    auto c4 = -x1 - x2 <= 10;
+    inline void assumptions() {
+        superclass::assumptions();
 
-}
+        REQUIRE( (std::is_constructible<oct_var>::value) );
+
+        static_assert( (oct_vexpr(var_type()), true), "should be constexpr 1-var-constructible." );
+    }
+
+    inline void valid() {
+        superclass::valid();
+
+        SECTION( "Duplicate variables should be identified correctly" ) {
+            const oct_var x1(10);
+            const oct_vexpr o1(x1, -x1);
+            const oct_vexpr o2(-x1, x1);
+            const oct_vexpr o3(x1, x1);
+            const oct_vexpr o4(-x1, -x1);
+
+            REQUIRE( (!o1.doubled() && !o2.doubled()) );
+            REQUIRE( (!o1.valid()   && !o2.valid()) );
+
+            REQUIRE( ( o3.doubled() &&  o4.valid()) );
+            REQUIRE( ( o3.valid()   &&  o4.valid()) );
+        }
+    }
+};
+
+
+}}}

@@ -8,6 +8,17 @@ class oct_var_test<octdiff_var> : public base_oct_var_test<octdiff_var> {
 public:
     using superclass = base_oct_var_test<octdiff_var>;
 
+    inline void assumptions() {
+        superclass::assumptions();
+
+        static_assert( (octdiff_var().to_oct(), true), "to_oct() should be constexpr" );
+        static_assert( ((oct_var) octdiff_var(), true), "explicit conversion to oct_var should be constexpr" );
+        static_assert( (octdiff_var().same_oct_var(octdiff_var())), "same_oct_var() should be constexpr" );
+        static_assert( (octdiff_var().negative(), true), "negative() should be constexpr" );
+        static_assert( (octdiff_var().positive(), true), "positive() should be constexpr" );
+        static_assert( (octdiff_var().swap(), true), "swap() should be constexpr" );
+    }
+
     inline void test_all() {
         superclass::test_all();
 
@@ -73,6 +84,12 @@ public:
     }
 
     inline void oct_var_cast() {
+
+        SECTION( "explicit cast to oct_var yields the same results as to_oct()" ) {
+            const octdiff_var odv(1);
+
+            REQUIRE( (odv.to_oct() == (oct_var) odv) );
+        }
 
         SECTION( "conversion from octdiff_var to oct_var" ) {
             const octdiff_var odv1(1), odv2(2), odv3(5), odv4(8);

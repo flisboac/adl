@@ -83,6 +83,7 @@ public:
             return !valid();
         }
         constexpr inline operator oct_cons<T>() const;
+        constexpr inline oct_cons<T> to_oct() const;
 
     private:
         octdiff_cons<T> _first;
@@ -121,19 +122,45 @@ public:
         { return thisclass_(); }
 };
 
+
+template <typename V>
+constexpr inline oct_cons<V> make_octdiff_cons(octdiff_vexpr vexpr, V c) {
+    using namespace adl::oct;
+    return octdiff_cons<V>(vexpr, c);
+}
+
+
+template <typename V>
+constexpr inline oct_cons<V> make_octdiff_cons(octdiff_var xi, octdiff_var xj, V c) {
+    using namespace adl::oct;
+    return octdiff_cons<V>(xi, xj, c);
+}
+
+
 }}
 
 
 #include "adl/oct/oct_cons.hpp"
 
 template <typename T>
-constexpr inline adl::oct::octdiff_cons<T>::pair::operator adl::oct::oct_cons<T>() const {
+constexpr inline adl::oct::octdiff_cons<T> operator<=(adl::oct::octdiff_vexpr e, T c) {
+    using namespace adl::oct;
+    return octdiff_cons<T>(e, c);
+}
+
+template <typename T>
+constexpr inline adl::oct::oct_cons<T> adl::oct::octdiff_cons<T>::pair::to_oct() const {
     using namespace adl::oct;
     return valid() ?
         !single_cons()
             ? oct_cons<T>(_first.xi().to_oct(), _first.xj().swap().to_oct(), _first.c())
             : oct_cons<T>(_first.xi().to_oct(), _first.c() / 2)
         : oct_cons<T>::invalid();
+}
+
+template <typename T>
+constexpr inline adl::oct::octdiff_cons<T>::pair::operator adl::oct::oct_cons<T>() const {
+    return to_oct();
 }
 
 

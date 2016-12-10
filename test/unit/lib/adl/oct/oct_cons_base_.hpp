@@ -76,12 +76,6 @@ public:
 
             REQUIRE( (c1.valid() && ((bool) c1) && !!c1) );
         }
-
-        SECTION( "constraints with two variables equal to each other must be invalid" ) {
-            cons_type c1(var_type(1), var_type(1), 3);
-
-            REQUIRE( (!c1.valid() && !((bool) c1) && !c1) );
-        }
     }
 
     inline void assert_equal(const cons_type& c1, const cons_type& c2) {

@@ -63,19 +63,19 @@ public:  using const_iterator = typename collection_type::const_iterator;
     }
 
     inline const value_type& operator[](var_type var) const {
-        return find(var)->second;
+        return operator[](find(var));
     }
     inline const value_type& operator[](vexpr_type vexpr) const {
-        return find(vexpr)->second;
+        return operator[](find(vexpr));
     }
     inline const value_type& operator[](const_iterator iter) const {
         return iter->second;
     }
     inline value_type& operator[](var_type var) {
-        return find(var)->second;
+        return operator[](find(var));
     }
     inline value_type& operator[](vexpr_type vexpr) {
-        return find(vexpr)->second;
+        return operator[](find(vexpr));
     }
     inline value_type& operator[](iterator iter) {
         return iter->second;
@@ -130,12 +130,21 @@ public:  using const_iterator = typename collection_type::const_iterator;
     }
     inline size_t insert(cons_type cons) {
         size_t assigned = 0;
+
         if (cons.valid()) {
             auto iter = find(cons);
+
             if (iter != _constraints.end()) {
                 assigned = insert(iter, cons.c());
+
+            } else {
+                auto elem = std::make_pair(cons.to_vexpr(), cons.c());
+                auto insert_result = _constraints.insert(elem);
+                auto inserted = insert_result->second;
+                if (inserted) assigned++;
             }
         }
+
         return assigned;
     }
     template <typename I>

@@ -1,7 +1,7 @@
 #ifndef ADL_HPP__
 #define ADL_HPP__
 
-//!@namespace
+///@namespace
 namespace adl {}
 
 #include "adl/adl.hpp"

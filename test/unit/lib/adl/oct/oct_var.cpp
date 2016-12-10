@@ -16,6 +16,11 @@ public:
 
         static_assert( (+oct_var(), true), "operator+() should be constexpr." );
         static_assert( (-oct_var(), true), "operator-() should be constexpr." );
+        static_assert( (oct_var().negated(), true), "negated() should be constexpr." );
+        static_assert( (oct_var().normalize(), true), "normalize() should be constexpr." );
+        static_assert( (oct_var().same_var(oct_var()), true), "same_var() should be constexpr." );
+        static_assert( (oct_var().to_diff(), true), "to_diff() should be constexpr." );
+        static_assert( ((octdiff_var) oct_var(), true), "explicit cast to octdiff_var should be constexpr." );
     }
 
     inline void test_all() {
@@ -165,6 +170,12 @@ public:
     }
 
     inline void octdiff_var_cast() {
+
+        SECTION( "explicit cast to octdiff_var yields the same results as to_diff()" ) {
+            const oct_var ov(1);
+
+            REQUIRE( (ov.to_diff() == (octdiff_var) ov) );
+        }
 
         SECTION( "valid conversions from oct_var to octdiff_var" ) {
             const oct_var ov1(1), ov2(-1), ov3(3), ov4(-4);

@@ -26,6 +26,7 @@ public:
     constexpr oct_cons() = default;
     constexpr oct_cons(var_type xi, var_type xj, T c) : superclass_::oct_cons_base_(xi, xj, c) {}
     constexpr oct_cons(var_type x, T c) : superclass_::oct_cons_base_(x, c) {}
+    constexpr oct_cons(vexpr_type e, T c) : superclass_::oct_cons_base_(e, c) {}
     constexpr oct_cons(const thisclass_& rhs) = default;
     constexpr oct_cons(thisclass_&& rhs) = default;
     inline thisclass_& operator=(const thisclass_& rhs) = default;
@@ -42,20 +43,45 @@ public:
 };
 
 
+template <typename V>
+constexpr inline oct_cons<V> make_oct_cons(oct_vexpr vexpr, V c) {
+    using namespace adl::oct;
+    return vexpr.valid()
+        ? !vexpr.single_var()
+            ? oct_cons<V>(vexpr.normalized(), !vexpr.doubled() ? c : c / 2)
+            : oct_cons<V>(vexpr.xi(), c)
+        : oct_cons<V>::invalid();
+}
+
+
+template <typename V>
+constexpr inline oct_cons<V> make_oct_cons(oct_var xi, oct_var xj, V c) {
+    using namespace adl::oct;
+    return make_oct_cons(oct_vexpr(xi, xj), c);
+}
+
+
+template <typename V>
+constexpr inline oct_cons<V> make_oct_cons(oct_var xi, V c) {
+    using namespace adl::oct;
+    return make_oct_cons(oct_vexpr(xi), c);
+}
+
+
 }}
 
 template <typename V>
 constexpr inline adl::oct::oct_cons<V> operator<=(adl::oct::oct_vexpr e, V c) {
     using namespace adl::oct;
-    return e.to_cons(c);
+    return make_oct_cons(e, c);
 }
 
 template <typename V>
 constexpr inline adl::oct::oct_cons<V> operator>=(adl::oct::oct_vexpr e, V c) {
     using namespace adl::oct;
-    return e.single_var()
-        ? oct_cons<V>(-e.xi(), -c)
-        : oct_cons<V>::invalid();
+    return e.single_var() || e.doubled()
+        ? make_oct_cons(-e.xi(), !e.doubled() ? c : c / 2)
+        : oct_cons<V>::invalid(); // >= constraints are acceptable only for a single var
 }
 
 template <typename V>

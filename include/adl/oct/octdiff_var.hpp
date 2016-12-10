@@ -10,6 +10,9 @@
 namespace adl {
 namespace oct {
 
+constexpr const char *const default_posvar_suffix = "__pos";
+constexpr const char *const default_negvar_suffix = "__neg";
+
 class oct_var;
 
 class octdiff_var : public oct_var_base_<octdiff_var> {
@@ -60,12 +63,12 @@ constexpr static octdiff_var make_octdiff_var(int var = 0) {
 template <>
 inline std::string var_name<octdiff_var>(octdiff_var var, const std::string& base) {
     return var.positive()
-        ? base + std::to_string(var.to_int()) + std::string("__pos")
-        : base + std::to_string(var.to_int()) + std::string("__neg");
+        ? base + std::to_string(var.to_oct().normalize().to_int()) + std::string(default_posvar_suffix)
+        : base + std::to_string(var.to_oct().normalize().to_int()) + std::string(default_negvar_suffix);
 }
 template <>
 inline std::string var_name<octdiff_var>(octdiff_var var) {
-    const std::string base = "x";
+    std::string base = default_var_name;
     return var_name(var, base);
 }
 
@@ -78,13 +81,12 @@ namespace literals {
 }
 
 
+}}
+
+
 //------------------------------------------------------------------------------
 // [ IMPLEMENTATION ]
 //------------------------------------------------------------------------------
-
-
-
-}}
 
 
 #include "adl/oct/oct_var.hpp"

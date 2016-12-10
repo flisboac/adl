@@ -9,14 +9,14 @@
 namespace adl {
 namespace oct {
 
-template <typename T> class oct_cons;
-
 class oct_vexpr : public oct_vexpr_base_<oct_var> {
 private:
     using thisclass_ = oct_vexpr;
     using superclass_ = oct_vexpr_base_<oct_var>;
 
 public:
+    using var_type = oct_var;
+
     constexpr oct_vexpr() = default;
     constexpr oct_vexpr(var_type xi, var_type xj) : superclass_::oct_vexpr_base_(xi, xj) {}
     constexpr explicit oct_vexpr(var_type x) : superclass_::oct_vexpr_base_(x) {}
@@ -29,39 +29,31 @@ public:
         { return valid(); }
     constexpr inline bool operator !() const
         { return !valid(); }
+    constexpr inline bool doubled() const
+        { return _xi.valid() && _xi == _xj; }
     constexpr inline bool single_var() const
         { return _xi.valid() && !_xj.valid(); }
+    constexpr inline oct_vexpr normalized() const
+        { return !doubled() ? oct_vexpr(*this) : oct_vexpr(_xi); }
     constexpr inline bool valid() const {
-        return _xi.valid() // xi must be always valid...
-            && (!_xj.valid() // ... and if xj is given
-                || !_xi.same_var(_xj) // ... it must be different from xi.
+        return _xi.valid()                                                      // xi must be always valid...
+            && (!_xj.valid()                                                    // ... and if xj is given
+                || (_xi.negated() == _xj.negated() || !_xi.same_var(_xj))       // ... it must be different from xi if the signs are different.
             );
     }
-    constexpr inline thisclass_ commute() const {
+    inline thisclass_& invalidate() {
+        return (superclass_::_invalidate(), *this);
+    }
+    constexpr inline thisclass_ commuted() const {
         return !single_var()
             ? thisclass_(_xj, _xi)
             : thisclass_(_xi, _xj);
-    }
-    inline thisclass_& commute() {
-        return !single_var()
-            ? *this = thisclass_(_xj, _xi)
-            : *this;
-    }
-    template <typename V>
-    constexpr inline oct_cons<V> to_cons(V c) const {
-        using namespace adl::oct;
-        return !single_var()
-            ? oct_cons<V>(xi(), xj(), c)
-            : oct_cons<V>(xi(), c);
     }
 
     constexpr static inline oct_vexpr invalid();
 };
 
 }}
-
-
-#include "adl/oct/oct_cons.hpp"
 
 
 constexpr inline adl::oct::oct_vexpr adl::oct::oct_vexpr::invalid() {

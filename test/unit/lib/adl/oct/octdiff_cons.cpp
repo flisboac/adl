@@ -29,6 +29,12 @@ public:
             REQUIRE( (c1.valid()) );
             REQUIRE( (!c2.valid()) );
         }
+
+        SECTION( "constraints with two variables equal to each other must be invalid" ) {
+            cons_type c1(var_type(1), var_type(1), 3);
+
+            REQUIRE( (!c1.valid() && !((bool) c1) && !c1) );
+        }
     }
 
     // ---
