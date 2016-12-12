@@ -27,7 +27,7 @@ public:
     constexpr inline bool operator!=(const thisclass_& rhs) const
         { return !(*this == rhs); }
     constexpr inline bool operator<(const thisclass_& rhs) const {
-        return _xi < rhs._xi && _xj < rhs._xj;
+        return _xi < rhs._xi || (!(rhs._xi < _xi) && _xj < rhs._xj );
     }
     constexpr inline const var_type& xi() const
         { return _xi; }

@@ -30,9 +30,8 @@ public:
         { return !valid(); }
     constexpr inline bool valid() const {
         return _xi.valid() && _xj.valid() // Must contain two valid difference variabless...
-                //&& !_xi.same_var(_xj)     // ... different between each other, despite their occurrences (negated or not)
                 && (!_xi.same_oct_var(_xj)// ... referring to different octagonal vars
-                        || _xi.negative() != _xj.negative()); // ... or to equal octagonal vars with difference occurrences (negation)
+                    || _xi.negative() != _xj.negative()); // ... or to equal octagonal vars with difference occurrences (negation)
     }
     inline thisclass_& invalidate() {
         return (superclass_::_invalidate(), *this);
@@ -43,6 +42,8 @@ public:
         { return _xi.swap(); }
     constexpr inline const var_type xJ() const
         { return _xj.swap(); }
+    constexpr inline octdiff_vexpr swap() const
+        { return octdiff_vexpr(_xj.swap(), _xi.swap()); }
 
     constexpr static inline octdiff_vexpr invalid();
 };

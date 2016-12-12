@@ -13,10 +13,10 @@ namespace oct {
 template <typename T> class octdiff_cons;
 
 template <typename T = float>
-class oct_cons : public oct_cons_base_<oct_vexpr, T> {
+class oct_cons : public oct_cons_base_<oct_vexpr, T, oct_cons> {
 private:
     using thisclass_ = oct_cons<T>;
-    using superclass_ = oct_cons_base_<oct_vexpr, T>;
+    using superclass_ = oct_cons_base_<oct_vexpr, T, ::adl::oct::oct_cons>;
 
 public:
     using value_type = typename superclass_::value_type;
@@ -24,9 +24,9 @@ public:
     using var_type = typename superclass_::var_type;
 
     constexpr oct_cons() = default;
-    constexpr oct_cons(var_type xi, var_type xj, T c) : superclass_::oct_cons_base_(xi, xj, c) {}
-    constexpr oct_cons(var_type x, T c) : superclass_::oct_cons_base_(x, c) {}
-    constexpr oct_cons(vexpr_type e, T c) : superclass_::oct_cons_base_(e, c) {}
+    constexpr oct_cons(var_type xi, var_type xj, value_type c) : thisclass_::oct_cons(vexpr_type(xi, xj), c) {}
+    constexpr oct_cons(var_type x, value_type c) : thisclass_::oct_cons(vexpr_type(x), c) {}
+    constexpr oct_cons(vexpr_type e, value_type c) : superclass_::oct_cons_base_(e.normalized(), !e.doubled() ? c : c / 2) {}
     constexpr oct_cons(const thisclass_& rhs) = default;
     constexpr oct_cons(thisclass_&& rhs) = default;
     inline thisclass_& operator=(const thisclass_& rhs) = default;
@@ -47,9 +47,7 @@ template <typename V>
 constexpr inline oct_cons<V> make_oct_cons(oct_vexpr vexpr, V c) {
     using namespace adl::oct;
     return vexpr.valid()
-        ? !vexpr.single_var()
-            ? oct_cons<V>(vexpr.normalized(), !vexpr.doubled() ? c : c / 2)
-            : oct_cons<V>(vexpr.xi(), c)
+        ? oct_cons<V>(vexpr, c)
         : oct_cons<V>::invalid();
 }
 
@@ -80,7 +78,7 @@ template <typename V>
 constexpr inline adl::oct::oct_cons<V> operator>=(adl::oct::oct_vexpr e, V c) {
     using namespace adl::oct;
     return e.single_var() || e.doubled()
-        ? make_oct_cons(-e.xi(), !e.doubled() ? c : c / 2)
+        ? make_oct_cons(e, c)
         : oct_cons<V>::invalid(); // >= constraints are acceptable only for a single var
 }
 

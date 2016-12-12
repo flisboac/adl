@@ -46,10 +46,10 @@ public:
 
         SECTION( "constraints with two variables equal to each other must be calculated appropriately" ) {
             var_type x1(1);
-            cons_type c1 = make_oct_cons( x1,  x1, T(10));  //  x1 <= 5
-            cons_type c2 = make_oct_cons(-x1, -x1, T(10));  // -x1 >= 5
-            cons_type c3 = make_oct_cons(-x1,  x1, T(-10)); // ERROR b/c 0 <= -10 does not hold
-            cons_type c4 = make_oct_cons( x1, -x1, T(10));  // INVALID b/c it is difficult to ensure previous item if allowed
+            cons_type c1( x1,  x1, T(10));  //  x1 <= 5
+            cons_type c2(-x1, -x1, T(10));  // -x1 >= 5
+            cons_type c3(-x1,  x1, T(-10)); // ERROR b/c 0 <= -10 does not hold
+            cons_type c4( x1, -x1, T(10));  // INVALID b/c it is difficult to ensure previous item if allowed
 
             REQUIRE( ( c1.valid()) );
             REQUIRE( ( c1.xi() ==  x1 && c1.c() == 5) );

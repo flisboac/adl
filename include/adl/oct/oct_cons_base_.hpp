@@ -6,10 +6,10 @@ namespace adl {
 namespace oct {
 
 
-template <typename V, typename T>
+template <typename V, typename T, template <typename CT> class C>
 class oct_cons_base_ {
 private:
-    using thisclass_ = oct_cons_base_<V, T>;
+    using thisclass_ = oct_cons_base_<V, T, C>;
 
 public:
     typedef T value_type;

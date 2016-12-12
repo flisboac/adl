@@ -14,10 +14,10 @@ template <typename T> class oct_cons;
 
 
 template <typename T = float>
-class octdiff_cons : public oct_cons_base_<octdiff_vexpr, T> {
+class octdiff_cons : public oct_cons_base_<octdiff_vexpr, T, octdiff_cons> {
 private:
     using thisclass_ = octdiff_cons<T>;
-    using superclass_ = oct_cons_base_<octdiff_vexpr, T>;
+    using superclass_ = oct_cons_base_<octdiff_vexpr, T, adl::oct::octdiff_cons>;
 
 public:
     using value_type = typename superclass_::value_type;
@@ -29,10 +29,12 @@ public:
         using thisclass_ = octdiff_cons<T>::pair;
 
     public:
+        using cons_type = octdiff_cons<T>;
+
         constexpr pair() = default;
         constexpr pair(const thisclass_& rhs) = default;
         constexpr pair(thisclass_&& rhs) = default;
-        constexpr pair(octdiff_cons<T> first, octdiff_cons<T> second) : _first(first), _second(second) {}
+        constexpr pair(cons_type first, cons_type second) : _first(first), _second(second) {}
         inline thisclass_& operator=(const thisclass_& rhs) = default;
         inline thisclass_& operator=(thisclass_&& rhs) = default;
 
@@ -48,16 +50,16 @@ public:
         constexpr inline bool single_cons() const {
             return _first.valid() && !_second.valid();
         }
-        constexpr inline const octdiff_cons<T>& first() const {
+        constexpr inline const cons_type& first() const {
             return _first;
         }
-        inline const octdiff_cons<T>& first() {
+        inline const cons_type& first() {
             return _first;
         }
-        constexpr inline const octdiff_cons<T>& second() const {
+        constexpr inline const cons_type& second() const {
             return _second;
         }
-        inline const octdiff_cons<T>& second() {
+        inline const cons_type& second() {
             return _second;
         }
         constexpr inline thisclass_ commute() const {
@@ -86,8 +88,8 @@ public:
         constexpr inline oct_cons<T> to_oct() const;
 
     private:
-        octdiff_cons<T> _first;
-        octdiff_cons<T> _second;
+        cons_type _first;
+        cons_type _second;
     };
 
     constexpr octdiff_cons() = default;
@@ -105,10 +107,10 @@ public:
     constexpr inline const var_type xJ() const
         { return superclass_::_e.xJ(); }
 
-    constexpr inline octdiff_cons<T> complement() const {
+    constexpr inline thisclass_ complement() const {
         return !single_oct_var()
-            ? octdiff_cons<T>(superclass_::_e.xj().swap(), superclass_::_e.xi().swap(), superclass_::_c)
-            : octdiff_cons<T>::invalid();
+            ? thisclass_(superclass_::_e.xj().swap(), superclass_::_e.xi().swap(), superclass_::_c)
+            : thisclass_::invalid();
     }
     constexpr inline pair conjunction() const {
         return pair(*this, complement());
@@ -124,16 +126,18 @@ public:
 
 
 template <typename V>
-constexpr inline oct_cons<V> make_octdiff_cons(octdiff_vexpr vexpr, V c) {
+constexpr inline octdiff_cons<V> make_octdiff_cons(octdiff_vexpr vexpr, V c) {
     using namespace adl::oct;
-    return octdiff_cons<V>(vexpr, c);
+    return vexpr.valid()
+        ? octdiff_cons<V>(vexpr, c)
+        : octdiff_cons<V>::invalid();
 }
 
 
 template <typename V>
 constexpr inline oct_cons<V> make_octdiff_cons(octdiff_var xi, octdiff_var xj, V c) {
     using namespace adl::oct;
-    return octdiff_cons<V>(xi, xj, c);
+    return make_octdiff_cons(octdiff_vexpr(xi, xj), c);
 }
 
 
