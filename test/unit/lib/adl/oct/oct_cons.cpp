@@ -131,6 +131,7 @@ public:
             const oct_cons<T> occ(xi, c);
             oct_cons<T> oc = dcc;
 
+            REQUIRE( (dcc.valid()) );
             REQUIRE( (oc.valid()) );
             REQUIRE( (oc == occ && oc.c() == occ.c()) );
         }

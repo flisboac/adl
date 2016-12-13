@@ -34,17 +34,21 @@ public:
         constexpr pair() = default;
         constexpr pair(const thisclass_& rhs) = default;
         constexpr pair(thisclass_&& rhs) = default;
-        constexpr pair(cons_type first, cons_type second) : _first(first), _second(second) {}
+        constexpr explicit pair(cons_type first) : _first(first), _second() {}
+        constexpr pair(cons_type first, cons_type second) :
+            _first(first.valid() ? first : second),
+            _second(!first.valid() ? first : second) {}
         inline thisclass_& operator=(const thisclass_& rhs) = default;
         inline thisclass_& operator=(thisclass_&& rhs) = default;
 
         constexpr inline bool valid() const {
             return _first.valid()                                               // The first constraint must always be provided.
-                && (!_second.valid()                                            // In case this conjunction does not represent a single-oct-var diff constraint...
-                    || (_first != _second                                       // ... they must be different from each other (represent distinct differences)
+                && (_second.valid()                                             // In case this conjunction does not represent a single-oct-var diff constraint...
+                    ? (_first != _second                                        // ... they must be different from each other (represent distinct differences)
                         && _first.xi().to_oct() == _second.xj().swap().to_oct() // ... and consistent (as per the conversion rules).
                         && _first.xj().to_oct() == _second.xi().swap().to_oct()
                     )
+                    : _first.xi().to_oct() == _first.xJ().to_oct()              // In case it is, it must conform to the conversion rules for xi<=c and/or -xi<=c.
                 );
         }
         constexpr inline bool single_cons() const {
@@ -53,13 +57,7 @@ public:
         constexpr inline const cons_type& first() const {
             return _first;
         }
-        inline const cons_type& first() {
-            return _first;
-        }
         constexpr inline const cons_type& second() const {
-            return _second;
-        }
-        inline const cons_type& second() {
             return _second;
         }
         constexpr inline thisclass_ commute() const {
@@ -93,8 +91,9 @@ public:
     };
 
     constexpr octdiff_cons() = default;
-    constexpr octdiff_cons(var_type xi, var_type xj, T c) : superclass_::oct_cons_base_(xi, xj, c) {}
-    constexpr octdiff_cons(var_type x, T c) : superclass_::oct_cons_base_(x, c) {}
+    constexpr octdiff_cons(var_type xi, var_type xj, T c) : thisclass_::octdiff_cons(vexpr_type(xi, xj), c) {}
+    constexpr octdiff_cons(var_type x, T c) : thisclass_::octdiff_cons(vexpr_type(x), c) {}
+    constexpr octdiff_cons(vexpr_type e, T c) : superclass_::oct_cons_base_(e, c) {}
     constexpr octdiff_cons(const thisclass_& rhs) = default;
     constexpr octdiff_cons(thisclass_&& rhs) = default;
     inline thisclass_& operator=(const thisclass_& rhs) = default;
@@ -109,7 +108,7 @@ public:
 
     constexpr inline thisclass_ complement() const {
         return !single_oct_var()
-            ? thisclass_(superclass_::_e.xj().swap(), superclass_::_e.xi().swap(), superclass_::_c)
+            ? thisclass_(superclass_::_e.swap(), superclass_::_c)
             : thisclass_::invalid();
     }
     constexpr inline pair conjunction() const {
@@ -126,7 +125,7 @@ public:
 
 
 template <typename V>
-constexpr inline octdiff_cons<V> make_octdiff_cons(octdiff_vexpr vexpr, V c) {
+constexpr inline octdiff_cons<V> make_cons(octdiff_vexpr vexpr, V c) {
     using namespace adl::oct;
     return vexpr.valid()
         ? octdiff_cons<V>(vexpr, c)
@@ -135,9 +134,9 @@ constexpr inline octdiff_cons<V> make_octdiff_cons(octdiff_vexpr vexpr, V c) {
 
 
 template <typename V>
-constexpr inline oct_cons<V> make_octdiff_cons(octdiff_var xi, octdiff_var xj, V c) {
+constexpr inline octdiff_cons<V> make_cons(octdiff_var xi, octdiff_var xj, V c) {
     using namespace adl::oct;
-    return make_octdiff_cons(octdiff_vexpr(xi, xj), c);
+    return make_cons(octdiff_vexpr(xi, xj), c);
 }
 
 
@@ -145,6 +144,7 @@ constexpr inline oct_cons<V> make_octdiff_cons(octdiff_var xi, octdiff_var xj, V
 
 
 #include "adl/oct/oct_cons.hpp"
+
 
 template <typename T>
 constexpr inline adl::oct::octdiff_cons<T> operator<=(adl::oct::octdiff_vexpr e, T c) {
@@ -155,8 +155,8 @@ constexpr inline adl::oct::octdiff_cons<T> operator<=(adl::oct::octdiff_vexpr e,
 template <typename T>
 constexpr inline adl::oct::oct_cons<T> adl::oct::octdiff_cons<T>::pair::to_oct() const {
     using namespace adl::oct;
-    return valid() ?
-        !single_cons()
+    return valid()
+        ? !single_cons()
             ? oct_cons<T>(_first.xi().to_oct(), _first.xj().swap().to_oct(), _first.c())
             : oct_cons<T>(_first.xi().to_oct(), _first.c() / 2)
         : oct_cons<T>::invalid();

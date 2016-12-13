@@ -15,6 +15,7 @@ public:
     typedef T value_type;
     using vexpr_type = V;
     using var_type = typename vexpr_type::var_type;
+    using cons_type = C<T>;
 
     constexpr oct_cons_base_() = default;
     constexpr oct_cons_base_(var_type xi, var_type xj, T c) : _e(vexpr_type(xi, xj)), _c(c) {}
@@ -61,7 +62,6 @@ protected:
     vexpr_type _e;
     T _c = T();
 };
-
 
 }}
 

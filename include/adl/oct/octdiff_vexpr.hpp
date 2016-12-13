@@ -49,6 +49,14 @@ public:
 };
 
 
+constexpr inline octdiff_vexpr make_vexpr(
+    typename octdiff_vexpr::var_type v1,
+    typename octdiff_vexpr::var_type v2
+) {
+    return octdiff_vexpr(v1, v2);
+}
+
+
 }}
 
 constexpr inline adl::oct::octdiff_vexpr adl::oct::octdiff_vexpr::invalid() {

@@ -53,6 +53,19 @@ public:
     constexpr static inline oct_vexpr invalid();
 };
 
+
+constexpr inline oct_vexpr make_vexpr(typename oct_vexpr::var_type var) {
+    return oct_vexpr(var);
+}
+
+constexpr inline oct_vexpr make_vexpr(
+    typename oct_vexpr::var_type v1,
+    typename oct_vexpr::var_type v2
+) {
+    return oct_vexpr(v1, v2);
+}
+
+
 }}
 
 

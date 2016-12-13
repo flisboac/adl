@@ -33,13 +33,8 @@ public:  using iterator = typename collection_type::iterator;
     template <typename Iter> oct_system_stats(Iter begin, Iter end) {
         size_t count = 0;
         for (; begin != end; ++begin) {
-            const cons_type& cons = *begin;
-            if (cons.valid()) {
-                count += insert_var(cons.xi());
-                if (cons.xj().valid()) count += insert_var(cons.xj());
-                if (!_min_cons_c || cons.c() < _min_cons_c.c()) _min_cons_c = cons;
-                if (!_max_cons_c || cons.c() > _max_cons_c.c()) _max_cons_c = cons;
-            }
+            const cons_type cons = *begin;
+            count += insert_cons(cons);
         }
         _valid = count > 0;
     }
@@ -91,6 +86,16 @@ public:  using iterator = typename collection_type::iterator;
     }
 
 private:
+    size_t insert_cons(cons_type cons) {
+        size_t count = 0;
+        if (cons.valid()) {
+            count += insert_var(cons.xi());
+            if (cons.xj().valid()) count += insert_var(cons.xj());
+            if (!_min_cons_c || cons.c() < _min_cons_c.c()) _min_cons_c = cons;
+            if (!_max_cons_c || cons.c() > _max_cons_c.c()) _max_cons_c = cons;
+        }
+        return count;
+    }
     size_t insert_var(var_type var) {
         size_t inserted = 0;
         size_t var_index = var.index();

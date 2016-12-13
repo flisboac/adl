@@ -44,7 +44,7 @@ public:
 
 
 template <typename V>
-constexpr inline oct_cons<V> make_oct_cons(oct_vexpr vexpr, V c) {
+constexpr inline oct_cons<V> make_cons(oct_vexpr vexpr, V c) {
     using namespace adl::oct;
     return vexpr.valid()
         ? oct_cons<V>(vexpr, c)
@@ -53,16 +53,16 @@ constexpr inline oct_cons<V> make_oct_cons(oct_vexpr vexpr, V c) {
 
 
 template <typename V>
-constexpr inline oct_cons<V> make_oct_cons(oct_var xi, oct_var xj, V c) {
+constexpr inline oct_cons<V> make_cons(oct_var xi, oct_var xj, V c) {
     using namespace adl::oct;
-    return make_oct_cons(oct_vexpr(xi, xj), c);
+    return make_cons(oct_vexpr(xi, xj), c);
 }
 
 
 template <typename V>
-constexpr inline oct_cons<V> make_oct_cons(oct_var xi, V c) {
+constexpr inline oct_cons<V> make_cons(oct_var xi, V c) {
     using namespace adl::oct;
-    return make_oct_cons(oct_vexpr(xi), c);
+    return make_cons(oct_vexpr(xi), c);
 }
 
 
@@ -71,14 +71,14 @@ constexpr inline oct_cons<V> make_oct_cons(oct_var xi, V c) {
 template <typename V>
 constexpr inline adl::oct::oct_cons<V> operator<=(adl::oct::oct_vexpr e, V c) {
     using namespace adl::oct;
-    return make_oct_cons(e, c);
+    return make_cons(e, c);
 }
 
 template <typename V>
 constexpr inline adl::oct::oct_cons<V> operator>=(adl::oct::oct_vexpr e, V c) {
     using namespace adl::oct;
     return e.single_var() || e.doubled()
-        ? make_oct_cons(e, c)
+        ? make_cons(e, c)
         : oct_cons<V>::invalid(); // >= constraints are acceptable only for a single var
 }
 
