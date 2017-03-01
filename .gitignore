@@ -1,9 +1,6 @@
 # Project stuff
 bin
 build
-.cproject
-.project
-.settings
 
 # Compiled Object files
 *.slo
@@ -35,3 +32,18 @@ build
 *.out
 *.app
 
+# KDevelop
+.kdev4
+*.kdev4
+
+# Eclipse
+.cproject
+.project
+.settings
+
+# CLion
+.idea
+cmake-build-*
+
+# Local stuff
+local
