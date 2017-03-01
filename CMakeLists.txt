@@ -1,63 +1,3 @@
-
-# Folder layout:
-# /                            (Project's root folder)
-# +- CMakeLists.txt
-# +- include/                  (include folder for exported/public modules)
-#    +- <module|component>?    (can be a header or folder)
-# +- src/
-#    +- include/               (include folder for static/private modules)
-#       +- <module|component>? (can be a header or folder)
-#    +- <module|component>?    (can be a source file or folder)
-
-# Optional test folders:
-# /
-# +- ext/                      (For any external, local dependency.)
-#    +- include/               (For header-only dependencies and simple drop-in)
-# +- test/                     (For unit tests only! Specs and regressions are put somewhere else. Module layout)
-#    +- include/
-#       +- <module|component>? (include folder used for test execution, be it unit, spec or fix)
-#    +- <module|component>?
-# +- spec/                     (only if there's something akin to use cases supporting the tests. Use-case oriented layout)
-#    +- include/
-#    +- <use_case>?
-# +- fix/                      (should be created as soon as a fix (and consequent regression test) is created. Per-fix oriented layout)
-#    +- include/
-#    +- <bug_tracker_artifact>?
-
-# Project phases:
-# - build
-# - test
-#   - test_unit
-#   - test_spec
-#   - test_fix
-
-#CMake Target variable names:
-# <target>                 (the main target name)
-#    <target>_dir_root
-#    <target>_dir_include
-#    <target>_dir_source
-#    <target>_deps         (a list with all dependencies for this target)
-#    <target>_objs         (a target name for a OBJECTS target, for binaries only)
-#    <target>_sharedlib    (a target name for a SHARED target, if any distinction must be made by name)
-#    <target>_staticlib    (a target name for a STATIC target, if any distinction must be made by name)
-
-# CMake Target Libraries:
-# - ${PROJECT_NAME}-api            : include/
-# - ${PROJECT_NAME}-iapi           : src/include/   ; ${PROJECT_NAME}-api
-# - ${PROJECT_NAME}-ext-api        : include/
-# - ${PROJECT_NAME}-ext-iapi       : src/include/   ; ${PROJECT_NAME}-api
-# - ${PROJECT_NAME}-test-iapi      : test/include/  ; ${PROJECT_NAME}-iapi
-# - ${PROJECT_NAME}-test_spec-iapi : spec/include/  ; ${PROJECT_NAME}-test-api
-# - ${PROJECT_NAME}-test_fix-iapi  : fix/include/   ; ${PROJECT_NAME}-test-api
-
-# CMake Targets:
-# - ${PROJECT_NAME}                : src/**/*.cpp              ; ${PROJECT_NAME}-api
-# - ${PROJECT_NAME}-api              (only if needed, or for header-only projects)
-# - ${PROJECT_NAME}-test           : {test,spec,fix}/**/*.cpp  ; ${PROJECT_NAME}-test-api, ${PROJECT_NAME}-test_spec-api, ${PROJECT_NAME}-test_fix-api
-# - ${PROJECT_NAME}-test_unit      : test/**/*.cpp             ; ${PROJECT_NAME}-test-api
-# - ${PROJECT_NAME}-test_spec      : spec/**/*.cpp             ; ${PROJECT_NAME}-test_spec-api
-# - ${PROJECT_NAME}-test_fix       : spec/**/*.cpp             ; ${PROJECT_NAME}-test_fix-api
-
 cmake_minimum_required(VERSION 3.6)
 
 project(adl
@@ -94,9 +34,24 @@ set(api_dir_root "${CMAKE_CURRENT_SOURCE_DIR}/include")
 add_library(${api} INTERFACE)
 target_include_directories(${api} INTERFACE ${api_dir_root})
 target_link_libraries(${api} INTERFACE ${ext_iapi})
-#target_sources(${api} INTERFACE
+target_sources(${api} INTERFACE
     # e.g. "${api_dir_root}/adl.hpp"
-#    )
+    # adl
+    "${api_dir_root}/adl.hpp"
+    "${api_dir_root}/adl.fwd.hpp"
+    "${api_dir_root}/adl.cfg.hpp"
+
+    # adl/util
+    "${api_dir_root}/adl/util.hpp"
+    "${api_dir_root}/adl/util.fwd.hpp"
+
+    # adl/oct
+    "${api_dir_root}/adl/oct.hpp"
+    "${api_dir_root}/adl/oct.fwd.hpp"
+
+    # adl/oct/dsl
+    "${api_dir_root}/adl/oct/dsl.hpp"
+    )
 
 
 # Internal API target
