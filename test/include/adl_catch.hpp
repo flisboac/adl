@@ -8,7 +8,6 @@
 
 #include "catch.hpp"
 #include "adl_catch/macros.hpp"
-#include "adl_catch/oct_var.hpp"
 
 #endif // adl_catch__hpp__
 

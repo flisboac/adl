@@ -40,6 +40,8 @@ target_sources(${api} INTERFACE
     "${api_dir_root}/adl.hpp"
     "${api_dir_root}/adl.fwd.hpp"
     "${api_dir_root}/adl.cfg.hpp"
+    "${api_dir_root}/adl/config.hpp"
+    "${api_dir_root}/adl/error.hpp"
 
     # adl/util
     "${api_dir_root}/adl/util.hpp"
@@ -48,6 +50,7 @@ target_sources(${api} INTERFACE
     # adl/oct
     "${api_dir_root}/adl/oct.hpp"
     "${api_dir_root}/adl/oct.fwd.hpp"
+    "${api_dir_root}/adl/oct/domain_space.hpp"
 
     # adl/oct/dsl
     "${api_dir_root}/adl/oct/dsl.hpp"
@@ -88,6 +91,7 @@ set(test_dir_root "${CMAKE_CURRENT_SOURCE_DIR}/test")
 set(test_dir_unit "${CMAKE_CURRENT_SOURCE_DIR}/test/unit")
 add_executable(${test}
     "${test_dir_unit}/main.unit.cpp"
+    "${test_dir_unit}/adl/error.unit.cpp"
 )
 target_link_libraries(${test} ${test_iapi})
 enable_testing()
