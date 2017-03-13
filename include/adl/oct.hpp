@@ -6,6 +6,9 @@
 #ifndef adl__oct__hpp__
 #define adl__oct__hpp__
 
+#include "adl/oct.fwd.hpp"
+
+#include "adl/oct/domain_space.hpp"
 
 #include "adl/oct/dsl.hpp"
 

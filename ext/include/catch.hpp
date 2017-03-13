@@ -4784,7 +4784,7 @@ namespace Catch {
             .describe( "abort after x failures" )
             .bind( &abortAfterX, "no. failures" );
 
-        cli["-w"]["--warn"]
+        cli["-w"]["--warning"]
             .describe( "enable warnings" )
             .bind( &addWarning, "warning name" );
 

@@ -7,16 +7,11 @@
 #define adl__util__fwd__hpp__
 
 #include "adl.cfg.hpp"
-#include "adl/config.hpp"
 
-namespace adl {
-namespace adl_ABI_NAMESPACE_NAME {
-namespace util {
+adl_BEGIN_MAIN_MODULE(util)
 
 
 
-} // util
-} // adl_ABI_NAMESPACE_NAME
-} // adl
+adl_END_MAIN_MODULE
 
 #endif // adl__util__fwd__hpp__

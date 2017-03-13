@@ -8,29 +8,17 @@
 
 #include "adl.cfg.hpp"
 
-#define adl_ROOT_PATH adl_ROOT_NAMESPACE_NAME::adl_ABI_NAMESPACE_NAME
-#define adl_ROOT_MODULE_PATH(m_name__) adl_ROOT_PATH::m_name__
+adl_BEGIN_MAIN_MODULE(config)
 
-namespace adl {
-inline namespace adl_ABI_NAMESPACE_NAME {
-namespace config {
-
-constexpr char const* const name = adl_STRFY(adl_NAME);
+constexpr char const* const name = adl_CONFIG_NAME_STR;
 namespace version {
-    constexpr int major = adl_VERSION_MAJOR;
-    constexpr int minor = adl_VERSION_MINOR;
-    constexpr int patch = adl_VERSION_PATCH;
-    constexpr int abi = adl_VERSION_ABI;
+    constexpr char const* const name = adl_CONFIG_VERSION_STR;
+    constexpr int const major = adl_CONFIG_VERSION_MAJOR;
+    constexpr int const minor = adl_CONFIG_VERSION_MINOR;
+    constexpr int const patch = adl_CONFIG_VERSION_PATCH;
+    constexpr int const abi = adl_CONFIG_VERSION_ABI;
 }
 
-constexpr bool using_exceptions = adl_CONFIG_IS_USING_EXCEPTIONS;
-constexpr bool debug = adl_CONFIG_IS_DEBUG;
-constexpr bool stripped_binary = adl_CONFIG_IS_STRIPPED_BINARY;
-constexpr bool cpp17 = adl_CONFIG_IS_CPP17;
-
-} // config
-} // adl_ABI_NAMESPACE_NAME
-} // adl
-
+adl_END_MAIN_MODULE
 
 #endif //adl__config__hpp__

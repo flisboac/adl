@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.6)
 project(adl
         VERSION 0.1.0
         LANGUAGES CXX)
+set(GLOBAL PROPERTY SONAME 0)
 
 # For C++14 support
 set(CMAKE_CXX_STANDARD 14)
@@ -11,6 +12,16 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
     message( FATAL_ERROR "In-source builds not allowed. To build, create a folder and run CMake from there." )
+endif()
+
+add_definitions(-Dadl_BUILDING)
+
+if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+    add_definitions(-Dadl_DEBUG)
+endif()
+
+if (${CMAKE_BUILD_TYPE} STREQUAL "MinSizeRel")
+    add_definitions(-Dadl_STRIPPED)
 endif()
 
 #
@@ -41,7 +52,7 @@ target_sources(${api} INTERFACE
     "${api_dir_root}/adl.fwd.hpp"
     "${api_dir_root}/adl.cfg.hpp"
     "${api_dir_root}/adl/config.hpp"
-    "${api_dir_root}/adl/error.hpp"
+    "${api_dir_root}/adl/intl.hpp"
 
     # adl/util
     "${api_dir_root}/adl/util.hpp"
@@ -91,7 +102,6 @@ set(test_dir_root "${CMAKE_CURRENT_SOURCE_DIR}/test")
 set(test_dir_unit "${CMAKE_CURRENT_SOURCE_DIR}/test/unit")
 add_executable(${test}
     "${test_dir_unit}/main.unit.cpp"
-    "${test_dir_unit}/adl/error.unit.cpp"
 )
 target_link_libraries(${test} ${test_iapi})
 enable_testing()
