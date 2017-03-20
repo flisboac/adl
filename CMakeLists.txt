@@ -4,6 +4,7 @@ project(adl
         VERSION 0.1.0
         LANGUAGES CXX)
 set(GLOBAL PROPERTY SONAME 0)
+set(GLOBAL PROPERTY PROJECT_BRIEF "Abstract Domain Library, a C++ library implementing the octagon domain in CPU and GPU.")
 
 # For C++14 support
 set(CMAKE_CXX_STANDARD 14)
@@ -53,6 +54,8 @@ target_sources(${api} INTERFACE
     "${api_dir_root}/adl.cfg.hpp"
     "${api_dir_root}/adl/config.hpp"
     "${api_dir_root}/adl/intl.hpp"
+    "${api_dir_root}/adl/error.fwd.hpp"
+    "${api_dir_root}/adl/error.hpp"
 
     # adl/util
     "${api_dir_root}/adl/util.hpp"
@@ -102,11 +105,31 @@ set(test_dir_root "${CMAKE_CURRENT_SOURCE_DIR}/test")
 set(test_dir_unit "${CMAKE_CURRENT_SOURCE_DIR}/test/unit")
 add_executable(${test}
     "${test_dir_unit}/main.unit.cpp"
+
+    # adl
+    "${test_dir_unit}/adl/config.unit.cpp"
+    "${test_dir_unit}/adl/intl.unit.cpp"
+    "${test_dir_unit}/adl/error.unit.cpp"
 )
 target_link_libraries(${test} ${test_iapi})
 enable_testing()
 add_test(NAME ${test} COMMAND "./${test}")
 
+
+#
+# [ DOCUMENTATION GENERATION ]
+#
+
+
+find_package(Doxygen)
+if(DOXYGEN_FOUND)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
+    add_custom_target(doc
+        ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        COMMENT "Generating API documentation with Doxygen" VERBATIM
+    )
+endif(DOXYGEN_FOUND)
 
 #
 # [ CMAKE DEBUGGING ]

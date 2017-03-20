@@ -2,7 +2,6 @@
 /**
  * @file domain_space.hpp
  */
-#pragma once
 #ifndef adl__oct__domain_space__hpp__
 #define adl__oct__domain_space__hpp__
 

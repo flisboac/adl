@@ -5,48 +5,6 @@
 #ifndef adl__cfg__hpp__
 #define adl__cfg__hpp__
 
-
-//
-// [[ DOCUMENTATION ]]
-//
-
-/**
- * @def adl_NO_EXCEPTIONS
- * If defined, sets adl_CONFIG_IS_USING_EXCEPTIONS to @c false.
- * @sa adl_CONFIG_IS_USING_EXCEPTIONS
- */
-
-/**
- * @def adl_DEBUG
- * If defined, sets adl_CONFIG_IS_DEBUG to @c true.
- * @sa adl_CONFIG_IS_DEBUG
- */
-
-/**
- * @def adl_STRIPPED
- * If defined, sets adl_CONFIG_IS_STRIPPED_BINARY to @c true.
- * @sa adl_CONFIG_IS_STRIPPED_BINARY
- */
-
-/**
- * @def adl_CONFIG_IS_USING_EXCEPTIONS
- * Determines if the library will default to throw exceptions on errors or not. The API is prepared to handle
- * both cases, and some dependencies (e.g. OpenCL's cl2.hpp) may follow suit automatically.
- */
-
-/**
- * @def adl_CONFIG_IS_DEBUG
- * If @c true, enables more runtime information. This flag acts more like an instruction for the implementation to
- * output more information and than to reduce the binary size. For that, adl_STRIPPED should be defined.
- */
-
-/**
- * @def adl_CONFIG_IS_STRIPPED_BINARY
- * If @c true, enables symbol stripping (at the language and TU level).
- * Stripping removes additional debugging information and additional symbols. The resulting binary is therefore smaller.
- * As of now, it disables error conditions' descriptions.
- */
-
 //
 // [[ CONFIGURABLE DEFINITIONS ]]
 //
@@ -61,6 +19,8 @@
 #define adl_CONFIG_VERSION_PATCH 0
 #define adl_CONFIG_VERSION_ABI 0 // Increased at each breaking change, major bump certainly bumps ABI version, minor bump should not (but may?) lead to abi bump
 
+
+#ifndef adl_BUILDING_DOCS
 
 //
 // [[ PREPROCESSOR FLAGS ]]
@@ -223,4 +183,56 @@
 #define adl_IMPL   inline
 
 
+#else
+
+#define adl_API
+#define adl_IAPI
+#define adl_VAR
+#define adl_IVAR
+#define adl_CLASS
+#define adl_ICLASS
+#define adl_IMPL   inline
+
+//
+// [[ DOCUMENTATION ]]
+//
+
+/**
+ * User-provided: If defined, sets adl_CONFIG_IS_USING_EXCEPTIONS to @c false.
+ * @sa adl_CONFIG_IS_USING_EXCEPTIONS
+ */
+#define adl_NO_EXCEPTIONS
+
+/**
+ * User-provided: If defined, sets adl_CONFIG_IS_DEBUG to @c true.
+ * @sa adl_CONFIG_IS_DEBUG
+ */
+#define adl_DEBUG
+
+/**
+ * User-provided: If defined, sets adl_CONFIG_IS_STRIPPED_BINARY to @c true.
+ * @sa adl_CONFIG_IS_STRIPPED_BINARY
+ */
+#define adl_STRIPPED
+
+/**
+ * Determines if the library will default to throw exceptions on errors or not. The API is prepared to handle
+ * both cases, and some dependencies (e.g. OpenCL's cl2.hpp) may follow suit automatically.
+ */
+#define adl_CONFIG_IS_USING_EXCEPTIONS
+
+/**
+ * If @c true, enables more runtime information. This flag acts more like an instruction for the implementation to
+ * output more information and than to reduce the binary size. For that, adl_STRIPPED should be defined.
+ */
+#define adl_CONFIG_IS_DEBUG
+
+/**
+ * If @c true, enables symbol stripping (at the language and TU level).
+ * Stripping removes additional debugging information and additional symbols. The resulting binary is therefore smaller.
+ * As of now, it disables error conditions' descriptions.
+ */
+#define adl_CONFIG_IS_STRIPPED_BINARY
+
+#endif // adl_BUILDING_DOCS
 #endif // adl__cfg__hpp__

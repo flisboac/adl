@@ -2,7 +2,6 @@
 /**
  * @file util.fwd.hpp
  */
-#pragma once
 #ifndef adl__util__fwd__hpp__
 #define adl__util__fwd__hpp__
 

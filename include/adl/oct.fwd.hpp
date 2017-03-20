@@ -2,7 +2,6 @@
 /**
  * @file oct.fwd.hpp.hpp
  */
-#pragma once
 #ifndef adl__oct__fwd__hpp__
 #define adl__oct__fwd__hpp__
 

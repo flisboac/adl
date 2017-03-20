@@ -2,7 +2,6 @@
 /**
  * @file dsl.hpp.hpp
  */
-#pragma once
 #ifndef adl__oct__dsl__hpp__
 #define adl__oct__dsl__hpp__
 

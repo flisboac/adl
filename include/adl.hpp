@@ -2,7 +2,6 @@
 /**
  * @file adl.hpp
  */
-#pragma once
 #ifndef adl__hpp__
 #define adl__hpp__
 
@@ -11,6 +10,7 @@
 // Utility components/modules
 #include "adl/config.hpp"
 #include "adl/intl.hpp"
+#include "adl/error.hpp"
 
 // Main modules
 #include "adl/util.hpp"

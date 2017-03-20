@@ -2,7 +2,6 @@
 /**
  * @file util.hpp
  */
-#pragma once
 #ifndef adl__util__hpp__
 #define adl__util__hpp__
 

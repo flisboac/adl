@@ -2,7 +2,6 @@
 /**
  * @file intl.hpp
  */
-#pragma once
 #ifndef adl__intl__hpp__
 #define adl__intl__hpp__
 
