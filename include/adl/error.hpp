@@ -350,6 +350,7 @@ namespace std {
 // [[[ DOCUMENTATION ]]]
 //
 adl_BEGIN_ROOT_MODULE
+
 adl_END_ROOT_MODULE
 
 #endif // adl__error_info__hpp__
