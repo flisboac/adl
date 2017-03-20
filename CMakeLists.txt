@@ -92,6 +92,7 @@ target_link_libraries(${test_iapi} INTERFACE ${iapi})
 target_sources(${test_iapi} INTERFACE
     "${test_iapi_dir_root}/adl_catch.hpp"
     "${test_iapi_dir_root}/adl_catch/macros.hpp"
+    "${test_iapi_dir_root}/adl/assert.hpp"
     )
 
 
