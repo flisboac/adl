@@ -57,6 +57,10 @@ target_sources(${api} INTERFACE
     "${api_dir_root}/adl/error.fwd.hpp"
     "${api_dir_root}/adl/error.hpp"
 
+    # adl/std
+    "${api_dir_root}/adl/std/optional.hpp"
+    "${api_dir_root}/adl/std/impl/optional.hpp"
+
     # adl/util
     "${api_dir_root}/adl/util.hpp"
     "${api_dir_root}/adl/util.fwd.hpp"

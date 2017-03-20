@@ -3,28 +3,47 @@
 #include "adl/error.hpp"
 
 TEST_CASE("adl/error.hpp", "[adl][adl/error]") {
+    const auto warning_kind = adl::make_error_kind(adl::errk::warning);
+    const auto ok_kind = adl::make_error_kind(adl::errk::ok);
+    const auto error_kind = adl::make_error_kind(adl::errk::error);
+    const auto client_error_kind = adl::make_error_kind(adl::errk::client_error);
+
+    const adl::error_info no_error;
+    const adl::error_info internal_error = adl::make_error_info(adl::err::error);
+
+    SECTION("adl::error_enum_to_int") {
+        constexpr int value = -2;
+        constexpr adl::errk kind = adl::errk::warning;
+        static_assert((adl::error_enum_to_int(kind), true), "must be constexpr");
+        REQUIRE((adl::error_enum_to_int(kind) == value));
+    }
 
     SECTION("adl::error_info") {
-        const adl::error_info warning_kind = adl::make_error_info(adl::error_kind_id::warning);
-        const adl::error_info ok_kind = adl::make_error_info(adl::error_kind_id::ok);
-        const adl::error_info error_kind = adl::make_error_info(adl::error_kind_id::error);
-        const adl::error_info client_error_kind = adl::make_error_info(adl::error_kind_id::client_error);
 
-        const adl::error_info no_error;
-        const adl::error_info some_error = adl::error_id::function_not_supported;
+        REQUIRE( (warning_kind == warning_kind) );
 
-        REQUIRE_SECTION((warning_kind == warning_kind), "error should equal itself");
+        REQUIRE( (no_error == ok_kind) );
+        REQUIRE( (no_error != error_kind) );
+        REQUIRE( (no_error != client_error_kind) );
+        REQUIRE( (no_error != warning_kind) );
 
-        REQUIRE_SECTION((ok_kind == no_error), "no-error info should be an adl::error_kind_id::ok");
-        REQUIRE_SECTION((no_error != error_kind), "no-error info should not be an adl::error_kind_id::error");
-        REQUIRE_SECTION((no_error != client_error_kind), "no-error info should not be an adl::error_kind_id::client_error");
-        REQUIRE_SECTION((no_error != warning_kind), "no-error info should not be an adl::error_kind_id::warning");
+        REQUIRE( (internal_error != ok_kind) );
+        REQUIRE( (internal_error == error_kind) );
+        REQUIRE( (internal_error != client_error_kind) );
+        REQUIRE( (internal_error != warning_kind) );
+    }
 
-        REQUIRE_SECTION((some_error != ok_kind), "an error-kind error info should be an adl::error_kind_id::ok");
-        REQUIRE_SECTION((some_error == error_kind), "an error-kind error info should not be an adl::error_kind_id::error");
-        REQUIRE_SECTION((some_error != client_error_kind), "an error-kind error info should not be an adl::error_kind_id::client_error");
-        REQUIRE_SECTION((some_error != warning_kind), "an error info-kind error should not be an adl::error_kind_id::warning");
+    SECTION("adl: result functions") {
+        constexpr int return_value = 2;
 
-        REQUIRE_SECTION_THROWS_AS((adl::done(some_error)), adl::internal_exception, "an error-kind error_info should throw adl::internal_exception");
+        REQUIRE_THROWS_AS( (adl::finished(internal_error)), adl::internal_exception );
+        REQUIRE_NOTHROW( (adl::finished(no_error)) );
+
+        REQUIRE_THROWS_AS( (adl::result(internal_error, return_value) == return_value), adl::internal_exception );
+        REQUIRE_NOTHROW( (adl::result(no_error, return_value) == return_value) );
+
+        REQUIRE_NOTHROW( (adl::safe_result(no_error, return_value)) );
+        REQUIRE_NOTHROW( (*adl::safe_result(no_error, return_value) == return_value) );
+        REQUIRE_NOTHROW( (!adl::safe_result(internal_error, return_value)) );
     }
 }
