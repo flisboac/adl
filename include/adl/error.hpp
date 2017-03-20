@@ -138,6 +138,9 @@ namespace std {
 
     template <> struct is_error_code_enum<adl::err> : public std::true_type {};
     std::error_code make_error_code(adl::err value) noexcept;
+
+    template <> struct is_error_condition_enum<adl::err> : public std::true_type {};
+    std::error_condition make_error_condition(adl::err value) noexcept;
 }
 
 //
@@ -336,6 +339,10 @@ namespace std {
 
     std::error_code make_error_code(adl::err value) noexcept {
         return std::error_code(adl::error_enum_to_int(value), adl::library_code_category());
+    }
+
+    std::error_condition make_error_condition(adl::err value) noexcept {
+        return std::error_condition(adl::error_enum_to_int(value), adl::library_code_category());
     }
 }
 
