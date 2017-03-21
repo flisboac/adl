@@ -5,6 +5,4 @@
 #ifndef adl__fwd__hpp__
 #define adl__fwd__hpp__
 
-
-
 #endif // adl__fwd__hpp__

@@ -56,6 +56,8 @@ target_sources(${api} INTERFACE
     "${api_dir_root}/adl/intl.hpp"
     "${api_dir_root}/adl/error.fwd.hpp"
     "${api_dir_root}/adl/error.hpp"
+    "${api_dir_root}/adl/char_helper.hpp"
+    "${api_dir_root}/adl/char_helper.fwd.hpp"
 
     # adl/std
     "${api_dir_root}/adl/std/optional.hpp"
@@ -115,6 +117,7 @@ add_executable(${test}
     "${test_dir_unit}/adl/config.unit.cpp"
     "${test_dir_unit}/adl/intl.unit.cpp"
     "${test_dir_unit}/adl/error.unit.cpp"
+    "${test_dir_unit}/adl/char_helper.unit.cpp"
 )
 target_link_libraries(${test} ${test_iapi})
 enable_testing()
