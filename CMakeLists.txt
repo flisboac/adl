@@ -11,10 +11,12 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Various safety checks
 if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
     message( FATAL_ERROR "In-source builds not allowed. To build, create a folder and run CMake from there." )
 endif()
 
+# Build flags
 add_definitions(-Dadl_BUILDING)
 
 if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
@@ -24,6 +26,7 @@ endif()
 if (${CMAKE_BUILD_TYPE} STREQUAL "MinSizeRel")
     add_definitions(-Dadl_STRIPPED)
 endif()
+
 
 #
 # [ TARGETS ]
@@ -62,6 +65,7 @@ target_sources(${api} INTERFACE
     # adl/std
     "${api_dir_root}/adl/std/optional.hpp"
     "${api_dir_root}/adl/std/impl/optional.hpp"
+    "${api_dir_root}/adl/std/string_view.hpp"
 
     # adl/util
     "${api_dir_root}/adl/util.hpp"
@@ -113,11 +117,12 @@ set(test_dir_unit "${CMAKE_CURRENT_SOURCE_DIR}/test/unit")
 add_executable(${test}
     "${test_dir_unit}/main.unit.cpp"
 
-    # adl
+    # unit:adl
     "${test_dir_unit}/adl/config.unit.cpp"
     "${test_dir_unit}/adl/intl.unit.cpp"
     "${test_dir_unit}/adl/error.unit.cpp"
     "${test_dir_unit}/adl/char_helper.unit.cpp"
+    "${test_dir_unit}/adl/std/string_view.unit.cpp"
 )
 target_link_libraries(${test} ${test_iapi})
 enable_testing()
@@ -132,12 +137,13 @@ add_test(NAME ${test} COMMAND "./${test}")
 find_package(Doxygen)
 if(DOXYGEN_FOUND)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
-    add_custom_target(doc
+    add_custom_target(${PROJECT_NAME}-doc
         ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         COMMENT "Generating API documentation with Doxygen" VERBATIM
     )
 endif(DOXYGEN_FOUND)
+
 
 #
 # [ CMAKE DEBUGGING ]

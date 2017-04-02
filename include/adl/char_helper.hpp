@@ -195,11 +195,6 @@ adl_BEGIN_ROOT_MODULE
 //
 
 template <typename... Args>
-inline int string_printf(std::string& buffer, const std::string& fmt, Args... args) {
-    return string_printf(buffer, fmt.c_str(), args...);
-}
-
-template <typename... Args>
 inline int string_printf(std::wstring& buffer, const wchar_t* fmt, Args... args) {
     int chars_written = 0;
     const auto nchars = std::swprintf(nullptr, 0, fmt, string_printf_basic_arg_(args)...) + 1;
@@ -222,6 +217,11 @@ inline int string_printf(std::string& buffer, const char* fmt, Args... args) {
         buffer.resize(buffer.size() - 1);
     }
     return chars_written;
+}
+
+template <typename... Args>
+inline int string_printf(std::string& buffer, const std::string& fmt, Args... args) {
+    return string_printf(buffer, fmt.c_str(), args...);
 }
 
 template <typename... Args>
