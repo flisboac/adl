@@ -75,6 +75,7 @@ target_sources(${api} INTERFACE
     "${api_dir_root}/adl/oct.hpp"
     "${api_dir_root}/adl/oct.fwd.hpp"
     "${api_dir_root}/adl/oct/domain_space.hpp"
+    "${api_dir_root}/adl/oct/limits.hpp"
 
     # adl/oct/dsl
     "${api_dir_root}/adl/oct/dsl.hpp"
@@ -123,6 +124,9 @@ add_executable(${test}
     "${test_dir_unit}/adl/error.unit.cpp"
     "${test_dir_unit}/adl/char_helper.unit.cpp"
     "${test_dir_unit}/adl/std/string_view.unit.cpp"
+
+    # unit:adl/oct
+    "${test_dir_unit}/adl/oct/limits.unit.cpp"
 )
 target_link_libraries(${test} ${test_iapi})
 enable_testing()

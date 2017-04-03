@@ -8,6 +8,7 @@
 #include "adl/oct.fwd.hpp"
 
 #include "adl/oct/domain_space.hpp"
+#include "adl/oct/limits.hpp"
 
 #include "adl/oct/dsl.hpp"
 
