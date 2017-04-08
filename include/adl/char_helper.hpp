@@ -127,41 +127,41 @@ public:
 
     // std::char_traits<T> functions
 
-    constexpr static inline void assign(char_type& r, const char_type& a) noexcept; //std
-    static inline char_type* assign(char_type* p, std::size_t count, char_type a); //std
-    constexpr static inline bool eq(char_type a, char_type b) noexcept; //std
-    constexpr static inline bool lt(char_type a, char_type b) noexcept; //std
-    static inline char_type* move(char_type* dest, const char_type* src, std::size_t count); //std
-    static inline char_type* copy(char_type* dest, const char_type* src, std::size_t count); //std
-    constexpr static inline int compare(const char_type* a, const char_type* b, size_t count = 0); //std
-    constexpr static inline size_t length(const char_type* a, size_t a_size = 0); //std
-    constexpr static inline const char_type* find(const char_type* p, std::size_t count, const char_type& ch); //std
-    constexpr static inline char_type to_char_type(int_type c) noexcept; //std
-    constexpr static inline int_type to_int_type(char_type c) noexcept; //std
-    constexpr static inline bool eq_int_type(int_type c1, int_type c2) noexcept; //std
-    constexpr static inline int_type eof() noexcept; //std
-    constexpr static inline int_type not_eof(int_type e) noexcept; //std
+    constexpr static void assign(char_type& r, const char_type& a) noexcept; //std
+    static char_type* assign(char_type* p, std::size_t count, char_type a); //std
+    constexpr static bool eq(char_type a, char_type b) noexcept; //std
+    constexpr static bool lt(char_type a, char_type b) noexcept; //std
+    static char_type* move(char_type* dest, const char_type* src, std::size_t count); //std
+    static char_type* copy(char_type* dest, const char_type* src, std::size_t count); //std
+    constexpr static int compare(const char_type* a, const char_type* b, size_t count = 0); //std
+    constexpr static size_t length(const char_type* a, size_t a_size = 0); //std
+    constexpr static const char_type* find(const char_type* p, std::size_t count, const char_type& ch); //std
+    constexpr static char_type to_char_type(int_type c) noexcept; //std
+    constexpr static int_type to_int_type(char_type c) noexcept; //std
+    constexpr static bool eq_int_type(int_type c1, int_type c2) noexcept; //std
+    constexpr static int_type eof() noexcept; //std
+    constexpr static int_type not_eof(int_type e) noexcept; //std
 
     // ------
 
-    constexpr static inline int compare(const char_type* a, const char_type* b, size_t a_size, size_t b_size);
-    constexpr static inline const char* ensure_empty_string(const char_type* s) noexcept;
+    constexpr static int compare(const char_type* a, const char_type* b, size_t a_size, size_t b_size);
+    constexpr static const char* ensure_empty_string(const char_type* s) noexcept;
     template <template <typename> class StringType = std::basic_string, class String = StringType<Char>>
-        constexpr static inline String ensure_empty_string(String const& s)
+        constexpr static String ensure_empty_string(String const& s)
         noexcept(noexcept(String().empty()) && noexcept(String("")));
-    constexpr static inline const char_type* rfind(const char_type* p, std::size_t count, const char_type& ch);
-    constexpr static inline bool is_digit(const char_type& c) noexcept;
-    template <typename T = int> constexpr static inline T digit_to_integer(const char_type& c) noexcept;
-    template <typename T> constexpr static inline T to_integer(T fallback_value, const char_type* c, size_t size = 0);
+    constexpr static const char_type* rfind(const char_type* p, std::size_t count, const char_type& ch);
+    constexpr static bool is_digit(const char_type& c) noexcept;
+    template <typename T = int> constexpr inline T digit_to_integer(const char_type& c) noexcept;
+    template <typename T> constexpr static T to_integer(T fallback_value, const char_type* c, size_t size = 0);
 
 private:
-    constexpr static inline bool is_finished_(const char_type* s, size_t s_size, size_t s_count);
-    template <typename T> constexpr static inline T choose_valid_(std::pair<T, bool> a, T b);
-    constexpr static inline int compare_(const Char* a, size_t a_size, const Char* b, size_t b_size, size_t count);
-    constexpr static inline size_t length_(const char_type* c, size_t c_size, size_t c_count);
-    constexpr static inline const char_type* find_(const char_type* str, size_t size, size_t counter, const char_type& ch);;
-    constexpr static inline const char_type* rfind_(const char_type* str, size_t counter, const char_type& ch);;
-    template <typename T> constexpr static inline std::pair<T, bool> to_integer_(
+    constexpr static bool is_finished_(const char_type* s, size_t s_size, size_t s_count);
+    template <typename T> constexpr static T choose_valid_(std::pair<T, bool> a, T b);
+    constexpr static int compare_(const Char* a, size_t a_size, const Char* b, size_t b_size, size_t count);
+    constexpr static size_t length_(const char_type* c, size_t c_size, size_t c_count);
+    constexpr static const char_type* find_(const char_type* str, size_t size, size_t counter, const char_type& ch);;
+    constexpr static const char_type* rfind_(const char_type* str, size_t counter, const char_type& ch);;
+    template <typename T> constexpr static std::pair<T, bool> to_integer_(
         const char_type* c,
         size_t c_size,
         size_t c_count = 0,
@@ -195,7 +195,7 @@ adl_BEGIN_ROOT_MODULE
 //
 
 template <typename... Args>
-inline int string_printf(std::wstring& buffer, const wchar_t* fmt, Args... args) {
+adl_IMPL int string_printf(std::wstring& buffer, const wchar_t* fmt, Args... args) {
     int chars_written = 0;
     const auto nchars = std::swprintf(nullptr, 0, fmt, string_printf_basic_arg_(args)...) + 1;
     if (nchars > 0 && nchars <= std::numeric_limits<std::size_t>::max()) {
@@ -208,7 +208,7 @@ inline int string_printf(std::wstring& buffer, const wchar_t* fmt, Args... args)
 };
 
 template <typename... Args>
-inline int string_printf(std::string& buffer, const char* fmt, Args... args) {
+adl_IMPL int string_printf(std::string& buffer, const char* fmt, Args... args) {
     int chars_written = 0;
     const auto nchars = std::snprintf(nullptr, 0, fmt, string_printf_basic_arg_(args)...) + 1;
     if (nchars > 0 && nchars <= std::numeric_limits<std::size_t>::max()) {
@@ -220,22 +220,22 @@ inline int string_printf(std::string& buffer, const char* fmt, Args... args) {
 }
 
 template <typename... Args>
-inline int string_printf(std::string& buffer, const std::string& fmt, Args... args) {
+adl_IMPL int string_printf(std::string& buffer, const std::string& fmt, Args... args) {
     return string_printf(buffer, fmt.c_str(), args...);
 }
 
 template <typename... Args>
-inline int string_printf(std::wstring& buffer, const std::wstring& fmt, Args... args) {
+adl_IMPL int string_printf(std::wstring& buffer, const std::wstring& fmt, Args... args) {
     return string_printf(buffer, fmt.c_str(), args...);
 }
 
 template <typename T>
-inline T string_printf_basic_arg_(T value) {
+adl_IMPL T string_printf_basic_arg_(T value) {
     return value;
 }
 
 template <typename T>
-inline T const* string_printf_basic_arg_(std::basic_string<T> const& value) {
+adl_IMPL T const* string_printf_basic_arg_(std::basic_string<T> const& value) {
     return value.c_str();
 }
 
@@ -249,7 +249,7 @@ constexpr void char_helper<Char>::assign(char_type& r, const char_type& a) noexc
 }
 
 template <typename Char>
-inline typename char_helper<Char>::char_type* char_helper<Char>::assign(char_type* p, std::size_t count, char_type a) { // std
+adl_IMPL typename char_helper<Char>::char_type* char_helper<Char>::assign(char_type* p, std::size_t count, char_type a) { // std
     return std_char_traits_::assign(p, count, a);
 }
 
@@ -264,13 +264,13 @@ constexpr bool char_helper<Char>::lt(char_type a, char_type b) noexcept { // std
 }
 
 template <typename Char>
-inline typename char_helper<Char>::char_type*
+adl_IMPL typename char_helper<Char>::char_type*
 char_helper<Char>::move(char_type* dest, const char_type* src, std::size_t count) { // std
     return std_char_traits_::move(dest, src, count);
 }
 
 template <typename Char>
-inline typename char_helper<Char>::char_type*
+adl_IMPL typename char_helper<Char>::char_type*
 char_helper<Char>::copy(char_type* dest, const char_type* src, std::size_t count) { // std
     return std_char_traits_::copy(dest, src, count);
 }
