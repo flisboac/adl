@@ -76,6 +76,7 @@ target_sources(${api} INTERFACE
     "${api_dir_root}/adl/oct.fwd.hpp"
     "${api_dir_root}/adl/oct/domain_space.hpp"
     "${api_dir_root}/adl/oct/limits.hpp"
+    "${api_dir_root}/adl/oct/traits.hpp"
 
     # adl/oct/dsl
     "${api_dir_root}/adl/oct/dsl.hpp"
@@ -127,6 +128,7 @@ add_executable(${test}
 
     # unit:adl/oct
     "${test_dir_unit}/adl/oct/limits.unit.cpp"
+    "${test_dir_unit}/adl/oct/traits.unit.cpp"
 )
 target_link_libraries(${test} ${test_iapi})
 enable_testing()

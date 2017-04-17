@@ -151,8 +151,8 @@ public:
         noexcept(noexcept(String().empty()) && noexcept(String("")));
     constexpr static const char_type* rfind(const char_type* p, std::size_t count, const char_type& ch);
     constexpr static bool is_digit(const char_type& c) noexcept;
-    template <typename T = int> constexpr inline T digit_to_integer(const char_type& c) noexcept;
-    template <typename T> constexpr static T to_integer(T fallback_value, const char_type* c, size_t size = 0);
+    template <typename T = int> constexpr static T digit_to_integer(const char_type& c) noexcept;
+    template <typename T> constexpr static T to_integer(T fallback_value, const char_type* c, size_t size = 0) noexcept;
 
 private:
     constexpr static bool is_finished_(const char_type* s, size_t s_size, size_t s_count);
@@ -169,7 +169,7 @@ private:
         bool found = false,
         bool negative = false,
         char_digit_base base = char_digit_base::decimal
-    );
+    ) noexcept;
 };
 
 template <typename... Args> adl_API int string_printf(std::string& buffer, const char* fmt, Args... args);
@@ -353,7 +353,7 @@ constexpr T char_helper<Char>::digit_to_integer(const char_type& c) noexcept {
 
 template <typename Char>
 template <typename T>
-constexpr T char_helper<Char>::to_integer(T fallback_value, const char_type* c, size_t size) {
+constexpr T char_helper<Char>::to_integer(T fallback_value, const char_type* c, size_t size) noexcept {
     return choose_valid_(to_integer_(c, size, 0, T(0)), fallback_value);
 }
 
@@ -423,7 +423,7 @@ constexpr std::pair<T, bool> char_helper<Char>::to_integer_(
     bool found,
     bool negative,
     char_digit_base base
-) {
+) noexcept {
     return !is_finished_(c, c_size, c_count)
            ? is_digit(c[c_count])
              ? to_integer_(

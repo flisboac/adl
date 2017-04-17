@@ -25,7 +25,7 @@ enum class domain_space;
 
 using default_var_id_type = int;
 template <typename ValueType> class value_limits;
-template <domain_space Domain, typename VarIdType = default_var_id_type> struct var_id_limits;
+template <domain_space Domain> struct var_id_limits;
 
 /**
  * The hard-limit maximum number of octagonal variables supported for a given variable id's type.
@@ -48,6 +48,14 @@ constexpr static std::size_t max_oct_variables =
  */
 template <typename VarIdType = default_var_id_type>
 constexpr static std::size_t max_octdiff_variables = max_oct_variables<VarIdType> * 2;
+
+//
+// traits.hpp
+//
+template <typename ValueType, typename ValueLimits = value_limits<ValueType>> struct value_traits;
+template <domain_space Domain, typename VarIdLimits = var_id_limits<Domain>> struct var_id_traits;
+template <typename VarType> struct var_traits;
+
 
 adl_END_MAIN_MODULE
 
