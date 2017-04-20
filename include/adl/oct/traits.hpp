@@ -140,13 +140,17 @@ constexpr void var_id_traits<Domain, VarIdLimits>::static_assert_valid_arithmeti
 
 template <domain_space Domain, typename VarIdLimits>
 constexpr bool var_id_traits<Domain, VarIdLimits>::is_valid_id(var_id_type id) noexcept {
-    const var_id_type nid = var_id_limits::space == domain_space::oct ? raw_normalize_id_(id) : id;
-    return (nid >= var_id_limits::first_var_id && nid <= var_id_limits::last_var_id);
+    bool valid = space == domain_space::oct || id >= 0;
+    if (valid) id = raw_normalize_id_(id);
+    return valid && id >= var_id_limits::first_var_id && id <= var_id_limits::last_var_id;
 }
 
 template <domain_space Domain, typename VarIdLimits>
 constexpr bool var_id_traits<Domain, VarIdLimits>::is_id_in_range(var_id_type id) noexcept {
-    return is_valid_id(id) || id == var_id_limits::end_var_id;
+    return is_valid_id(id)
+        || id == var_id_limits::invalid_var_id
+        || id == var_id_limits::end_var_id
+        || id == var_id_limits::rend_var_id;
 }
 
 template <domain_space Domain, typename VarIdLimits>
@@ -177,7 +181,7 @@ var_id_traits<Domain, VarIdLimits>::negate_id(var_id_type id) noexcept {
     return is_valid_id(id)
         ? var_id_limits::space == domain_space::oct
             ? -id
-            : (id & 1) ? id - 1 : id + 1
+            : (id & 1) ? id + 1 : id - 1
         : var_id_limits::invalid_var_id;
 }
 
@@ -187,10 +191,8 @@ var_id_traits<Domain, VarIdLimits>::increment_id(
     var_id_type id,
     size_t offset
 ) noexcept {
-    auto iid = normalize_id(id);
-    if (is_valid_id(iid)) iid += (var_id_limits::space == domain_space::octdiff ? offset << 1 : offset);
-    return is_valid_id(iid)
-        ? id
+    return is_valid_id(id)
+        ? normalize_id(raw_normalize_id_(id) + (var_id_limits::space == domain_space::octdiff ? offset << 1 : offset))
         : var_id_limits::invalid_var_id;
 }
 
@@ -200,10 +202,8 @@ var_id_traits<Domain, VarIdLimits>::decrement_id(
     var_id_type id,
     size_t offset
 ) noexcept {
-    auto iid = normalize_id(id);
-    if (is_valid_id(iid)) iid -= (var_id_limits::space == domain_space::octdiff ? offset << 1 : offset);
-    return is_valid_id(iid)
-        ? id
+    return is_valid_id(id)
+        ? normalize_id(raw_normalize_id_(id) - (var_id_limits::space == domain_space::octdiff ? offset << 1 : offset))
         : var_id_limits::invalid_var_id;
 }
 
@@ -241,7 +241,7 @@ constexpr typename var_id_traits<Domain, VarIdLimits>::var_id_type
 var_id_traits<Domain, VarIdLimits>::raw_normalize_id_(var_id_type id) noexcept {
     return var_id_limits::space == domain_space::oct
         ? (id < 0) ? -id : id
-        : (id & 1) ? id - 1 : id;
+        : (id & 1) ? id : id - 1;
 }
 
 template <domain_space Domain, typename VarIdLimits>
@@ -287,7 +287,7 @@ constexpr N var_id_traits<Domain, VarIdLimits>::id_to_arithmetic(var_id_type id,
     using return_limits = std::numeric_limits<N>;
     static_assert_valid_arithmetic_type<N>();
     // Here, we depend on type promotion...
-    if (return_limits::max() >= id && return_limits::lowest() <= id) return N(id);
+    if (return_limits::max() >= id && return_limits::lowest() <= id && is_id_in_range(id)) return N(id);
     return fallback_value;
 }
 
@@ -322,7 +322,7 @@ var_id_traits<Domain, VarIdLimits>::id_to_counterpart(var_id_type id) noexcept {
         : is_valid_id(id)
             ? var_id_limits::space == domain_space::oct
                 ? var_id_type((id < 0) ? (-id << 1) : (id << 1) - 1)    // for oct
-                : var_id_type((id & 1) ? -(id >> 1): (id >> 1) + 1)
+                : var_id_type((id & 1) ? (id >> 1) + 1 : -(id >> 1))
             : var_id_limits::invalid_var_id;
 }
 

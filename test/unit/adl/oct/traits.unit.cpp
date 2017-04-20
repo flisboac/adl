@@ -19,6 +19,7 @@
 #define FOR_FIRST_ID      " [for id == first_var_id]"
 #define FOR_LAST_ID       " [for id == last_var_id]"
 #define FOR_END_ID        " [for id == end_var_id]"
+#define FOR_REND_ID       " [for id == rend_var_id]"
 #define FOR_STRINGP_NAME  " [for `char const*` name]"
 #define FOR_STRINGV_NAME  " [for `string_view` name]"
 #define FOR_STRING_NAME   " [for `std::string` name]"
@@ -78,12 +79,12 @@ static inline void test_definitions_values_() {
 
 }
 
-TEST_CASE("adl/oct/traits.hpp:var_id", "[adl][adl/oct][adl/oct/traits]") {
+TEST_CASE("unit:adl/oct/traits.hpp:var_id", "[unit][adl][adl/oct][adl/oct/traits]") {
     using namespace imports_;
 
-    constexpr var_id_type ov_0 = 0,
-        ov_p = 1,
-        ov_n = -1,
+    constexpr var_id_type ov_0 = oct_limits::invalid_var_id,
+        ov_p = 127,
+        ov_n = -127,
         ov_p1 = 3,
         ov_n1 = -3,
         ov_p2 = 4,
@@ -93,12 +94,13 @@ TEST_CASE("adl/oct/traits.hpp:var_id", "[adl][adl/oct][adl/oct/traits]") {
         ov_L = -oct_limits::last_var_id, // conceptually, this is the last value, non-normalized
         ov_e = oct_limits::end_var_id,
         ov_E = -oct_limits::end_var_id, // conceptually, end_var_id + 1
+        ov_r = oct_limits::rend_var_id,
         ov_f = oct_limits::first_var_id,
         ov_F = -oct_limits::first_var_id,
         ov_l = oct_limits::last_var_id;
-    constexpr var_id_type odv_0 = 0,
-        odv_p = 1,
-        odv_n = -1,
+    constexpr var_id_type odv_0 = octdiff_limits::invalid_var_id,
+        odv_p = 127,
+        odv_n = -127,
         odv_p1 = 5,
         odv_n1 = 6,
         odv_p2 = 7,
@@ -108,6 +110,7 @@ TEST_CASE("adl/oct/traits.hpp:var_id", "[adl][adl/oct][adl/oct/traits]") {
         odv_L = octdiff_limits::last_var_id + 1,
         odv_e = octdiff_limits::end_var_id,
         odv_E = octdiff_limits::end_var_id + 1,
+        odv_r = oct_limits::rend_var_id,
         odv_f = octdiff_limits::first_var_id,
         odv_F = octdiff_limits::first_var_id + 1,
         odv_l = octdiff_limits::last_var_id;
@@ -122,10 +125,10 @@ TEST_CASE("adl/oct/traits.hpp:var_id", "[adl][adl/oct][adl/oct/traits]") {
     const std::string ov_n1_sname(ov_n1_name);
     const std::string ov_x_sname(ov_x_name);
 
-    constexpr size_t ov_p1_index = ov_p1 - 1;
-    constexpr size_t ov_n1_index = ov_p1 - 1; // it is calculated from the normalized id!
     constexpr size_t odv_p1_index = odv_p1 - 1;
     constexpr size_t odv_n1_index = odv_n1 - 1;
+    constexpr size_t ov_p1_index = odv_p1_index;
+    constexpr size_t ov_n1_index = odv_n1_index; // it is calculated from the normalized id!
 
     test_definitions_values_<oct_traits>();
     test_definitions_values_<octdiff_traits>();
@@ -165,7 +168,7 @@ TEST_CASE("adl/oct/traits.hpp:var_id", "[adl][adl/oct][adl/oct/traits]") {
     SECTION("is_id_in_range(id) [should be true for id == end, id == invalid and first <= id <= last]") {
 
         adl_static_assert( (oct_traits::is_id_in_range(0), true) );
-        REQUIRE_SECTION_NOTHROW( ( oct_traits::is_id_in_range(0)),    FOR_ID_ZERO FOR_OCT);
+        REQUIRE_SECTION_NOTHROW( ( oct_traits::is_id_in_range(0)), FOR_ID_ZERO FOR_OCT);
         REQUIRE_SECTION_NOTHROW( ( oct_traits::is_id_in_range(ov_f)), FOR_FIRST_ID FOR_NORMALIZED_ID FOR_OCT);
         REQUIRE_SECTION_NOTHROW( ( oct_traits::is_id_in_range(ov_F)), FOR_FIRST_ID FOR_OCT);
         REQUIRE_SECTION_NOTHROW( ( oct_traits::is_id_in_range(ov_l)), FOR_LAST_ID FOR_NORMALIZED_ID FOR_OCT);
@@ -176,7 +179,7 @@ TEST_CASE("adl/oct/traits.hpp:var_id", "[adl][adl/oct][adl/oct/traits]") {
         REQUIRE_SECTION_NOTHROW( (!oct_traits::is_id_in_range(ov_E)), FOR_OUTBOUND_ID FOR_OCT);
 
         adl_static_assert( (octdiff_traits::is_id_in_range(0), true) );
-        REQUIRE_SECTION_NOTHROW( ( octdiff_traits::is_id_in_range(0)),     FOR_ID_ZERO FOR_OCTDIFF);
+        REQUIRE_SECTION_NOTHROW( ( octdiff_traits::is_id_in_range(0)), FOR_ID_ZERO FOR_OCTDIFF);
         REQUIRE_SECTION_NOTHROW( ( octdiff_traits::is_id_in_range(odv_f)), FOR_FIRST_ID FOR_NORMALIZED_ID FOR_OCTDIFF);
         REQUIRE_SECTION_NOTHROW( ( octdiff_traits::is_id_in_range(odv_F)), FOR_FIRST_ID FOR_OCTDIFF);
         REQUIRE_SECTION_NOTHROW( ( octdiff_traits::is_id_in_range(odv_l)), FOR_LAST_ID FOR_NORMALIZED_ID FOR_OCTDIFF);
@@ -266,16 +269,18 @@ TEST_CASE("adl/oct/traits.hpp:var_id", "[adl][adl/oct][adl/oct/traits]") {
         REQUIRE_SECTION_NOTHROW( (oct_traits::increment_id(ov_E) == 0), FOR_OUTBOUND_ID FOR_OCT);
         REQUIRE_SECTION_NOTHROW( (oct_traits::increment_id(ov_p1) == ov_p2), FOR_POSITIVE_ID FOR_OCT);
         REQUIRE_SECTION_NOTHROW( (oct_traits::increment_id(ov_n1) == ov_p2), FOR_NEGATIVE_ID FOR_OCT);
-        // TODO Increment with offset != 1
+        REQUIRE_SECTION_NOTHROW( (oct_traits::increment_id(ov_p3, 2) == ov_p1), FOR_POSITIVE_ID FOR_OCT);
+        REQUIRE_SECTION_NOTHROW( (oct_traits::increment_id(ov_n3, 2) == ov_p1), FOR_NEGATIVE_ID FOR_OCT);
 
         adl_static_assert( (octdiff_traits::increment_id(0), true) );
         REQUIRE_SECTION_NOTHROW( (octdiff_traits::increment_id(0) == 0), FOR_INVALID_ID FOR_OCTDIFF);
-        REQUIRE_SECTION_NOTHROW( (octdiff_traits::increment_id(odv_e) == 0), FOR_INVALID_ID FOR_OCT);
+        REQUIRE_SECTION_NOTHROW( (octdiff_traits::increment_id(odv_e) == 0), FOR_INVALID_ID FOR_OCTDIFF);
         REQUIRE_SECTION_NOTHROW( (octdiff_traits::increment_id(odv_E) == 0), FOR_OUTBOUND_ID FOR_OCTDIFF);
         REQUIRE_SECTION_NOTHROW( (octdiff_traits::increment_id(odv_n) == 0), FOR_INVALID_ID FOR_OCTDIFF);
         REQUIRE_SECTION_NOTHROW( (octdiff_traits::increment_id(odv_p1) == odv_p2), FOR_POSITIVE_ID FOR_OCTDIFF);
         REQUIRE_SECTION_NOTHROW( (octdiff_traits::increment_id(odv_n1) == odv_p2), FOR_NEGATIVE_ID FOR_OCTDIFF);
-        // TODO Increment with offset != 1
+        REQUIRE_SECTION_NOTHROW( (octdiff_traits::increment_id(odv_p3, 2) == odv_p1), FOR_POSITIVE_ID FOR_OCTDIFF);
+        REQUIRE_SECTION_NOTHROW( (octdiff_traits::increment_id(odv_n3, 2) == odv_p1), FOR_NEGATIVE_ID FOR_OCTDIFF);
     }
 
     SECTION("decrement_id(id) [should decrement the normalized value of id, resulting in a positive variable]") {
@@ -310,56 +315,59 @@ TEST_CASE("adl/oct/traits.hpp:var_id", "[adl][adl/oct][adl/oct/traits]") {
     SECTION("id_compare(a, b) [should compare ids a and b, considering negated-ness, positive ids before]") {
         // <invalids>, <positive, negative>..., <end>
         adl_static_assert( (oct_traits::id_compare(0, 0), true) );
-        REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_p1, ov_p1) == 0), FOR_OCT);
-        REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_n1, ov_n1) == 0), FOR_OCT)
-        REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_0, ov_p1) == -1), FOR_OCT);
-        REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_0, ov_n1) == -1), FOR_OCT);
-        REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_E, ov_p1) == -1), FOR_OCT);
-        REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_E, ov_n1) == -1), FOR_OCT);
-        REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_p1, ov_e) == -1), FOR_OCT);
-        REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_n1, ov_e) == -1), FOR_OCT);
+        REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_p1, ov_p1) == 0), FOR_OCT); // For the two occurrences of a variable
+        REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_n1, ov_n1) == 0), FOR_OCT);
         REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_p1, ov_n1) == -1), FOR_OCT);
-        REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_p1, ov_p2) == -1), FOR_OCT);
+        REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_n1, ov_p1) == 1), FOR_OCT);
+        REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_p1, ov_p2) == -1), FOR_OCT); // For the two occurrences of two consecutive variables, 1-2
         REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_p1, ov_n2) == -1), FOR_OCT);
         REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_n1, ov_p2) == -1), FOR_OCT);
         REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_n1, ov_n2) == -1), FOR_OCT);
-        REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_p1, ov_0) == 1), FOR_OCT);
-        REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_n1, ov_0) == 1), FOR_OCT);
-        REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_p1, ov_E) == 1), FOR_OCT);
-        REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_n1, ov_E) == 1), FOR_OCT);
-        REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_e, ov_p1) == 1), FOR_OCT);
-        REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_e, ov_n1) == 1), FOR_OCT);
-        REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_n1, ov_p1) == 1), FOR_OCT);
-        REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_p2, ov_p1) == 1), FOR_OCT);
+        REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_p2, ov_p1) == 1), FOR_OCT); // For the two occurrences of two consecutive variables, 2-1
         REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_p2, ov_n1) == 1), FOR_OCT);
         REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_n2, ov_p1) == 1), FOR_OCT);
         REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_n2, ov_n1) == 1), FOR_OCT);
+        REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_e, ov_e) == 0), FOR_OCT); // For end value, any valid variable < end value
+        REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_e, ov_p1) == 1), FOR_OCT);
+        REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_e, ov_n1) == 1), FOR_OCT);
+        REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_p1, ov_e) == -1), FOR_OCT);
+        REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_n1, ov_e) == -1), FOR_OCT);
+        REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_r, ov_r) == 0), FOR_OCT); // For rear end value, any valid variable > rear end value
+        REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_r, ov_p1) == -1), FOR_OCT);
+        REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_r, ov_n1) == -1), FOR_OCT);
+        REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_p1, ov_r) == 1), FOR_OCT);
+        REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_n1, ov_r) == 1), FOR_OCT);
+        REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_e, ov_r) == 1), FOR_OCT); // end_value > rend_value
+        REQUIRE_SECTION_NOTHROW( (oct_traits::id_compare(ov_r, ov_e) == -1), FOR_OCT);
+        // NOTE Comparisons between invalid_var_id and any other value don't make sense.
+
 
         adl_static_assert( (octdiff_traits::id_compare(0, 0), true) );
-        REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_p1, odv_p1) == 0), FOR_OCTDIFF);
+        REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_p1, odv_p1) == 0), FOR_OCTDIFF); // For the two occurrences of a variable
         REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_n1, odv_n1) == 0), FOR_OCTDIFF);
-        REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_0, odv_p1) == -1), FOR_OCTDIFF);
-        REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_0, odv_n1) == -1), FOR_OCTDIFF);
-        REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_E, odv_p1) == -1), FOR_OCTDIFF);
-        REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_E, odv_n1) == -1), FOR_OCTDIFF);
-        REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_p1, odv_e) == -1), FOR_OCTDIFF);
-        REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_n1, odv_e) == -1), FOR_OCTDIFF);
         REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_p1, odv_n1) == -1), FOR_OCTDIFF);
-        REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_p1, odv_p2) == -1), FOR_OCTDIFF);
+        REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_n1, odv_p1) == 1), FOR_OCTDIFF);
+        REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_p1, odv_p2) == -1), FOR_OCTDIFF); // For the two occurrences of two consecutive variables, 1-2
         REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_p1, odv_n2) == -1), FOR_OCTDIFF);
         REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_n1, odv_p2) == -1), FOR_OCTDIFF);
         REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_n1, odv_n2) == -1), FOR_OCTDIFF);
-        REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_p1, odv_0) == 1), FOR_OCTDIFF);
-        REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_n1, odv_0) == 1), FOR_OCTDIFF);
-        REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_p1, odv_E) == 1), FOR_OCTDIFF);
-        REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_n1, odv_E) == 1), FOR_OCTDIFF);
-        REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_e, odv_p1) == 1), FOR_OCTDIFF);
-        REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_e, odv_n1) == 1), FOR_OCTDIFF);
-        REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_n1, odv_p1) == 1), FOR_OCTDIFF);
-        REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_p2, odv_p1) == 1), FOR_OCTDIFF);
+        REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_p2, odv_p1) == 1), FOR_OCTDIFF); // For the two occurrences of two consecutive variables, 2-1
         REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_p2, odv_n1) == 1), FOR_OCTDIFF);
         REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_n2, odv_p1) == 1), FOR_OCTDIFF);
         REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_n2, odv_n1) == 1), FOR_OCTDIFF);
+        REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_e, odv_e) == 0), FOR_OCTDIFF); // For end value, any valid variable < end value
+        REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_e, odv_p1) == 1), FOR_OCTDIFF);
+        REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_e, odv_n1) == 1), FOR_OCTDIFF);
+        REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_p1, odv_e) == -1), FOR_OCTDIFF);
+        REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_n1, odv_e) == -1), FOR_OCTDIFF);
+        REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_r, odv_r) == 0), FOR_OCTDIFF); // For rear end value, any valid variable > rear end value
+        REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_r, odv_p1) == -1), FOR_OCTDIFF);
+        REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_r, odv_n1) == -1), FOR_OCTDIFF);
+        REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_p1, odv_r) == 1), FOR_OCTDIFF);
+        REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_n1, odv_r) == 1), FOR_OCTDIFF);
+        REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_e, odv_r) == 1), FOR_OCTDIFF); // end_value > rend_value
+        REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_compare(odv_r, odv_e) == -1), FOR_OCTDIFF);
+        // NOTE Comparisons between invalid_var_id and any other value don't make sense.
     }
 
     SECTION("id_sign(id) [should return -1 if id is negated or 1 if id is non-negated, else return 0]") {
@@ -392,12 +400,12 @@ TEST_CASE("adl/oct/traits.hpp:var_id", "[adl][adl/oct][adl/oct/traits]") {
         REQUIRE_SECTION_NOTHROW( (nullptr != oct_traits::id_sign_format(ov_n1) && string_view(oct_traits::id_sign_format(ov_n1)) == oct_limits::negative_var_name_format), FOR_NEGATIVE_ID FOR_OCT);
 
         adl_static_assert( (octdiff_traits::id_sign_format(0), true) );
-        REQUIRE_SECTION_NOTHROW( (nullptr != octdiff_traits::id_sign_format(0)     && string_view(octdiff_traits::id_sign_format(0)).empty()), FOR_INVALID_ID FOR_OCTDIFF);
-        REQUIRE_SECTION_NOTHROW( (nullptr != octdiff_traits::id_sign_format(odv_e) && string_view(octdiff_traits::id_sign_format(odv_e)).empty()), FOR_INVALID_ID FOR_OCTDIFF);
-        REQUIRE_SECTION_NOTHROW( (nullptr != octdiff_traits::id_sign_format(odv_E) && string_view(octdiff_traits::id_sign_format(odv_E)).empty()), FOR_OUTBOUND_ID FOR_OCTDIFF);
-        REQUIRE_SECTION_NOTHROW( (nullptr != octdiff_traits::id_sign_format(odv_n) && string_view(octdiff_traits::id_sign_format(odv_n)).empty()), FOR_INVALID_ID FOR_OCTDIFF);
-        REQUIRE_SECTION_NOTHROW( (nullptr != oct_traits::id_sign_format(odv_p1)    && string_view(octdiff_traits::id_sign_format(ov_p1)) == octdiff_limits::positive_var_name_format), FOR_POSITIVE_ID FOR_OCTDIFF);
-        REQUIRE_SECTION_NOTHROW( (nullptr != oct_traits::id_sign_format(odv_n1)    && string_view(octdiff_traits::id_sign_format(ov_n1)) == octdiff_limits::negative_var_name_format), FOR_NEGATIVE_ID FOR_OCTDIFF);
+        REQUIRE_SECTION_NOTHROW( (nullptr != octdiff_traits::id_sign_format(0)      && string_view(octdiff_traits::id_sign_format(0)).empty()), FOR_INVALID_ID FOR_OCTDIFF);
+        REQUIRE_SECTION_NOTHROW( (nullptr != octdiff_traits::id_sign_format(odv_e)  && string_view(octdiff_traits::id_sign_format(odv_e)).empty()), FOR_INVALID_ID FOR_OCTDIFF);
+        REQUIRE_SECTION_NOTHROW( (nullptr != octdiff_traits::id_sign_format(odv_E)  && string_view(octdiff_traits::id_sign_format(odv_E)).empty()), FOR_OUTBOUND_ID FOR_OCTDIFF);
+        REQUIRE_SECTION_NOTHROW( (nullptr != octdiff_traits::id_sign_format(odv_n)  && string_view(octdiff_traits::id_sign_format(odv_n)).empty()), FOR_INVALID_ID FOR_OCTDIFF);
+        REQUIRE_SECTION_NOTHROW( (nullptr != octdiff_traits::id_sign_format(odv_p1) && string_view(octdiff_traits::id_sign_format(odv_p1)) == octdiff_limits::positive_var_name_format), FOR_POSITIVE_ID FOR_OCTDIFF);
+        REQUIRE_SECTION_NOTHROW( (nullptr != octdiff_traits::id_sign_format(odv_n1) && string_view(octdiff_traits::id_sign_format(odv_n1)) == octdiff_limits::negative_var_name_format), FOR_NEGATIVE_ID FOR_OCTDIFF);
     }
 
     //
@@ -419,7 +427,7 @@ TEST_CASE("adl/oct/traits.hpp:var_id", "[adl][adl/oct][adl/oct/traits]") {
         REQUIRE_SECTION( (oct_traits::name_to_id(ov_p1_sname) == ov_p1), FOR_POSITIVE_ID FOR_STRING_NAME FOR_OCT );
         REQUIRE_SECTION( (oct_traits::name_to_id(ov_n1_sname) == ov_n1), FOR_NEGATIVE_ID FOR_STRING_NAME FOR_OCT );
         REQUIRE_SECTION( (oct_traits::name_to_id(ov_x_sname) == oct_limits::invalid_var_id), FOR_INVALID_ID FOR_STRING_NAME FOR_OCT );
-        
+
         // NOTE Conversion from octdiff variable name to octdiff variable ID is prohibited atm.
     }
 
@@ -429,7 +437,7 @@ TEST_CASE("adl/oct/traits.hpp:var_id", "[adl][adl/oct][adl/oct/traits]") {
     ) {
         adl_static_assert( (oct_traits::arithmetic_to_range(0), true) );
         // TODO Implementation
-        
+
         adl_static_assert( (octdiff_traits::arithmetic_to_range(0), true) );
         // TODO Implementation
     }
@@ -440,7 +448,7 @@ TEST_CASE("adl/oct/traits.hpp:var_id", "[adl][adl/oct][adl/oct/traits]") {
     ) {
         adl_static_assert( (oct_traits::arithmetic_to_valid(0), true) );
         // TODO Implementation
-        
+
         adl_static_assert( (octdiff_traits::arithmetic_to_valid(0), true) );
         // TODO Implementation
     }
@@ -472,7 +480,7 @@ TEST_CASE("adl/oct/traits.hpp:var_id", "[adl][adl/oct][adl/oct/traits]") {
     ) {
         adl_static_assert( (oct_traits::id_to_range(0), true) );
         // TODO Implementation
-        
+
         adl_static_assert( (octdiff_traits::id_to_range(0), true) );
         // TODO Implementation
     }
@@ -483,7 +491,7 @@ TEST_CASE("adl/oct/traits.hpp:var_id", "[adl][adl/oct][adl/oct/traits]") {
     ) {
         adl_static_assert( (oct_traits::id_to_valid(0), true) );
         // TODO Implementation
-        
+
         adl_static_assert( (octdiff_traits::id_to_valid(0), true) );
         // TODO Implementation
     }
@@ -504,7 +512,8 @@ TEST_CASE("adl/oct/traits.hpp:var_id", "[adl][adl/oct][adl/oct/traits]") {
 
         REQUIRE_SECTION_NOTHROW( (oct_traits::id_to_counterpart(0) == 0), FOR_INVALID_ID FOR_OCT);
         REQUIRE_SECTION_NOTHROW( (oct_traits::id_to_counterpart(ov_E) == 0), FOR_OUTBOUND_ID FOR_OCT);
-        REQUIRE_SECTION_NOTHROW( (oct_traits::id_to_counterpart(ov_e) == odv_e), FOR_INVALID_ID FOR_OCT);
+        REQUIRE_SECTION_NOTHROW( (oct_traits::id_to_counterpart(ov_e) == odv_e), FOR_END_ID FOR_OCT);
+        REQUIRE_SECTION_NOTHROW( (oct_traits::id_to_counterpart(ov_r) == odv_r), FOR_REND_ID FOR_OCT);
         REQUIRE_SECTION_NOTHROW( (oct_traits::id_to_counterpart(ov_p1) == odv_p1), FOR_POSITIVE_ID FOR_OCT);
         REQUIRE_SECTION_NOTHROW( (oct_traits::id_to_counterpart(ov_n1) == odv_n1), FOR_NEGATIVE_ID FOR_OCT);
         REQUIRE_SECTION_NOTHROW( (oct_traits::id_to_counterpart(ov_p3) == odv_p3), FOR_POSITIVE_ID FOR_OCT);
@@ -513,7 +522,8 @@ TEST_CASE("adl/oct/traits.hpp:var_id", "[adl][adl/oct][adl/oct/traits]") {
         REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_to_counterpart(0) == 0), FOR_INVALID_ID FOR_OCTDIFF);
         REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_to_counterpart(odv_E) == 0), FOR_OUTBOUND_ID FOR_OCTDIFF);
         REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_to_counterpart(odv_n) == 0), FOR_INVALID_ID FOR_OCTDIFF);
-        REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_to_counterpart(odv_e) == ov_e), FOR_INVALID_ID FOR_OCT);
+        REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_to_counterpart(odv_e) == ov_e), FOR_END_ID FOR_OCTDIFF);
+        REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_to_counterpart(odv_r) == ov_r), FOR_REND_ID FOR_OCTDIFF);
         REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_to_counterpart(odv_p1) == ov_p1), FOR_POSITIVE_ID FOR_OCTDIFF);
         REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_to_counterpart(odv_n1) == ov_n1), FOR_NEGATIVE_ID FOR_OCTDIFF);
         REQUIRE_SECTION_NOTHROW( (octdiff_traits::id_to_counterpart(odv_p3) == ov_p3), FOR_POSITIVE_ID FOR_OCTDIFF);
