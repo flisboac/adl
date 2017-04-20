@@ -177,10 +177,8 @@ template <typename... Args> adl_API int string_printf(std::string& buffer, const
 template <typename... Args> adl_API int string_printf(std::wstring& buffer, const wchar_t* fmt, Args... args);;
 template <typename... Args> adl_API int string_printf(std::wstring& buffer, const std::wstring& fmt, Args... args);;
 
-namespace {
-    template <typename T> adl_IAPI T string_printf_basic_arg_(T value) noexcept;
-    template <typename T> adl_IAPI T const* string_printf_basic_arg_(std::basic_string<T> const& value) noexcept;
-}
+template <typename T> adl_IAPI T string_printf_basic_arg_(T value) noexcept;
+template <typename T> adl_IAPI T const* string_printf_basic_arg_(std::basic_string<T> const& value) noexcept;
 
 adl_END_ROOT_MODULE
 
@@ -230,12 +228,12 @@ adl_IMPL int string_printf(std::wstring& buffer, const std::wstring& fmt, Args..
 }
 
 template <typename T>
-adl_IMPL T string_printf_basic_arg_(T value) {
+adl_IMPL T string_printf_basic_arg_(T value) noexcept {
     return value;
 }
 
 template <typename T>
-adl_IMPL T const* string_printf_basic_arg_(std::basic_string<T> const& value) {
+adl_IMPL T const* string_printf_basic_arg_(std::basic_string<T> const& value) noexcept {
     return value.c_str();
 }
 

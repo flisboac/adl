@@ -166,6 +166,7 @@ namespace literals {
     }
 }
 
+template <typename T> adl_IAPI T const* string_printf_basic_arg_(basic_string_view<T> const& value) noexcept(false);
 
 adl_END_ROOT_MODULE
 
@@ -196,6 +197,11 @@ adl_BEGIN_ROOT_MODULE
 template <typename Char>
 std::string to_string(basic_string_view<Char> const& str) {
     return std::string(str.data(), str.size());
+}
+
+template <typename T>
+T const* string_printf_basic_arg_(basic_string_view<T> const& value) noexcept(false) {
+    throw std::invalid_argument("Cannot string_printf with a basic_string_view argument.");
 }
 
 namespace literals {

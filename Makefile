@@ -19,6 +19,9 @@ all: $(BUILD_DIR)/Makefile
 clean: $(BUILD_DIR)/Makefile
 	$(MAKE) -C $(BUILD_DIR) clean
 
+docs: $(BUILD_DIR)/Makefile
+	$(MAKE) -C $(BUILD_DIR) adl-doc
+
 distclean:
 	$(RM) $(BUILD_DIRS)
 

@@ -156,15 +156,15 @@ constexpr bool var_id_traits<Domain, VarIdLimits>::is_id_in_range(var_id_type id
 template <domain_space Domain, typename VarIdLimits>
 constexpr bool var_id_traits<Domain, VarIdLimits>::is_positive_id(var_id_type id) noexcept {
     return var_id_limits::space == domain_space::octdiff
-        ? bool(id & 1)
-        : (id > 0);
+            ? bool(id & 1)
+            : (id > 0);
 }
 
 template <domain_space Domain, typename VarIdLimits>
 constexpr bool var_id_traits<Domain, VarIdLimits>::is_negative_id(var_id_type id) noexcept {
     return var_id_limits::space == domain_space::octdiff
-        ? !bool(id & 1)
-        : (id < 0);
+            ? !bool(id & 1)
+            : (id < 0);
 }
 
 template <domain_space Domain, typename VarIdLimits>
@@ -343,10 +343,12 @@ adl_IMPL void var_id_traits<Domain, VarIdLimits>::id_to_name(
 ) {
     if (is_valid_id(id)) {
         string_printf(name, base_name_format, id_to_normal_oct(id));
+        char const* pn_format = pos_neg_format.c_str();
+        if (pos_neg_format.empty()) pn_format = id_sign_format(id);
 
-        if (!pos_neg_format.empty()) {
+        if (*pn_format != '\0') {
             std::string formatted_name;
-            string_printf(formatted_name, pos_neg_format, name);
+            string_printf(formatted_name, pn_format, name);
             name = formatted_name;
         }
     }

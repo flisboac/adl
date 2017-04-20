@@ -12,18 +12,18 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Various safety checks
-if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
+if (CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
     message( FATAL_ERROR "In-source builds not allowed. To build, create a folder and run CMake from there." )
 endif()
 
 # Build flags
 add_definitions(-Dadl_BUILDING)
 
-if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_definitions(-Dadl_DEBUG)
 endif()
 
-if (${CMAKE_BUILD_TYPE} STREQUAL "MinSizeRel")
+if (CMAKE_BUILD_TYPE STREQUAL "MinSizeRel")
     add_definitions(-Dadl_STRIPPED)
 endif()
 
