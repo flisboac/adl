@@ -56,6 +56,14 @@ template <typename ValueType, typename ValueLimits = value_limits<ValueType>> st
 template <domain_space Domain, typename VarIdLimits = var_id_limits<Domain>> struct var_id_traits;
 template <typename VarType> struct var_traits;
 
+//
+// var.hpp
+//
+template <typename VarType, typename VarTraits = var_traits<VarType>> class var_base_;
+template <typename VarType, typename VarTraits = var_traits<VarType>> class unnamed_var_base_;
+
+class oct_var;
+class octdiff_var;
 
 adl_END_MAIN_MODULE
 
