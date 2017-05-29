@@ -48,6 +48,8 @@ struct adl_CLASS var_id_traits {
     constexpr static auto space = var_id_limits::space;
     constexpr static auto counterpart_space = var_id_limits::counterpart_space;
 
+    using counterpart_var_id_traits = var_id_traits<counterpart_space, typename var_id_limits::counterpart_var_id_limits>;
+
     // static utility functions
     template <typename N> constexpr static void static_assert_valid_arithmetic_type() noexcept;
 
@@ -155,16 +157,20 @@ constexpr bool var_id_traits<Domain, VarIdLimits>::is_id_in_range(var_id_type id
 
 template <domain_space Domain, typename VarIdLimits>
 constexpr bool var_id_traits<Domain, VarIdLimits>::is_positive_id(var_id_type id) noexcept {
-    return var_id_limits::space == domain_space::octdiff
+    return is_valid_id(id)
+        ? var_id_limits::space == domain_space::octdiff
             ? bool(id & 1)
-            : (id > 0);
+            : (id > 0)
+        : false;
 }
 
 template <domain_space Domain, typename VarIdLimits>
 constexpr bool var_id_traits<Domain, VarIdLimits>::is_negative_id(var_id_type id) noexcept {
-    return var_id_limits::space == domain_space::octdiff
+    return is_valid_id(id)
+        ? var_id_limits::space == domain_space::octdiff
             ? !bool(id & 1)
-            : (id < 0);
+            : (id < 0)
+        : false;
 }
 
 template <domain_space Domain, typename VarIdLimits>
@@ -270,7 +276,7 @@ template <typename N>
 constexpr typename var_id_traits<Domain, VarIdLimits>::var_id_type
 var_id_traits<Domain, VarIdLimits>::arithmetic_to_range(N value) noexcept {
     var_id_type id = arithmetic_to_id_limits_(value);
-    return id_to_range(var_id_type(value));
+    return id_to_range(id);
 }
 
 template <domain_space Domain, typename VarIdLimits>

@@ -11,6 +11,7 @@
 #include "adl.cfg.hpp"
 
 #define adl_static_assert(_condition__) static_assert((_condition__), #_condition__)
+#define adl_static_assert_constexpr(_expr__) static_assert( ((_expr__), true), "'" #_expr__ "' is not constexpr.")
 
 adl_BEGIN_ROOT_MODULE
 
@@ -157,6 +158,18 @@ constexpr inline bool seamlessly_explicitly_convertible() {
 template <typename T, typename T1>
 constexpr inline bool literal_seamlessly_explicitly_convertible() {
     return (literal_explicitly_convertible<T, T1>() && literal_explicitly_convertible<T1, T>());
+};
+
+template <typename T, typename T1>
+constexpr bool assignable() {
+    static_assert(std::is_assignable<T, T1>::value,
+        "Type is not assignable.");
+};
+
+template <typename T, typename T1>
+constexpr bool literal_assignable() {
+    assignable<T, T1>();
+    static_assert( (T() = T1(), true), "");
 };
 
 }
