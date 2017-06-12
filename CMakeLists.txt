@@ -80,6 +80,7 @@ target_sources(${api} INTERFACE
     "${api_dir_root}/adl/oct/var.hpp"
     "${api_dir_root}/adl/oct/var/base_.hpp"
     "${api_dir_root}/adl/oct/var/identity_.hpp"
+    "${api_dir_root}/adl/oct/var/view_named_.hpp"
 
     # adl/oct/dsl
     "${api_dir_root}/adl/oct/dsl.hpp"

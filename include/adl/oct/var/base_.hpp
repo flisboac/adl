@@ -5,6 +5,7 @@
 #ifndef adl__oct__var__base___hpp__
 #define adl__oct__var__base___hpp__
 
+#include <cstddef>
 #include <iosfwd>
 
 #include "adl.cfg.hpp"
@@ -34,6 +35,7 @@ namespace oct {
         using var_id_type = typename var_id_traits::var_id_type;
         using var_traits = VarTraits;
         using var_type = VarType;
+        using ivar_type = typename var_traits::ivar_type;
         using counterpart_var_type = typename var_traits::counterpart_var_type;
 
         static_assert(var_traits::valid,
@@ -57,6 +59,8 @@ namespace oct {
         constexpr var_base_& operator=(var_base_&&) = default;
 
         // Constructors and assignments
+        constexpr var_base_(var_type const& base, long long int id) noexcept;
+        constexpr var_base_(counterpart_var_type const& base, long long int id) noexcept;
         constexpr explicit var_base_(long long int id) noexcept;
 
         // static construction functions
@@ -115,10 +119,12 @@ namespace oct {
 
         // conversion functions
         constexpr std::size_t to_index() const noexcept;
+        constexpr ivar_type to_ivar() const noexcept;
         constexpr var_type const& as_valid() const;
         constexpr var_type& as_valid();
         constexpr var_type to_valid() const noexcept;
         constexpr counterpart_var_type to_counterpart() const noexcept;
+        constexpr ivar_type to_id_var() const noexcept;
         /* "virtual" std::string to_string() const; */
 
         // conversion operators
@@ -145,6 +151,7 @@ namespace oct {
 
     public:
         using var_type = typename superclass_::var_type;
+        using counterpart_var_type = typename superclass_::counterpart_var_type;
         using var_id_traits = typename superclass_::var_id_traits;
         using superclass_::id;
 
@@ -164,13 +171,15 @@ namespace oct {
 
         // constructors and assignments
         constexpr explicit unnamed_var_base_(long long int id) noexcept;
+        constexpr unnamed_var_base_(var_type const& base, long long int id) noexcept;
+        constexpr unnamed_var_base_(counterpart_var_type const& base, long long int id) noexcept;
 
         //
         // PROPERTIES
         //
 
         // Properties
-        string_view name() const noexcept;
+        constexpr string_view name() const noexcept;
 
         //
         // CONVERSIONS
@@ -183,7 +192,61 @@ namespace oct {
         explicit operator std::string() const;
     };
 
-    template <typename VarType> constexpr void assert_valid_var_type() noexcept;
+    template <typename VarType, typename VarTraits>
+    class lit_named_var_base_ : public var_base_<VarType, VarTraits> {
+    private:
+        using superclass_ = var_base_<VarType, VarTraits>;
+
+    public:
+        using var_type = typename superclass_::var_type;
+        using counterpart_var_type = typename superclass_::counterpart_var_type;
+        using var_id_traits = typename superclass_::var_id_traits;
+        using ivar_type = typename superclass_::ivar_type;
+        using superclass_::id;
+
+        // constexpr static properties
+        constexpr static const bool named = false;
+
+        //
+        // CONSTRUCTION
+        //
+
+        // Defaulted/deleted members
+        constexpr lit_named_var_base_() = default;
+        constexpr lit_named_var_base_(const lit_named_var_base_&) = default;
+        constexpr lit_named_var_base_(lit_named_var_base_&&) = default;
+        constexpr lit_named_var_base_& operator=(const lit_named_var_base_&) = default;
+        constexpr lit_named_var_base_& operator=(lit_named_var_base_&&) = default;
+
+        // constructors and assignments
+        constexpr explicit lit_named_var_base_(long long int id) noexcept;
+        constexpr lit_named_var_base_(var_type const& base, long long int id) noexcept;
+        constexpr lit_named_var_base_(counterpart_var_type const& base, long long int id) noexcept;
+        constexpr explicit lit_named_var_base_(string_view name) noexcept;
+        constexpr lit_named_var_base_(long long int id, string_view name) noexcept;
+
+        //
+        // PROPERTIES
+        //
+
+        // Properties
+        constexpr string_view name() const noexcept;
+
+        //
+        // CONVERSIONS
+        //
+
+        // Conversion functions
+        std::string to_string() const;
+
+        // conversion operators
+        explicit operator std::string() const;
+
+    private:
+        string_view name_ { "", 0 };
+    };
+
+template <typename VarType> constexpr void assert_valid_var_type() noexcept;
 }
 
 namespace operators {
@@ -272,6 +335,14 @@ constexpr void assert_valid_var_type() noexcept {
 //
 template <typename VarType, typename VarTraits>
 constexpr var_base_<VarType, VarTraits>::var_base_(long long int id) noexcept :
+    id_(id_to_range(id)) {}
+
+template <typename VarType, typename VarTraits>
+constexpr var_base_<VarType, VarTraits>::var_base_(var_type const& base, long long int id) noexcept :
+    id_(id_to_range(id)) {}
+
+template <typename VarType, typename VarTraits>
+constexpr var_base_<VarType, VarTraits>::var_base_(counterpart_var_type const& base, long long int id) noexcept :
     id_(id_to_range(id)) {}
 
 template <typename VarType, typename VarTraits>
@@ -397,8 +468,19 @@ var_base_<VarType, VarTraits>::to_post_decremented(size_t offset) noexcept {
 }
 
 template <typename VarType, typename VarTraits>
+constexpr typename var_base_<VarType, VarTraits>::ivar_type
+var_base_<VarType, VarTraits>::to_id_var() const noexcept {
+    return ivar_type(id_);
+}
+
+template <typename VarType, typename VarTraits>
 constexpr std::size_t var_base_<VarType, VarTraits>::to_index() const noexcept {
     return var_id_traits::id_to_index(id_);
+}
+
+template <typename VarType, typename VarTraits>
+constexpr var_base_<VarType, VarTraits>::to_ivar() const noexcept {
+    return ivar_type(id_);
 }
 
 template <typename VarType, typename VarTraits>
@@ -422,7 +504,7 @@ var_base_<VarType, VarTraits>::to_valid() const noexcept {
 template <typename VarType, typename VarTraits>
 constexpr typename var_base_<VarType, VarTraits>::counterpart_var_type
 var_base_<VarType, VarTraits>::to_counterpart() const noexcept {
-    return var_traits::var_to_counterpart(as_subclass_(), var_id_traits::id_to_counterpart(id_));
+    return counterpart_var_type(as_subclass_(), var_id_traits::id_to_counterpart(id_));
 }
 
 template <typename VarType, typename VarTraits>
@@ -531,7 +613,7 @@ var_base_<VarType, VarTraits>::as_subclass_() const noexcept {
 template <typename VarType, typename VarTraits>
 constexpr typename var_base_<VarType, VarTraits>::var_type
 var_base_<VarType, VarTraits>::with_id_(var_id_type new_id) const noexcept {
-    return var_traits::var_with_id(as_subclass_(), new_id);
+    return var_type(as_subclass_(), new_id);
 }
 
 
@@ -544,7 +626,19 @@ constexpr unnamed_var_base_<VarType, VarTraits>::unnamed_var_base_(long long int
     superclass_(id) {}
 
 template <typename VarType, typename VarTraits>
-adl_IMPL string_view unnamed_var_base_<VarType, VarTraits>::name() const noexcept {
+constexpr unnamed_var_base_<VarType, VarTraits>::unnamed_var_base_(
+    var_type const& base,
+    long long int id) noexcept :
+    superclass_(base, id) {}
+
+template <typename VarType, typename VarTraits>
+constexpr unnamed_var_base_<VarType, VarTraits>::unnamed_var_base_(
+    counterpart_var_type const& base,
+    long long int id) noexcept :
+    superclass_(base, id) {}
+
+template <typename VarType, typename VarTraits>
+constexpr string_view unnamed_var_base_<VarType, VarTraits>::name() const noexcept {
     return "";
 }
 
@@ -557,6 +651,56 @@ template <typename VarType, typename VarTraits>
 adl_IMPL unnamed_var_base_<VarType, VarTraits>::operator std::string() const {
     return to_string();
 }
+
+
+//
+// lit_named_var_base_
+//
+
+
+template <typename VarType, typename VarTraits>
+constexpr lit_named_var_base_<VarType, VarTraits>::lit_named_var_base_(long long int id) noexcept :
+    superclass_(id) {}
+
+template <typename VarType, typename VarTraits>
+constexpr lit_named_var_base_<VarType, VarTraits>::lit_named_var_base_(
+    var_type const& base,
+    long long int id) noexcept :
+    superclass_(base, id),
+    name_(base.name()) {}
+
+template <typename VarType, typename VarTraits>
+constexpr lit_named_var_base_<VarType, VarTraits>::lit_named_var_base_(
+    counterpart_var_type const& base,
+    long long int id) noexcept :
+    superclass_(base, id),
+    name_(base.name()) {}
+
+template <typename VarType, typename VarTraits>
+constexpr lit_named_var_base_<VarType, VarTraits>::lit_named_var_base_(string_view name) noexcept :
+    name_(name),
+    superclass_(var_id_traits::name_to_id(name)) {}
+
+template <typename VarType, typename VarTraits>
+constexpr lit_named_var_base_<VarType, VarTraits>::lit_named_var_base_(long long int id, string_view name) noexcept :
+    name_(name),
+    superclass_(id) {}
+
+template <typename VarType, typename VarTraits>
+constexpr string_view lit_named_var_base_<VarType, VarTraits>::name() const noexcept {
+    return name_;
+}
+
+template <typename VarType, typename VarTraits>
+adl_IMPL std::string lit_named_var_base_<VarType, VarTraits>::to_string() const {
+    return var_id_traits::id_to_name(id(), std::string(name_.data(), name_.size()));
+}
+
+template <typename VarType, typename VarTraits>
+adl_IMPL lit_named_var_base_<VarType, VarTraits>::operator std::string() const {
+    return to_string();
+}
+
 
 adl_END_MAIN_MODULE
 adl_BEGIN_ROOT_MODULE
@@ -600,12 +744,12 @@ inline namespace iteration {
     }
 
     template <typename VarType, typename>
-    constexpr VarType& operator++(VarType& var, int) noexcept {
+    constexpr VarType operator++(VarType& var, int) noexcept {
         return var.to_post_incremented();
     }
 
     template <typename VarType, typename>
-    constexpr VarType& operator--(VarType& var, int) noexcept {
+    constexpr VarType operator--(VarType& var, int) noexcept {
         return var.to_post_decremented();
     }
 

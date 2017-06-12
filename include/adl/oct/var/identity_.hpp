@@ -5,6 +5,17 @@
 #ifndef adl__oct__var__identity___hpp__
 #define adl__oct__var__identity___hpp__
 
+
+#include "adl.cfg.hpp"
+
+#include "adl/oct.fwd.hpp"
+#include "adl/oct/domain_space.hpp"
+#include "adl/oct/limits.hpp"
+#include "adl/oct/traits.hpp"
+
+#include "adl/oct/var/base_.hpp"
+
+
 //
 // [[ API ]]
 //
@@ -18,6 +29,7 @@ struct adl_CLASS var_traits<oct_var> {
     using var_id_type = typename var_id_traits::var_id_type;
     using var_type = oct_var;
     using counterpart_var_type = octdiff_var;
+    using ivar_type = var_type;
 
     // Constexpr static values
     constexpr static const bool valid = true;
@@ -37,6 +49,7 @@ struct adl_CLASS var_traits<octdiff_var> {
     using var_id_type = typename var_id_traits::var_id_type;
     using var_type = octdiff_var;
     using counterpart_var_type = oct_var;
+    using ivar_type = var_type;
 
     // Constexpr static values
     constexpr static const bool valid = true;
@@ -70,18 +83,6 @@ namespace literals {
 
 
 adl_END_MAIN_MODULE
-
-template <typename Traits>
-inline std::basic_ostream<char, Traits>& operator<<(
-    std::basic_ostream<char, Traits>& os,
-    const adl::oct::oct_var& var
-);
-
-template <typename Traits>
-inline std::basic_ostream<char, Traits>& operator<<(
-    std::basic_ostream<char, Traits>& os,
-    const adl::oct::octdiff_var& var
-);
 
 //
 // [[ TEMPLATE IMPLEMENTATION ]]
@@ -140,24 +141,5 @@ inline namespace oct {
 } // namespace literals
 
 adl_END_ROOT_MODULE
-
-template <typename Traits>
-std::basic_ostream<char, Traits>& operator<<(
-    std::basic_ostream<char, Traits>& os,
-    const adl::oct::octdiff_var& var
-) {
-    using namespace adl::operators::oct::var::ios_;
-    return os << var;
-}
-
-template <typename Traits>
-std::basic_ostream<char, Traits>& operator<<(
-    std::basic_ostream<char, Traits>& os,
-    const adl::oct::oct_var& var
-) {
-    using namespace adl::operators::oct::var::ios_;
-    return os << var;
-}
-
 
 #endif //adl__oct__var__identity___hpp__

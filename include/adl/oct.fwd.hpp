@@ -61,9 +61,13 @@ template <typename VarType> struct var_traits;
 //
 template <typename VarType, typename VarTraits = var_traits<VarType>> class var_base_;
 template <typename VarType, typename VarTraits = var_traits<VarType>> class unnamed_var_base_;
+template <typename VarType, typename VarTraits = var_traits<VarType>> class lit_named_var_base_;
 
 class oct_var;
 class octdiff_var;
+class oct_lvar;
+class octdiff_lvar;
+
 
 adl_END_MAIN_MODULE
 

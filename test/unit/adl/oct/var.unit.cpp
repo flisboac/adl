@@ -8,7 +8,8 @@
 
 #define OCT_VAR_CLASS_ adl::oct::oct_var
 #define OCTDIFF_VAR_CLASS_ adl::oct::octdiff_var
-
+#define OCT_LVAR_CLASS_ adl::oct::oct_lvar
+#define OCTDIFF_LVAR_CLASS_ adl::oct::octdiff_lvar
 
 //
 // [[ FIXTURES ]]
@@ -130,6 +131,14 @@ public:
     virtual void test_conversions();
 };
 
+template <typename VarType>
+class literal_var_test_ : public var_test_<VarType> {
+private:
+    using superclass_ = var_test_<VarType>;
+public:
+    // TODO Implementation
+};
+
 } // <anonymous namespace>
 
 
@@ -147,6 +156,20 @@ TEST_CASE_METHOD(unnamed_var_test_<OCT_VAR_CLASS_>,
 
 TEST_CASE_METHOD(unnamed_var_test_<OCTDIFF_VAR_CLASS_>,
     adl_UNIT_TEST_NAME(MODULE_NAME_, OCTDIFF_VAR_CLASS_),
+    adl_UNIT_TEST_FLAGS(MODULE_NAME_)
+) {
+    test_all();
+}
+
+TEST_CASE_METHOD(literal_var_test_<OCT_LVAR_CLASS_>,
+    adl_UNIT_TEST_NAME(MODULE_NAME_, OCT_LVAR_CLASS_),
+    adl_UNIT_TEST_FLAGS(MODULE_NAME_)
+) {
+    test_all();
+}
+
+TEST_CASE_METHOD(literal_var_test_<OCTDIFF_LVAR_CLASS_>,
+    adl_UNIT_TEST_NAME(MODULE_NAME_, OCTDIFF_LVAR_CLASS_),
     adl_UNIT_TEST_FLAGS(MODULE_NAME_)
 ) {
     test_all();
