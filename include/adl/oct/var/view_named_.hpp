@@ -21,7 +21,8 @@
 //
 // [[ API ]]
 //
-adl_BEGIN_MAIN_MODULE(oct)
+adl_BEGIN_ROOT_MODULE
+namespace oct {
 
 template <>
 struct adl_CLASS var_traits<oct_lvar> {
@@ -69,6 +70,8 @@ public:
     using lit_named_var_base_<octdiff_lvar>::operator=;
 };
 
+} // namespace oct
+
 namespace literals {
     inline namespace oct {
         constexpr adl::oct::oct_lvar operator "" _ol(unsigned long long int id);
@@ -76,7 +79,7 @@ namespace literals {
     } // oct
 } // literals
 
-adl_END_MAIN_MODULE
+adl_END_ROOT_MODULE
 
 
 //

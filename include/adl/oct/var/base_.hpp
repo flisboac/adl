@@ -696,7 +696,10 @@ constexpr string_view lit_named_var_base_<VarType, VarTraits>::name() const noex
 
 template <typename VarType, typename VarTraits>
 adl_IMPL std::string lit_named_var_base_<VarType, VarTraits>::to_string() const {
-    return var_id_traits::id_to_name(id(), std::string(name_.data(), name_.size()));
+    std::string base_name = !name_.empty()
+        ? std::string(name_.data(), name_.size())
+        : std::string(var_id_limits::base_var_name_format);
+    return var_id_traits::id_to_name(id(), base_name);
 }
 
 template <typename VarType, typename VarTraits>
