@@ -37,10 +37,6 @@ struct adl_CLASS var_traits<oct_lvar> {
     constexpr static const bool valid = true;
     constexpr static const auto space = var_id_traits::space;
     constexpr static const auto counterpart_space = var_id_traits::counterpart_space;
-
-    // static functions
-    constexpr static var_type var_with_id(const var_type& var, var_id_type id);
-    constexpr static counterpart_var_type var_to_counterpart(const var_type& var, var_id_type counterpart_id);
 };
 
 template <>
@@ -57,10 +53,6 @@ struct adl_CLASS var_traits<octdiff_lvar> {
     constexpr static const bool valid = true;
     constexpr static const auto space = var_id_traits::space;
     constexpr static const auto counterpart_space = var_id_traits::counterpart_space;
-
-    // static functions
-    constexpr static var_type var_with_id(const var_type& var, var_id_type id);
-    constexpr static counterpart_var_type var_to_counterpart(const var_type& var, var_id_type counterpart_id);
 };
 
 class adl_CLASS oct_lvar : public lit_named_var_base_<oct_lvar> {
@@ -68,8 +60,6 @@ public:
     using lit_named_var_base_<oct_lvar>::lit_named_var_base_;
     using var_base_<oct_lvar>::operator=;
     using lit_named_var_base_<oct_lvar>::operator=;
-
-    constexpr operator ivar_type() const noexcept;
 };
 
 class adl_CLASS octdiff_lvar : public lit_named_var_base_<octdiff_lvar> {
@@ -77,8 +67,6 @@ public:
     using lit_named_var_base_<octdiff_lvar>::lit_named_var_base_;
     using var_base_<octdiff_lvar>::operator=;
     using lit_named_var_base_<octdiff_lvar>::operator=;
-
-    constexpr operator ivar_type() const noexcept;
 };
 
 namespace literals {
@@ -92,59 +80,8 @@ adl_END_MAIN_MODULE
 
 
 //
-// [[ TEMPLATE IMPLEMENTATION ]]
+// [[ IMPLEMENTATION ]]
 //
-adl_BEGIN_MAIN_MODULE(oct)
-
-//
-// specialization: var_traits<oct_lvar>
-//
-constexpr typename var_traits<oct_lvar>::var_type
-var_traits<oct_lvar>::var_with_id(
-    const var_traits<oct_lvar>::var_type& var,
-    var_id_type id
-) {
-    return var_type(id, var.name());
-}
-
-constexpr typename var_traits<oct_lvar>::counterpart_var_type
-var_traits<oct_lvar>::var_to_counterpart(
-    const var_traits<oct_lvar>::var_type& var,
-    var_id_type counterpart_id
-) {
-    return counterpart_var_type(counterpart_id, var.name());
-}
-
-constexpr oct_lvar::operator ivar_type() const noexcept {
-    return to_id_var();
-}
-
-
-//
-// specialization: var_traits<octdiff_lvar>
-//
-constexpr typename var_traits<octdiff_lvar>::var_type
-var_traits<octdiff_lvar>::var_with_id(
-    const var_traits<octdiff_lvar>::var_type& var,
-    var_id_type id
-) {
-    return var_type(id, var.name());
-}
-
-constexpr typename var_traits<octdiff_lvar>::counterpart_var_type
-var_traits<octdiff_lvar>::var_to_counterpart(
-    const var_traits<octdiff_lvar>::var_type& var,
-    var_id_type counterpart_id
-) {
-    return counterpart_var_type(counterpart_id, var.name());
-}
-
-constexpr octdiff_lvar::operator ivar_type() const noexcept {
-    return to_id_var();
-}
-
-
-adl_END_MAIN_MODULE
 adl_BEGIN_ROOT_MODULE
 
 namespace literals {

@@ -203,6 +203,7 @@ namespace oct {
         using var_id_traits = typename superclass_::var_id_traits;
         using ivar_type = typename superclass_::ivar_type;
         using superclass_::id;
+        using superclass_::to_ivar;
 
         // constexpr static properties
         constexpr static const bool named = false;
@@ -241,6 +242,7 @@ namespace oct {
 
         // conversion operators
         explicit operator std::string() const;
+        constexpr operator ivar_type() const noexcept;
 
     private:
         string_view name_ { "", 0 };
@@ -479,7 +481,8 @@ constexpr std::size_t var_base_<VarType, VarTraits>::to_index() const noexcept {
 }
 
 template <typename VarType, typename VarTraits>
-constexpr var_base_<VarType, VarTraits>::to_ivar() const noexcept {
+constexpr typename var_base_<VarType, VarTraits>::ivar_type
+var_base_<VarType, VarTraits>::to_ivar() const noexcept {
     return ivar_type(id_);
 }
 
@@ -700,6 +703,11 @@ template <typename VarType, typename VarTraits>
 adl_IMPL lit_named_var_base_<VarType, VarTraits>::operator std::string() const {
     return to_string();
 }
+
+template <typename VarType, typename VarTraits>
+constexpr lit_named_var_base_<VarType, VarTraits>::operator ivar_type() const noexcept {
+    return to_ivar();
+};
 
 
 adl_END_MAIN_MODULE
