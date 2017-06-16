@@ -35,7 +35,7 @@ namespace oct {
         using var_id_type = typename var_id_traits::var_id_type;
         using var_traits = VarTraits;
         using var_type = VarType;
-        using ivar_type = typename var_traits::ivar_type;
+        using identity_var_type = typename var_traits::ivar_type;
         using counterpart_var_type = typename var_traits::counterpart_var_type;
 
         static_assert(var_traits::valid,
@@ -119,16 +119,17 @@ namespace oct {
 
         // conversion functions
         constexpr std::size_t to_index() const noexcept;
-        constexpr ivar_type to_ivar() const noexcept;
+        constexpr identity_var_type to_identity() const noexcept;
+        constexpr var_type& ensure_valid();
         constexpr var_type const& ensure_valid() const;
         constexpr var_type& as_valid() noexcept;
         constexpr var_type to_valid() const noexcept;
         constexpr counterpart_var_type to_counterpart() const noexcept;
-        constexpr ivar_type to_id_var() const noexcept;
         /* "virtual" std::string to_string() const; */
 
         // conversion operators
         constexpr explicit operator var_id_type() const noexcept;
+        constexpr bool operator !() const noexcept;
         constexpr explicit operator bool() const noexcept;
         constexpr explicit operator std::size_t() const noexcept;
         constexpr operator counterpart_var_type() const noexcept;
@@ -202,9 +203,9 @@ namespace oct {
         using counterpart_var_type = typename superclass_::counterpart_var_type;
         using var_id_traits = typename superclass_::var_id_traits;
         using var_id_limits = typename superclass_::var_id_limits;
-        using ivar_type = typename superclass_::ivar_type;
+        using ivar_type = typename superclass_::identity_var_type;
         using superclass_::id;
-        using superclass_::to_ivar;
+        using superclass_::to_identity;
 
         // constexpr static properties
         constexpr static const bool named = false;
@@ -471,20 +472,20 @@ var_base_<VarType, VarTraits>::to_post_decremented(size_t offset) noexcept {
 }
 
 template <typename VarType, typename VarTraits>
-constexpr typename var_base_<VarType, VarTraits>::ivar_type
-var_base_<VarType, VarTraits>::to_id_var() const noexcept {
-    return ivar_type(id_);
-}
-
-template <typename VarType, typename VarTraits>
 constexpr std::size_t var_base_<VarType, VarTraits>::to_index() const noexcept {
     return var_id_traits::id_to_index(id_);
 }
 
 template <typename VarType, typename VarTraits>
-constexpr typename var_base_<VarType, VarTraits>::ivar_type
-var_base_<VarType, VarTraits>::to_ivar() const noexcept {
-    return ivar_type(id_);
+constexpr typename var_base_<VarType, VarTraits>::identity_var_type
+var_base_<VarType, VarTraits>::to_identity() const noexcept {
+    return identity_var_type(id_);
+}
+
+template <typename VarType, typename VarTraits>
+constexpr typename var_base_<VarType, VarTraits>::var_type&
+var_base_<VarType, VarTraits>::ensure_valid() {
+    return valid() ? as_subclass_() : throw std::logic_error("Invalid variable.");
 }
 
 template <typename VarType, typename VarTraits>
@@ -514,6 +515,11 @@ var_base_<VarType, VarTraits>::to_counterpart() const noexcept {
 template <typename VarType, typename VarTraits>
 constexpr var_base_<VarType, VarTraits>::operator var_id_type() const noexcept {
     return id();
+}
+
+template <typename VarType, typename VarTraits>
+constexpr bool var_base_<VarType, VarTraits>::operator !() const noexcept {
+    return !valid();
 }
 
 template <typename VarType, typename VarTraits>
@@ -710,7 +716,7 @@ adl_IMPL lit_named_var_base_<VarType, VarTraits>::operator std::string() const {
 
 template <typename VarType, typename VarTraits>
 constexpr lit_named_var_base_<VarType, VarTraits>::operator ivar_type() const noexcept {
-    return to_ivar();
+    return to_identity();
 };
 
 

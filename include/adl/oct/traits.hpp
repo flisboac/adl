@@ -21,7 +21,7 @@
 adl_BEGIN_MAIN_MODULE(oct)
 
 template <typename ValueType, typename ValueLimits>
-struct adl_CLASS value_traits {
+struct value_traits {
     // Types
     using value_limits = ValueLimits;
 
@@ -38,7 +38,7 @@ struct adl_CLASS value_traits {
 
 
 template <domain_space Domain, typename VarIdLimits>
-struct adl_CLASS var_id_traits {
+struct var_id_traits {
     // Types
     using var_id_limits = VarIdLimits;
     using var_id_type = typename var_id_limits::var_id_type;
@@ -72,7 +72,7 @@ struct adl_CLASS var_id_traits {
     // static conversion functions
     constexpr static var_id_type name_to_id(char const* name) noexcept;
     constexpr static var_id_type name_to_id(string_view name) noexcept;
-    static var_id_type name_to_id(std::string name);
+    static var_id_type name_to_id(std::string const& name);
     template <typename N> constexpr static var_id_type arithmetic_to_range(N value) noexcept;
     template <typename N> constexpr static var_id_type arithmetic_to_valid(N value) noexcept;
     template <typename N = long long int> constexpr static N id_to_arithmetic(var_id_type id, N fallback_value = N()) noexcept;
@@ -97,7 +97,7 @@ private:
 };
 
 template <typename VarType>
-struct adl_CLASS var_traits {
+struct var_traits {
     constexpr static bool valid = false;
 #if 0
     // Types
@@ -214,16 +214,16 @@ var_id_traits<Domain, VarIdLimits>::decrement_id(
 }
 
 template <domain_space Domain, typename VarIdLimits>
-constexpr bool var_id_traits<Domain, VarIdLimits>::id_equals(var_id_type a, var_id_type b) noexcept {
-    return a == b;
+constexpr bool var_id_traits<Domain, VarIdLimits>::id_equals(var_id_type id1, var_id_type id2) noexcept {
+    return id1 == id2;
 }
 
 template <domain_space Domain, typename VarIdLimits>
-constexpr int var_id_traits<Domain, VarIdLimits>::id_compare(var_id_type a, var_id_type b) noexcept {
+constexpr int var_id_traits<Domain, VarIdLimits>::id_compare(var_id_type id1, var_id_type id2) noexcept {
     return space == domain_space::oct
         ? var_id_traits<domain_space::octdiff, typename var_id_limits::counterpart_var_id_limits>::id_compare(
-            id_to_counterpart(a), id_to_counterpart(b))
-        : (b < a) - (a < b);
+            id_to_counterpart(id1), id_to_counterpart(id2))
+        : (id2 < id1) - (id1 < id2);
 }
 
 template <domain_space Domain, typename VarIdLimits>
@@ -267,8 +267,8 @@ var_id_traits<Domain, VarIdLimits>::name_to_id(string_view name) noexcept {
 
 template <domain_space Domain, typename VarIdLimits>
 adl_IMPL typename var_id_traits<Domain, VarIdLimits>::var_id_type
-var_id_traits<Domain, VarIdLimits>::name_to_id(std::string name) {
-    return name_to_id(string_view(name.data(), name.size()));
+var_id_traits<Domain, VarIdLimits>::name_to_id(std::string const& name) {
+    return name_to_id(string_view(&name[0], name.size()));
 }
 
 template <domain_space Domain, typename VarIdLimits>

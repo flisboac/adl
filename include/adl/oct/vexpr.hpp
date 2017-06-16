@@ -42,7 +42,7 @@ public:
     // Var types
     using var_type = VarType;
     using counterpart_var_type = typename var_type::counterpart_var_type;
-    using ivar_type = typename var_type::ivar_type;
+    using identity_var_type = typename var_type::identity_var_type;
     using var_id_type = typename var_type::var_id_type;
 
     // Helper types
@@ -51,7 +51,7 @@ public:
     // Vexpr types
     using vexpr_type = subclass_;
     using counterpart_vexpr_type = typename subclass_::counterpart_vexpr_type;
-    using identity_vexpr_type = VexprType<ivar_type>;
+    using identity_vexpr_type = VexprType<identity_var_type>;
 
     //
     // Const-static Variable definitions
@@ -129,11 +129,14 @@ public:
     std::string to_string() const;
     template <typename = std::enable_if<space == domain_space::octdiff>>
         constexpr vexpr_type to_commuted() const noexcept;
+    constexpr identity_vexpr_type to_identity() const noexcept;
 
     // conversion operators
     constexpr bool operator!() const noexcept;
     constexpr explicit operator bool() const noexcept;
     constexpr explicit operator std::string() const;
+    template <typename = std::enable_if<!std::is_same<vexpr_type, identity_vexpr_type>::value>>
+        constexpr operator identity_vexpr_type() const noexcept;
 
 private:
     constexpr subclass_& as_subclass_() noexcept;
@@ -426,7 +429,7 @@ std::string vexpr_base_<VexprType, VarType>::to_string() const {
 
             } else if (xj_.valid()) {
                 if (xj_.negative()) {
-                    value = xi_.to_string() + " - " + (-xj_).to_string();
+                    value = xi_.to_string() + " - " + xj_.to_negated().to_string();
                 } else {
                     value = xi_.to_string() + " + " + xj_.to_string();
                 }
@@ -448,6 +451,12 @@ vexpr_base_<VexprType, VarType>::to_commuted() const noexcept {
 }
 
 template <template <typename> class VexprType, typename VarType>
+constexpr typename vexpr_base_<VexprType, VarType>::identity_vexpr_type
+vexpr_base_<VexprType, VarType>::to_identity() const noexcept {
+    return identity_vexpr_type(xi_.to_identity(), xj_.to_identity());
+}
+
+template <template <typename> class VexprType, typename VarType>
 constexpr bool vexpr_base_<VexprType, VarType>::operator!() const noexcept {
     return !valid();
 }
@@ -460,6 +469,12 @@ constexpr vexpr_base_<VexprType, VarType>::operator bool() const noexcept {
 template <template <typename> class VexprType, typename VarType>
 constexpr vexpr_base_<VexprType, VarType>::operator std::string() const {
     return to_string();
+}
+
+template <template <typename> class VexprType, typename VarType>
+template <typename>
+constexpr vexpr_base_<VexprType, VarType>::operator identity_vexpr_type() const noexcept {
+    return to_identity();
 }
 
 template <template <typename> class VexprType, typename VarType>
