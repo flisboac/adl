@@ -15,7 +15,6 @@
 #include "adl/char_helper.hpp"
 
 #include "adl/oct.fwd.hpp"
-#include "adl/oct/domain_space.hpp"
 #include "adl/oct/limits.hpp"
 #include "adl/oct/traits.hpp"
 
@@ -64,10 +63,10 @@ namespace oct {
         constexpr explicit var_base_(long long int id) noexcept;
 
         // static construction functions
-        constexpr static var_id_type id_to_range(long long int id) noexcept;
-        constexpr static var_id_type id_to_valid(long long int id) noexcept;
-        constexpr static var_type from_range(long long int id) noexcept;
-        constexpr static var_type from_valid(long long int id) noexcept;
+        template <typename N> constexpr static var_id_type id_to_range(N id) noexcept;
+        template <typename N> constexpr static var_id_type id_to_valid(N id) noexcept;
+        template <typename N> constexpr static var_type from_range(N id) noexcept;
+        template <typename N> constexpr static var_type from_valid(N id) noexcept;
         constexpr static var_type invalid() noexcept;
         constexpr static var_type first() noexcept;
         constexpr static var_type last() noexcept;
@@ -538,26 +537,30 @@ constexpr var_base_<VarType, VarTraits>::operator counterpart_var_type() const n
 }
 
 template <typename VarType, typename VarTraits>
+template <typename N>
 constexpr typename var_base_<VarType, VarTraits>::var_id_type
-var_base_<VarType, VarTraits>::id_to_range(long long int id) noexcept {
+var_base_<VarType, VarTraits>::id_to_range(N id) noexcept {
     return var_id_traits::arithmetic_to_range(id);
 }
 
 template <typename VarType, typename VarTraits>
+template <typename N>
 constexpr typename var_base_<VarType, VarTraits>::var_id_type
-var_base_<VarType, VarTraits>::id_to_valid(long long int id) noexcept {
-    return var_id_traits::id_to_valid(id);
+var_base_<VarType, VarTraits>::id_to_valid(N id) noexcept {
+    return var_id_traits::arithmetic_to_valid(id);
 }
 
 template <typename VarType, typename VarTraits>
+template <typename N>
 constexpr typename var_base_<VarType, VarTraits>::var_type
-var_base_<VarType, VarTraits>::from_range(long long int id) noexcept {
+var_base_<VarType, VarTraits>::from_range(N id) noexcept {
     return var_type(id);
 }
 
 template <typename VarType, typename VarTraits>
+template <typename N>
 constexpr typename var_base_<VarType, VarTraits>::var_type
-var_base_<VarType, VarTraits>::from_valid(long long int id) noexcept {
+var_base_<VarType, VarTraits>::from_valid(N id) noexcept {
     return var_type(id_to_valid(id));
 }
 

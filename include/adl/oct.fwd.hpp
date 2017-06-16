@@ -17,13 +17,18 @@ adl_BEGIN_MAIN_MODULE(oct)
 // domain_space.hpp
 //
 
-enum class domain_space;
+enum class domain_space {
+    oct = 1,
+    octdiff
+};
 
 //
 // limits.hpp
 //
 
 using default_var_id_type = int;
+using default_value_type = float;
+
 template <typename ValueType> class value_limits;
 template <domain_space Domain> struct var_id_limits;
 
@@ -74,8 +79,17 @@ class octdiff_lvar;
 //
 enum class vexpr_oper;
 template <template <typename VarType> class VexprType, typename VarType> class vexpr_base_;
-template <typename VarType> class oct_vexpr;
-template <typename VarType> class octdiff_vexpr;
+template <typename VarType = oct_var> class oct_vexpr;
+template <typename VarType = octdiff_var> class octdiff_vexpr;
+
+
+//
+// cons.hpp
+//
+template <template <typename ValueType, typename VarType> class ConsType, typename ValueType, typename VarType> class cons_base_;
+template <typename ValueType = default_value_type, typename VarType = oct_var> class oct_cons;
+template <typename ValueType = default_value_type, typename VarType = octdiff_var> class octdiff_cons;
+template <typename ValueType = default_value_type, typename VarType = octdiff_var> class octdiff_conjunction;
 
 adl_END_MAIN_MODULE
 

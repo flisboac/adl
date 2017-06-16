@@ -74,7 +74,6 @@ target_sources(${api} INTERFACE
     # adl/oct
     "${api_dir_root}/adl/oct.hpp"
     "${api_dir_root}/adl/oct.fwd.hpp"
-    "${api_dir_root}/adl/oct/domain_space.hpp"
     "${api_dir_root}/adl/oct/limits.hpp"
     "${api_dir_root}/adl/oct/traits.hpp"
     "${api_dir_root}/adl/oct/var.hpp"
@@ -82,9 +81,7 @@ target_sources(${api} INTERFACE
     "${api_dir_root}/adl/oct/var/identity_.hpp"
     "${api_dir_root}/adl/oct/var/view_named_.hpp"
     "${api_dir_root}/adl/oct/vexpr.hpp"
-
-    # adl/oct/dsl
-    "${api_dir_root}/adl/oct/dsl.hpp"
+    "${api_dir_root}/adl/oct/cons.hpp"
     )
 
 
@@ -136,6 +133,7 @@ add_executable(${test}
     "${test_dir_unit}/adl/oct/traits.unit.cpp"
     "${test_dir_unit}/adl/oct/var.unit.cpp"
     "${test_dir_unit}/adl/oct/vexpr.unit.cpp"
+    "${test_dir_unit}/adl/oct/cons.unit.cpp"
 )
 target_link_libraries(${test} ${test_iapi})
 enable_testing()
