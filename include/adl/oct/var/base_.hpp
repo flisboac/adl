@@ -54,9 +54,9 @@ namespace oct {
         // Defaulted/deleted members
         constexpr var_base_() = default;
         constexpr var_base_(const var_base_&) = default;
-        constexpr var_base_(var_base_&&) = default;
+        constexpr var_base_(var_base_&&) noexcept = default;
         constexpr var_base_& operator=(const var_base_&) = default;
-        constexpr var_base_& operator=(var_base_&&) = default;
+        constexpr var_base_& operator=(var_base_&&) noexcept = default;
 
         // Constructors and assignments
         constexpr var_base_(var_type const& base, long long int id) noexcept;
@@ -120,8 +120,8 @@ namespace oct {
         // conversion functions
         constexpr std::size_t to_index() const noexcept;
         constexpr ivar_type to_ivar() const noexcept;
-        constexpr var_type const& as_valid() const;
-        constexpr var_type& as_valid();
+        constexpr var_type const& ensure_valid() const;
+        constexpr var_type& as_valid() noexcept;
         constexpr var_type to_valid() const noexcept;
         constexpr counterpart_var_type to_counterpart() const noexcept;
         constexpr ivar_type to_id_var() const noexcept;
@@ -165,9 +165,9 @@ namespace oct {
         // Defaulted/deleted members
         constexpr unnamed_var_base_() = default;
         constexpr unnamed_var_base_(const unnamed_var_base_&) = default;
-        constexpr unnamed_var_base_(unnamed_var_base_&&) = default;
+        constexpr unnamed_var_base_(unnamed_var_base_&&) noexcept = default;
         constexpr unnamed_var_base_& operator=(const unnamed_var_base_&) = default;
-        constexpr unnamed_var_base_& operator=(unnamed_var_base_&&) = default;
+        constexpr unnamed_var_base_& operator=(unnamed_var_base_&&) noexcept = default;
 
         // constructors and assignments
         constexpr explicit unnamed_var_base_(long long int id) noexcept;
@@ -201,6 +201,7 @@ namespace oct {
         using var_type = typename superclass_::var_type;
         using counterpart_var_type = typename superclass_::counterpart_var_type;
         using var_id_traits = typename superclass_::var_id_traits;
+        using var_id_limits = typename superclass_::var_id_limits;
         using ivar_type = typename superclass_::ivar_type;
         using superclass_::id;
         using superclass_::to_ivar;
@@ -215,9 +216,9 @@ namespace oct {
         // Defaulted/deleted members
         constexpr lit_named_var_base_() = default;
         constexpr lit_named_var_base_(const lit_named_var_base_&) = default;
-        constexpr lit_named_var_base_(lit_named_var_base_&&) = default;
+        constexpr lit_named_var_base_(lit_named_var_base_&&) noexcept = default;
         constexpr lit_named_var_base_& operator=(const lit_named_var_base_&) = default;
-        constexpr lit_named_var_base_& operator=(lit_named_var_base_&&) = default;
+        constexpr lit_named_var_base_& operator=(lit_named_var_base_&&) noexcept = default;
 
         // constructors and assignments
         constexpr explicit lit_named_var_base_(long long int id) noexcept;
@@ -254,7 +255,7 @@ template <typename VarType> constexpr void assert_valid_var_type() noexcept;
 namespace operators {
     inline namespace oct {
         inline namespace var {
-            namespace arithmetic {
+            inline namespace arithmetic {
                 template <typename VarType, typename = std::enable_if_t<adl::oct::var_traits<VarType>::valid>>
                     constexpr VarType operator+(const VarType& var) noexcept;
                 template <typename VarType, typename = std::enable_if_t<adl::oct::var_traits<VarType>::valid>>
@@ -262,7 +263,7 @@ namespace operators {
                 template <typename VarType, typename = std::enable_if_t<adl::oct::var_traits<VarType>::valid>>
                     constexpr VarType operator~(const VarType& var) noexcept;
             }
-            namespace iteration {
+            inline namespace iteration {
                 template <typename VarType, typename = std::enable_if_t<adl::oct::var_traits<VarType>::valid>>
                     constexpr VarType& operator++(VarType& var) noexcept;
                 template <typename VarType, typename = std::enable_if_t<adl::oct::var_traits<VarType>::valid>>
@@ -280,7 +281,7 @@ namespace operators {
                 template <typename VarType, typename = std::enable_if_t<adl::oct::var_traits<VarType>::valid>>
                     constexpr VarType& operator-=(VarType& var, std::size_t off) noexcept;
             }
-            namespace comparison {
+            inline namespace comparison {
                 template <typename VarType, typename = std::enable_if_t<adl::oct::var_traits<VarType>::valid>>
                     constexpr bool operator==(const VarType& var, VarType var2) noexcept;
                 template <typename VarType, typename = std::enable_if_t<adl::oct::var_traits<VarType>::valid>>
@@ -488,14 +489,14 @@ var_base_<VarType, VarTraits>::to_ivar() const noexcept {
 
 template <typename VarType, typename VarTraits>
 constexpr typename var_base_<VarType, VarTraits>::var_type const&
-var_base_<VarType, VarTraits>::as_valid() const {
-    return valid() ? as_subclass_() : throw std::runtime_error("Invalid variable.");
+var_base_<VarType, VarTraits>::ensure_valid() const {
+    return valid() ? as_subclass_() : throw std::logic_error("Invalid variable.");
 }
 
 template <typename VarType, typename VarTraits>
 constexpr typename var_base_<VarType, VarTraits>::var_type&
-var_base_<VarType, VarTraits>::as_valid() {
-    return (as_const_().as_valid(), as_subclass_());
+var_base_<VarType, VarTraits>::as_valid() noexcept {
+    return (id_ = valid() ? id_ : var_id_limits::invalid_var_id, as_subclass_());
 }
 
 template <typename VarType, typename VarTraits>

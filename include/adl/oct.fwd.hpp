@@ -35,7 +35,7 @@ template <domain_space Domain> struct var_id_limits;
  * @tparam VarIdType The variable's underlying ID type.
  */
 template <typename VarIdType = default_var_id_type>
-constexpr static std::size_t max_oct_variables =
+constexpr static const std::size_t max_oct_variables =
     (std::numeric_limits<VarIdType>::max() / 2) > (std::numeric_limits<std::size_t>::max() / 2)
         ? (std::numeric_limits<std::size_t>::max() / 2)
         : static_cast<std::size_t>((std::numeric_limits<VarIdType>::max() / 2));
@@ -47,7 +47,7 @@ constexpr static std::size_t max_oct_variables =
  * @tparam VarIdType The variable's underlying ID type.
  */
 template <typename VarIdType = default_var_id_type>
-constexpr static std::size_t max_octdiff_variables = max_oct_variables<VarIdType> * 2;
+constexpr static const std::size_t max_octdiff_variables = max_oct_variables<VarIdType> * 2;
 
 //
 // traits.hpp
@@ -68,6 +68,14 @@ class octdiff_var;
 class oct_lvar;
 class octdiff_lvar;
 
+
+//
+// vexpr.hpp
+//
+enum class vexpr_oper;
+template <template <typename VarType> class VexprType, typename VarType> class vexpr_base_;
+template <typename VarType> class oct_vexpr;
+template <typename VarType> class octdiff_vexpr;
 
 adl_END_MAIN_MODULE
 
