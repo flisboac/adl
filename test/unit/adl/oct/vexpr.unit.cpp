@@ -3,3 +3,7 @@
 #include "adl/assert.hpp"
 
 #include "adl/oct/vexpr.hpp"
+
+TEST_CASE("unit:adl/oct/vexpr") {
+    // TODO
+}

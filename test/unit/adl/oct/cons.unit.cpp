@@ -2,4 +2,21 @@
 #include "adl_catch.hpp"
 #include "adl/assert.hpp"
 
-#include "adl/oct/vexpr.hpp"
+#include "adl/oct/cons.hpp"
+
+TEST_CASE("unit:adl/oct/cons") {
+    using namespace adl::literals; // For "x1"_ol
+    using namespace adl::operators; // For common operators (not part of a DSL, e.g. x1 <= x2)
+    using namespace adl::dsl; // for x1 - x2
+    using namespace adl::oct; // For type definitions
+
+    auto x1 = 1_ov;
+    auto x2 = "x2"_ov;
+    auto x3 = octdiff_var(3);
+    auto vexpr2 = make_sub_vexpr(x3, x2);
+    auto comp = x1 == x2;
+    auto vexpr = x3 + x1;
+    auto cons = make_cons(vexpr, 10.0);
+
+    // TODO Tests
+}

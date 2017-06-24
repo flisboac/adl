@@ -2,7 +2,7 @@
 #include "adl_catch.hpp"
 #include "adl/error.hpp"
 
-TEST_CASE("adl/error.hpp", "[adl][adl/error]") {
+TEST_CASE("unit:adl/error", "[adl][adl/error]") {
     const auto warning_kind = adl::make_error_kind(adl::errk::warning);
     const auto ok_kind = adl::make_error_kind(adl::errk::ok);
     const auto error_kind = adl::make_error_kind(adl::errk::error);

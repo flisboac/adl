@@ -113,7 +113,7 @@ static inline void test_definitions_values_() {
 
 }
 
-TEST_CASE("unit:adl/oct/traits.hpp:var_id", "[unit][adl][adl/oct][adl/oct/traits]") {
+TEST_CASE("unit:adl/oct/traits:var_id", "[unit][adl][adl/oct][adl/oct/traits]") {
     using namespace imports_;
 
     test_definitions_values_<oct_traits>();

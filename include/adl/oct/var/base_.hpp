@@ -34,7 +34,7 @@ namespace oct {
         using var_id_type = typename var_id_traits::var_id_type;
         using var_traits = VarTraits;
         using var_type = VarType;
-        using identity_var_type = typename var_traits::ivar_type;
+        using identity_var_type = typename var_traits::identity_var_type;
         using counterpart_var_type = typename var_traits::counterpart_var_type;
 
         static_assert(var_traits::valid,
@@ -140,7 +140,7 @@ namespace oct {
         constexpr inline const var_type& as_subclass_() const noexcept;
         constexpr inline var_type with_id_(var_id_type new_id) const noexcept;
 
-    private:
+    protected:
         var_id_type id_ = var_id_limits::invalid_var_id;
     };
 
@@ -150,9 +150,10 @@ namespace oct {
         using superclass_ = var_base_<VarType, VarTraits>;
 
     public:
-        using var_type = typename superclass_::var_type;
-        using counterpart_var_type = typename superclass_::counterpart_var_type;
-        using var_id_traits = typename superclass_::var_id_traits;
+        using typename superclass_::var_type;
+        using typename superclass_::counterpart_var_type;
+        using typename superclass_::var_id_traits;
+
         using superclass_::id;
 
         // constexpr static properties
@@ -198,11 +199,12 @@ namespace oct {
         using superclass_ = var_base_<VarType, VarTraits>;
 
     public:
-        using var_type = typename superclass_::var_type;
-        using counterpart_var_type = typename superclass_::counterpart_var_type;
-        using var_id_traits = typename superclass_::var_id_traits;
-        using var_id_limits = typename superclass_::var_id_limits;
-        using ivar_type = typename superclass_::identity_var_type;
+        using typename superclass_::var_type;
+        using typename superclass_::counterpart_var_type;
+        using typename superclass_::var_id_traits;
+        using typename superclass_::var_id_limits;
+        using typename superclass_::identity_var_type;
+
         using superclass_::id;
         using superclass_::to_identity;
 
@@ -243,13 +245,29 @@ namespace oct {
 
         // conversion operators
         explicit operator std::string() const;
-        constexpr operator ivar_type() const noexcept;
+        constexpr operator identity_var_type() const noexcept;
 
     private:
         string_view name_ { "", 0 };
     };
 
 template <typename VarType> constexpr void assert_valid_var_type() noexcept;
+
+template <typename FirstVarType, typename SecondVarType>
+struct common_var {
+    constexpr static const bool valid = var_traits<FirstVarType>::valid
+        && var_traits<SecondVarType>::valid;
+    using type = std::enable_if_t<valid,
+        std::conditional_t<
+            std::is_same<FirstVarType, SecondVarType>::value,
+            FirstVarType,
+            std::conditional_t<SecondVarType::space == domain_space::oct,
+                typename SecondVarType::identity_var_type,
+                typename FirstVarType::identity_var_type>>>;
+    constexpr static const bool is_oct_space = valid && type::space == domain_space::oct;
+    constexpr static const bool is_octdiff_space = valid && type::space == domain_space::octdiff;
+};
+
 }
 
 namespace operators {
@@ -282,30 +300,18 @@ namespace operators {
                     constexpr VarType& operator-=(VarType& var, std::size_t off) noexcept;
             }
             inline namespace comparison {
-                template <typename VarType, typename = std::enable_if_t<adl::oct::var_traits<VarType>::valid>>
-                    constexpr bool operator==(const VarType& var, VarType var2) noexcept;
-                template <typename VarType, typename = std::enable_if_t<adl::oct::var_traits<VarType>::valid>>
-                    constexpr bool operator!=(const VarType& var, VarType var2) noexcept;
-                template <typename VarType, typename = std::enable_if_t<adl::oct::var_traits<VarType>::valid>>
-                    constexpr int operator<(const VarType& var, VarType var2) noexcept;
-                template <typename VarType, typename = std::enable_if_t<adl::oct::var_traits<VarType>::valid>>
-                    constexpr int operator<=(const VarType& var, VarType var2) noexcept;
-                template <typename VarType, typename = std::enable_if_t<adl::oct::var_traits<VarType>::valid>>
-                    constexpr int operator>(const VarType& var, VarType var2) noexcept;
-                template <typename VarType, typename = std::enable_if_t<adl::oct::var_traits<VarType>::valid>>
-                    constexpr int operator>=(const VarType& var, VarType var2) noexcept;
-                template <typename VarType, typename = std::enable_if_t<adl::oct::var_traits<VarType>::valid>>
-                    constexpr bool operator==(const VarType& var, long long int id) noexcept;
-                template <typename VarType, typename = std::enable_if_t<adl::oct::var_traits<VarType>::valid>>
-                    constexpr bool operator!=(const VarType& var, long long int id) noexcept;
-                template <typename VarType, typename = std::enable_if_t<adl::oct::var_traits<VarType>::valid>>
-                    constexpr int operator<(const VarType& var, long long int id) noexcept;
-                template <typename VarType, typename = std::enable_if_t<adl::oct::var_traits<VarType>::valid>>
-                    constexpr int operator<=(const VarType& var, long long int id) noexcept;
-                template <typename VarType, typename = std::enable_if_t<adl::oct::var_traits<VarType>::valid>>
-                    constexpr int operator>(const VarType& var, long long int id) noexcept;
-                template <typename VarType, typename = std::enable_if_t<adl::oct::var_traits<VarType>::valid>>
-                    constexpr int operator>=(const VarType& var, long long int id) noexcept;
+                template <typename VarTypeA, typename VarTypeB, typename = std::enable_if_t<adl::oct::common_var<VarTypeA, VarTypeB>::valid>>
+                    constexpr bool operator==(const VarTypeA& var, VarTypeB var2) noexcept;
+                template <typename VarTypeA, typename VarTypeB, typename = std::enable_if_t<adl::oct::common_var<VarTypeA, VarTypeB>::valid>>
+                    constexpr bool operator!=(const VarTypeA& var, VarTypeB var2) noexcept;
+                template <typename VarTypeA, typename VarTypeB, typename = std::enable_if_t<adl::oct::common_var<VarTypeA, VarTypeB>::valid>>
+                    constexpr int operator<(const VarTypeA& var, VarTypeB var2) noexcept;
+                template <typename VarTypeA, typename VarTypeB, typename = std::enable_if_t<adl::oct::common_var<VarTypeA, VarTypeB>::valid>>
+                    constexpr int operator<=(const VarTypeA& var, VarTypeB var2) noexcept;
+                template <typename VarTypeA, typename VarTypeB, typename = std::enable_if_t<adl::oct::common_var<VarTypeA, VarTypeB>::valid>>
+                    constexpr int operator>(const VarTypeA& var, VarTypeB var2) noexcept;
+                template <typename VarTypeA, typename VarTypeB, typename = std::enable_if_t<adl::oct::common_var<VarTypeA, VarTypeB>::valid>>
+                    constexpr int operator>=(const VarTypeA& var, VarTypeB var2) noexcept;
             }
         }
     }
@@ -718,7 +724,7 @@ adl_IMPL lit_named_var_base_<VarType, VarTraits>::operator std::string() const {
 }
 
 template <typename VarType, typename VarTraits>
-constexpr lit_named_var_base_<VarType, VarTraits>::operator ivar_type() const noexcept {
+constexpr lit_named_var_base_<VarType, VarTraits>::operator identity_var_type() const noexcept {
     return to_identity();
 };
 
@@ -797,65 +803,34 @@ inline namespace iteration {
 
 inline namespace comparison {
 
-    template <typename VarType, typename>
-    constexpr bool operator==(const VarType& var, VarType var2) noexcept {
+    template <typename VarTypeA, typename VarTypeB, typename>
+    constexpr bool operator==(const VarTypeA& var, VarTypeB var2) noexcept {
         return var.equals(var2);
     }
 
-    template <typename VarType, typename>
-    constexpr bool operator!=(const VarType& var, VarType var2) noexcept {
+    template <typename VarTypeA, typename VarTypeB, typename>
+    constexpr bool operator!=(const VarTypeA& var, VarTypeB var2) noexcept {
         return !var.equals(var2);
     }
 
-    template <typename VarType, typename>
-    constexpr int operator<(const VarType& var, VarType var2) noexcept {
+    template <typename VarTypeA, typename VarTypeB, typename>
+    constexpr int operator<(const VarTypeA& var, VarTypeB var2) noexcept {
         return var.compare(var2) < 0;
     }
 
-    template <typename VarType>
-    constexpr int operator<=(const VarType& var, VarType var2) noexcept {
-        adl::oct::assert_valid_var_type<VarType>();
+    template <typename VarTypeA, typename VarTypeB, typename>
+    constexpr int operator<=(const VarTypeA& var, VarTypeB var2) noexcept {
         return var.compare(var2) <= 0;
     }
 
-    template <typename VarType, typename>
-    constexpr int operator>(const VarType& var, VarType var2) noexcept {
+    template <typename VarTypeA, typename VarTypeB, typename>
+    constexpr int operator>(const VarTypeA& var, VarTypeB var2) noexcept {
         return var.compare(var2) > 0;
     }
 
-    template <typename VarType, typename>
-    constexpr int operator>=(const VarType& var, VarType var2) noexcept {
+    template <typename VarTypeA, typename VarTypeB, typename>
+    constexpr int operator>=(const VarTypeA& var, VarTypeB var2) noexcept {
         return var.compare(var2) >= 0;
-    }
-
-    template <typename VarType, typename>
-    constexpr bool operator==(const VarType& var, long long int id) noexcept {
-        return var == VarType(id);
-    }
-
-    template <typename VarType, typename>
-    constexpr bool operator!=(const VarType& var, long long int id) noexcept {
-        return var != VarType(id);
-    }
-
-    template <typename VarType, typename>
-    constexpr int operator<(const VarType& var, long long int id) noexcept {
-        return var < VarType(id);
-    }
-
-    template <typename VarType, typename>
-    constexpr int operator<=(const VarType& var, long long int id) noexcept {
-        return var <= VarType(id);
-    }
-
-    template <typename VarType, typename>
-    constexpr int operator>(const VarType& var, long long int id) noexcept {
-        return var > VarType(id);
-    }
-
-    template <typename VarType, typename>
-    constexpr int operator>=(const VarType& var, long long int id) noexcept {
-        return var >= VarType(id);
     }
 
 }
