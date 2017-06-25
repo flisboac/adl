@@ -91,7 +91,7 @@ public:
     constexpr var_type xj() const noexcept; // always invalid if `unit() && space == domain_space::oct`
     constexpr var_type xJ() const noexcept;
     constexpr var_type last_var() const noexcept;
-    constexpr std::size_t last_var_index() const noexcept;
+    constexpr std::size_t end_var_index() const noexcept;
     constexpr bool valid() const noexcept;
     constexpr bool unit() const noexcept; // Refers to a single octagonal var. If true, an eventual constraint will have the format +-xi <= c (or its difference format)
     constexpr bool duplicated_var() const noexcept; // xi.valid() && xi.equals(xj); must be always false for octdiff space
@@ -333,8 +333,9 @@ vexpr_base_<VarType>::last_var() const noexcept {
 }
 
 template <typename VarType>
-constexpr std::size_t vexpr_base_<VarType>::last_var_index() const noexcept {
-    return last_var().to_index();
+constexpr std::size_t vexpr_base_<VarType>::end_var_index() const noexcept {
+    auto var = last_var();
+    return var.valid() ? last_var().increment().to_index() : 0;
 }
 
 template <typename VarType>
@@ -397,7 +398,7 @@ constexpr typename vexpr_base_<VarType>::vexpr_type&
 vexpr_base_<VarType>::invalidate() noexcept {
     xi_ = var_type::invalid();
     xj_ = var_type::invalid();
-    return *this;
+    return as_subclass_();
 }
 
 template <typename VarType>
@@ -477,13 +478,13 @@ constexpr vexpr_base_<VarType>::operator std::string() const {
 template <typename VarType>
 constexpr typename vexpr_base_<VarType>::subclass_&
 vexpr_base_<VarType>::as_subclass_() noexcept {
-    return static_cast<subclass_>(*this);
+    return static_cast<subclass_&>(*this);
 }
 
 template <typename VarType>
 constexpr typename vexpr_base_<VarType>::subclass_ const&
 vexpr_base_<VarType>::as_subclass_() const noexcept {
-    return static_cast<subclass_>(*this);
+    return static_cast<subclass_&>(*this);
 }
 
 template <typename VarType>
@@ -498,11 +499,11 @@ oct_vexpr<VarType>::make_add(var_type xi, var_type xj) noexcept {
 
 template <typename VarType>
 constexpr oct_vexpr<VarType>::oct_vexpr(var_type xi) noexcept :
-    superclass_(xi_, var_type::invalid()) {}
+    superclass_(xi, var_type::invalid()) {}
 
 template <typename VarType>
 constexpr oct_vexpr<VarType>::oct_vexpr(var_type xi, var_type xj) noexcept :
-    superclass_(xi_, xj) {}
+    superclass_(xi, xj) {}
 
 template <typename VarType>
 constexpr oct_vexpr<VarType>
@@ -540,12 +541,12 @@ constexpr oct_vexpr<> make_unit_vexpr(oct_var xi) noexcept {
 
 template <typename VarTypeA, typename VarTypeB, typename>
 constexpr common_vexpr_t<VarTypeA, VarTypeB> make_add_vexpr(VarTypeA xi, VarTypeB xj) noexcept {
-    return common_vexpr_t<VarTypeA, VarTypeB>::make_add_vexpr(xi, xj);
+    return common_vexpr_t<VarTypeA, VarTypeB>::make_add(xi, xj);
 }
 
 template <typename VarTypeA, typename VarTypeB>
 constexpr common_vexpr_t<VarTypeA, VarTypeB> make_sub_vexpr(VarTypeA xi, VarTypeB xj) noexcept {
-    return common_vexpr_t<VarTypeA, VarTypeB>::make_sub_vexpr(xi, xj);
+    return common_vexpr_t<VarTypeA, VarTypeB>::make_sub(xi, xj);
 }
 
 } // namespace oct
@@ -557,7 +558,7 @@ inline namespace vexpr {
 
     template <typename VarTypeA, typename VarTypeB, typename = std::enable_if_t<adl::oct::common_var<VarTypeA, VarTypeB>::is_oct_space>>
     constexpr adl::oct::common_vexpr_t<VarTypeA, VarTypeB> operator+(VarTypeA const& lhs, VarTypeB const& rhs) noexcept {
-        return adl::oct::common_vexpr_t<VarTypeA, VarTypeB>::make_sub(lhs, rhs);
+        return adl::oct::common_vexpr_t<VarTypeA, VarTypeB>::make_add(lhs, rhs);
     }
 
     template <typename VarTypeA, typename VarTypeB>

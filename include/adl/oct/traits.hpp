@@ -5,6 +5,7 @@
 #ifndef adl__oct__traits__hpp__
 #define adl__oct__traits__hpp__
 
+#include <string>
 
 #include "adl/std/string_view.hpp"
 #include "adl/char_helper.hpp"
@@ -23,6 +24,7 @@ template <typename ValueType, typename ValueLimits>
 struct value_traits {
     // Types
     using value_limits = ValueLimits;
+    using value_type = typename value_limits::value_type;
 
     // Static assertions
     static_assert(value_limits::is_specialized,
@@ -33,6 +35,8 @@ struct value_traits {
 
     // Constexpr static values
     constexpr static bool valid = true;
+
+    static std::string to_string(value_type value);
 };
 
 
@@ -97,7 +101,7 @@ private:
 
 template <typename VarType>
 struct var_traits {
-    constexpr static bool valid = false;
+    constexpr static const bool valid = false;
 #if 0
     // Types
     using var_id_traits = oct::var_id_traits<domain_space::oct>;
@@ -126,6 +130,7 @@ adl_END_MAIN_MODULE
 // [[ TEMPLATE IMPLEMENTATION ]]
 //
 adl_BEGIN_MAIN_MODULE(oct)
+
 
 //
 // var_id_traits

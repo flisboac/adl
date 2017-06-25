@@ -21,11 +21,17 @@ adl_BEGIN_MAIN_MODULE(oct)
 template <typename ValueType>
 struct value_limits : public std::numeric_limits<ValueType> {
     using value_type = ValueType;
-    using std::numeric_limits<ValueType>::has_infinity;
-    using std::numeric_limits<ValueType>::infinity;
-    using std::numeric_limits<ValueType>::max;
-    using std::numeric_limits<ValueType>::is_specialized;
-    constexpr static ValueType top();
+    using numeric_limits = std::numeric_limits<ValueType>;
+
+    static_assert(value_limits::is_specialized,
+          "The value_limits class is not valid. Please, specialize it correctly "
+          "for the provided value type.");
+
+    constexpr static const bool valid = numeric_limits::is_specialized;
+
+    constexpr static value_type top() noexcept;
+    constexpr static value_type bottom() noexcept;
+    static std::string to_string(value_type value);
 };
 
 /**
@@ -117,8 +123,20 @@ adl_END_MAIN_MODULE
 adl_BEGIN_MAIN_MODULE(oct)
 
 template <typename Constant>
-constexpr Constant adl::oct::value_limits<Constant>::top() {
-    return has_infinity ? infinity() : max();
+constexpr typename adl::oct::value_limits<Constant>::value_type
+adl::oct::value_limits<Constant>::top() noexcept {
+    return numeric_limits::has_infinity ? numeric_limits::infinity() : numeric_limits::max();
+}
+
+template <typename Constant>
+constexpr typename adl::oct::value_limits<Constant>::value_type
+adl::oct::value_limits<Constant>::bottom() noexcept {
+    return numeric_limits::has_infinity ? -numeric_limits::infinity() : numeric_limits::min();
+}
+
+template <typename Constant>
+adl_IMPL std::string value_limits<Constant>::to_string(value_type value) {
+    return std::to_string(value);
 }
 
 adl_END_MAIN_MODULE

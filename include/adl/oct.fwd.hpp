@@ -57,7 +57,6 @@ constexpr static const std::size_t max_octdiff_variables = max_oct_variables<Var
 //
 // traits.hpp
 //
-template <typename ValueType, typename ValueLimits = value_limits<ValueType>> struct value_traits;
 template <domain_space Domain, typename VarIdLimits = var_id_limits<Domain>> struct var_id_traits;
 template <typename VarType> struct var_traits;
 

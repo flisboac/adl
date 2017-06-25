@@ -1,4 +1,6 @@
 // $flisboac 2017-06-15
+//#include <iostream>
+
 #include "adl_catch.hpp"
 #include "adl/assert.hpp"
 
@@ -17,6 +19,7 @@ TEST_CASE("unit:adl/oct/cons") {
     auto comp = x1 == x2;
     auto vexpr = x3 + x1;
     auto cons = make_cons(vexpr, 10.0);
+    //std::cout << x3 << " (oct: " << ((oct_var) x3) << ")" << std::endl << vexpr << std::endl << cons << std::endl << cons.split() << std::endl;
 
-    // TODO Tests
+    // TODO Tests (remember to remove all the commented ios stuff)
 }
