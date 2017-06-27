@@ -82,6 +82,7 @@ target_sources(${api} INTERFACE
     "${api_dir_root}/adl/oct/var/view_named_.hpp"
     "${api_dir_root}/adl/oct/vexpr.hpp"
     "${api_dir_root}/adl/oct/cons.hpp"
+    "${api_dir_root}/adl/oct/system.hpp"
     )
 
 
@@ -134,6 +135,7 @@ add_executable(${test}
     "${test_dir_unit}/adl/oct/var.unit.cpp"
     "${test_dir_unit}/adl/oct/vexpr.unit.cpp"
     "${test_dir_unit}/adl/oct/cons.unit.cpp"
+    "${test_dir_unit}/adl/oct/system.unit.cpp"
 )
 target_link_libraries(${test} ${test_iapi})
 enable_testing()

@@ -20,26 +20,6 @@
 //
 adl_BEGIN_MAIN_MODULE(oct)
 
-template <typename ValueType, typename ValueLimits>
-struct value_traits {
-    // Types
-    using value_limits = ValueLimits;
-    using value_type = typename value_limits::value_type;
-
-    // Static assertions
-    static_assert(value_limits::is_specialized,
-        "The value_limits class is not valid. Please, specialize it correctly "
-        "for the provided value type.");
-    static_assert(std::is_same<typename value_limits::value_type, ValueType>::value,
-        "The ValueType provided must be the same as ValueLimits::value_type.");
-
-    // Constexpr static values
-    constexpr static bool valid = true;
-
-    static std::string to_string(value_type value);
-};
-
-
 template <domain_space Domain, typename VarIdLimits>
 struct var_id_traits {
     // Types
@@ -122,6 +102,122 @@ struct var_traits {
     constexpr static counterpart_var_type var_to_counterpart(const var_type& var, var_id_type counterpart_id);
 #endif
 };
+
+template <domain_space DomainSpace>
+struct domain_space_traits {
+    constexpr static const bool valid = false;
+};
+
+template <>
+struct domain_space_traits<domain_space::oct> {
+    //
+    // Limits and traits
+    //
+    using var_id_traits = oct::var_id_traits<domain_space::oct>;
+    using var_id_limits = typename var_id_traits::var_id_limits;
+    using var_id_type = typename var_id_traits::var_id_type;
+
+    //
+    // Variable types
+    //
+    using identity_var_type = oct_var;
+    using literal_var_type = oct_lvar;
+    using counterpart_identity_var_type = octdiff_var;
+    using counterpart_literal_var_type = octdiff_lvar;
+
+    //
+    // Variable expression types
+    //
+    template <typename VarType> using vexpr_type = oct_vexpr<VarType>;
+    using identity_vexpr_type = vexpr_type<identity_var_type>;
+    using literal_vexpr_type = vexpr_type<literal_var_type>;
+
+    template <typename VarType> using counterpart_vexpr_type = octdiff_vexpr<VarType>;
+    using counterpart_identity_vexpr_type = counterpart_vexpr_type<counterpart_identity_var_type>;
+    using counterpart_literal_vexpr_type = counterpart_vexpr_type<counterpart_literal_var_type>;
+
+    //
+    // Octagonal constraint types
+    //
+    template <typename ValueType, typename VarType = identity_var_type> using cons_type = oct_cons<ValueType, VarType>;
+    template <typename ValueType> using identity_cons_type = cons_type<ValueType, identity_var_type>;
+    template <typename ValueType> using literal_cons_type = cons_type<ValueType, literal_var_type>;
+
+    template <typename ValueType, typename VarType = counterpart_identity_var_type> using counterpart_cons_type = octdiff_cons<ValueType, VarType>;
+    template <typename ValueType> using counterpart_identity_cons_type = counterpart_cons_type<ValueType, counterpart_identity_var_type>;
+    template <typename ValueType> using counterpart_literal_cons_type = counterpart_cons_type<ValueType, counterpart_literal_var_type>;
+
+    template <typename ValueType, typename VarType = identity_var_type> using octdiff_conjunction_type = octdiff_conjunction<ValueType, VarType>;
+    template <typename ValueType> using identity_octdiff_conjunction_type = octdiff_conjunction_type<ValueType, counterpart_identity_var_type>;
+    template <typename ValueType> using literal_octdiff_conjunction_type = octdiff_conjunction_type<ValueType, counterpart_literal_var_type>;
+
+    //
+    // Octagonal system traits
+    //
+    template <typename ValueType, typename ValueLimits = value_limits<ValueType>> using system_type = oct_system<ValueType, ValueLimits>;
+
+    //
+    // Constexpr static values
+    //
+    constexpr static const bool valid = true;
+    constexpr static const auto space = var_id_traits::space;
+    constexpr static const auto counterpart_space = var_id_traits::counterpart_space;
+};
+
+template <>
+struct domain_space_traits<domain_space::octdiff> {
+    //
+    // Limits and traits
+    //
+    using var_id_traits = oct::var_id_traits<domain_space::octdiff>;
+    using var_id_limits = typename var_id_traits::var_id_limits;
+    using var_id_type = typename var_id_traits::var_id_type;
+
+    //
+    // Variable types
+    //
+    using identity_var_type = octdiff_var;
+    using literal_var_type = octdiff_lvar;
+    using counterpart_identity_var_type = oct_var;
+    using counterpart_literal_var_type = oct_lvar;
+
+    //
+    // Variable expression types
+    //
+    template <typename VarType> using vexpr_type = octdiff_vexpr<VarType>;
+    using identity_vexpr_type = vexpr_type<identity_var_type>;
+    using literal_vexpr_type = vexpr_type<literal_var_type>;
+
+    template <typename VarType> using counterpart_vexpr_type = oct_vexpr<VarType>;
+    using counterpart_identity_vexpr_type = counterpart_vexpr_type<counterpart_identity_var_type>;
+    using counterpart_literal_vexpr_type = counterpart_vexpr_type<counterpart_literal_var_type>;
+
+    //
+    // Octagonal-difference constraint types
+    //
+    template <typename ValueType, typename VarType = identity_var_type> using cons_type = octdiff_cons<ValueType, VarType>;
+    template <typename ValueType> using identity_cons_type = cons_type<ValueType, identity_var_type>;
+    template <typename ValueType> using literal_cons_type = cons_type<ValueType, literal_var_type>;
+
+    template <typename ValueType, typename VarType = counterpart_identity_var_type> using counterpart_cons_type = oct_cons<ValueType, VarType>;
+    template <typename ValueType> using counterpart_identity_cons_type = counterpart_cons_type<ValueType, counterpart_identity_var_type>;
+    template <typename ValueType> using counterpart_literal_cons_type = counterpart_cons_type<ValueType, counterpart_literal_var_type>;
+
+    template <typename ValueType, typename VarType = identity_var_type> using octdiff_conjunction_type = octdiff_conjunction<ValueType, VarType>;
+    template <typename ValueType> using identity_octdiff_conjunction_type = octdiff_conjunction_type<ValueType, identity_var_type>;
+    template <typename ValueType> using literal_octdiff_conjunction_type = octdiff_conjunction_type<ValueType, literal_var_type>;
+
+    //
+    // Octagonal-difference system traits
+    //
+    template <typename ValueType, typename ValueLimits = value_limits<ValueType>> using system_type = octdiff_system<ValueType, ValueLimits>;
+
+    // Constexpr static values
+    constexpr static const bool valid = true;
+    constexpr static const auto space = var_id_traits::space;
+    constexpr static const auto counterpart_space = var_id_traits::counterpart_space;
+};
+
 
 adl_END_MAIN_MODULE
 

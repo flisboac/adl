@@ -2,8 +2,8 @@
 /**
  * @file view_named_.hpp
  */
-#ifndef adl__oct__var__view_named__hpp__
-#define adl__oct__var__view_named__hpp__
+#ifndef adl__oct__var__view_named___hpp__
+#define adl__oct__var__view_named___hpp__
 
 
 #include "adl.cfg.hpp"

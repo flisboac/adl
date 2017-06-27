@@ -59,6 +59,7 @@ constexpr static const std::size_t max_octdiff_variables = max_oct_variables<Var
 //
 template <domain_space Domain, typename VarIdLimits = var_id_limits<Domain>> struct var_id_traits;
 template <typename VarType> struct var_traits;
+template <domain_space DomainSpace> struct domain_space_traits;
 
 //
 // var.hpp
@@ -98,6 +99,13 @@ template <typename ValueType, typename VarType = octdiff_var> class octdiff_conj
 
 template <typename ValueType, typename FirstVarType, typename SecondVarType = FirstVarType> struct common_cons;
 template <typename ValueType, typename FirstVarType, typename SecondVarType = FirstVarType> using common_cons_t = typename common_cons<ValueType, FirstVarType, SecondVarType>::type;
+
+//
+// system.hpp
+//
+template <domain_space Domain, typename ValueType, typename ValueLimits = value_limits<ValueType>> class system_base_;
+template <typename ValueType, typename ValueLimits = value_limits<ValueType>> class oct_system;
+template <typename ValueType, typename ValueLimits = value_limits<ValueType>> class octdiff_system;
 
 adl_END_MAIN_MODULE
 
