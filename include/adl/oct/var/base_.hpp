@@ -264,8 +264,10 @@ struct common_var {
             std::conditional_t<SecondVarType::space == domain_space::oct,
                 typename SecondVarType::identity_var_type,
                 typename FirstVarType::identity_var_type>>>;
-    constexpr static const bool is_oct_space = valid && type::space == domain_space::oct;
-    constexpr static const bool is_octdiff_space = valid && type::space == domain_space::octdiff;
+    constexpr static const domain_space space = type::space;
+    constexpr static const domain_space counterpart_space = type::counterpart_space;
+    constexpr static const bool is_oct_space = valid && space == domain_space::oct;
+    constexpr static const bool is_octdiff_space = valid && space == domain_space::octdiff;
 };
 
 }

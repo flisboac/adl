@@ -312,6 +312,10 @@ private:
 public:
     constexpr static const bool valid = common_var<FirstVarType, SecondVarType>::valid;
     typedef typename var_traits::template cons_type<ValueType> type;
+    constexpr static const domain_space space = common_var<FirstVarType, SecondVarType>::space;
+    constexpr static const domain_space counterpart_space = common_var<FirstVarType, SecondVarType>::counterpart_space;
+    constexpr static const bool is_oct_space = common_var<FirstVarType, SecondVarType>::is_oct_space;
+    constexpr static const bool is_octdiff_space = common_var<FirstVarType, SecondVarType>::is_octdiff_space;
 };
 
 

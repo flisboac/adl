@@ -155,6 +155,7 @@ struct domain_space_traits<domain_space::oct> {
     // Octagonal system traits
     //
     template <typename ValueType, typename ValueLimits = value_limits<ValueType>> using system_type = oct_system<ValueType, ValueLimits>;
+    template <typename ValueType, typename ValueLimits = value_limits<ValueType>> using counterpart_system_type = octdiff_system<ValueType, ValueLimits>;
 
     //
     // Constexpr static values
@@ -184,26 +185,36 @@ struct domain_space_traits<domain_space::octdiff> {
     //
     // Variable expression types
     //
+private:
     template <typename VarType> using vexpr_type = octdiff_vexpr<VarType>;
+public:
     using identity_vexpr_type = vexpr_type<identity_var_type>;
     using literal_vexpr_type = vexpr_type<literal_var_type>;
 
+private:
     template <typename VarType> using counterpart_vexpr_type = oct_vexpr<VarType>;
+public:
     using counterpart_identity_vexpr_type = counterpart_vexpr_type<counterpart_identity_var_type>;
     using counterpart_literal_vexpr_type = counterpart_vexpr_type<counterpart_literal_var_type>;
 
     //
     // Octagonal-difference constraint types
     //
+private:
     template <typename ValueType, typename VarType = identity_var_type> using cons_type = octdiff_cons<ValueType, VarType>;
+public:
     template <typename ValueType> using identity_cons_type = cons_type<ValueType, identity_var_type>;
     template <typename ValueType> using literal_cons_type = cons_type<ValueType, literal_var_type>;
 
+private:
     template <typename ValueType, typename VarType = counterpart_identity_var_type> using counterpart_cons_type = oct_cons<ValueType, VarType>;
+public:
     template <typename ValueType> using counterpart_identity_cons_type = counterpart_cons_type<ValueType, counterpart_identity_var_type>;
     template <typename ValueType> using counterpart_literal_cons_type = counterpart_cons_type<ValueType, counterpart_literal_var_type>;
 
+private:
     template <typename ValueType, typename VarType = identity_var_type> using octdiff_conjunction_type = octdiff_conjunction<ValueType, VarType>;
+public:
     template <typename ValueType> using identity_octdiff_conjunction_type = octdiff_conjunction_type<ValueType, identity_var_type>;
     template <typename ValueType> using literal_octdiff_conjunction_type = octdiff_conjunction_type<ValueType, literal_var_type>;
 
@@ -211,6 +222,7 @@ struct domain_space_traits<domain_space::octdiff> {
     // Octagonal-difference system traits
     //
     template <typename ValueType, typename ValueLimits = value_limits<ValueType>> using system_type = octdiff_system<ValueType, ValueLimits>;
+    template <typename ValueType, typename ValueLimits = value_limits<ValueType>> using counterpart_system_type = oct_system<ValueType, ValueLimits>;
 
     // Constexpr static values
     constexpr static const bool valid = true;

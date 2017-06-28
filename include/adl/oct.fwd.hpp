@@ -103,6 +103,7 @@ template <typename ValueType, typename FirstVarType, typename SecondVarType = Fi
 //
 // system.hpp
 //
+template <domain_space Domain> class var_set;
 template <domain_space Domain, typename ValueType, typename ValueLimits = value_limits<ValueType>> class system_base_;
 template <typename ValueType, typename ValueLimits = value_limits<ValueType>> class oct_system;
 template <typename ValueType, typename ValueLimits = value_limits<ValueType>> class octdiff_system;
