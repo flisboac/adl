@@ -7,6 +7,7 @@
 
 #include <map>
 #include <set>
+#include <iterator>
 
 #include "adl.cfg.hpp"
 
@@ -36,24 +37,44 @@ public:
     using counterpart_identity_var_type = typename domain_space_traits::counterpart_identity_var_type;
     using counterpart_literal_var_type = typename domain_space_traits::counterpart_literal_var_type;
 
-private:
-    using occurrences_container_type_ = std::multiset<identity_var_type>; // non-normalized
-    using names_container_type_ = std::map<identity_var_type, std::string>; // normalized (positive-only)
-    using names_const_iterator_type_ = typename names_container_type_::const_iterator;
+    using var_type = literal_var_type;
 
-public:
-    using value_type = literal_var_type;
-    class const_iterator {
+    class value_type {
+    public:
+        value_type() = default;
+        value_type(value_type const&) = default;
+        value_type(value_type &&) noexcept = default;
+        value_type& operator=(value_type const&) = default;
+        value_type& operator=(value_type &&) noexcept = default;
 
-        // TODO Standard bidirectional iterator members here
+        std::string const& name() const noexcept;
+        std::string& name() noexcept;
+        value_type& name(std::string value);
 
-        std::size_t var_count() const;
-        std::size_t positive_var_count() const;
-        std::size_t negative_var_count() const;
+        std::size_t const& positive_count() const noexcept;
+        std::size_t& positive_count() noexcept;
+        value_type& positive_count(std::size_t value) noexcept;
+
+        std::size_t const& negative_count() const noexcept;
+        std::size_t& negative_count() noexcept;
+        value_type& negative_count(std::size_t value) noexcept;
+
+        var_type var() const noexcept;
+
+        operator var_type() const noexcept;
 
     private:
-        names_const_iterator_type_ iter_;
+        identity_var_type normalized_var_;
+        std::string name_;
+        std::size_t positive_count_;
+        std::size_t negative_count_;
     };
+
+private:
+    using container_type_ = std::multimap<identity_var_type, value_type>; // normalized (positive-only)
+
+public:
+    using const_iterator = typename container_type_::const_iterator;
 
     const_iterator begin() const;
     const_iterator end() const;
@@ -81,8 +102,7 @@ public:
         value_type operator[](VarType var) const; // returns invalid if the var is not included
 
 private:
-    names_container_type_ names_;
-    occurrences_container_type_ occurrences_;
+    container_type_ data_;
 };
 
 template <domain_space Domain, typename ValueType, typename ValueLimits>
@@ -130,10 +150,37 @@ public:
 
     class const_iterator {
 
-        // TODO Standard bidirectional iterator members here
+        // Type definitions
+        using difference_type = typename container_const_iterator_::difference_type;
+        using value_type = value_type;
+        using pointer = value_type*;
+        using reference = value_type&;
+        using iterator_category = std::random_access_iterator_tag;
+
+        // Defaulted members
+        const_iterator(const_iterator const& rhs) = default;
+        const_iterator(const_iterator && rhs) noexcept = default;
+        const_iterator& operator=(const_iterator const& rhs) = default;
+        const_iterator& operator=(const_iterator && rhs) noexcept = default;
+
+        // Instance construction
+        const_iterator(system_base_ const& parent, container_const_iterator_ iter) noexcept;
+
+        bool operator==(const_iterator rhs) noexcept;
+        bool operator!=(const_iterator rhs) noexcept;
+
+        // Iterator members
+        value_type const& operator*();
+        value_type const* operator->();
+        const_iterator& operator++();
+        const_iterator operator++(int);
+        const_iterator& operator--();
+        const_iterator operator--(int);
 
     private:
+        system_base_ parent_;
         container_const_iterator_ iter_;
+        value_type current_;
     };
 
     system_base_() noexcept = default;
@@ -182,17 +229,26 @@ private:
 };
 
 template <typename ValueType, typename ValueLimits>
-class oct_system : public system_base_<domain_space::oct, ValueType, ValueLimits>{
+class oct_system : public system_base_<domain_space::oct, ValueType, ValueLimits> {
+private:
+    using superclass_ = system_base_<domain_space::oct, ValueType, ValueLimits>;
+
+public:
 
 };
 
 template <typename ValueType, typename ValueLimits>
-class octdiff_system : public system_base_<domain_space::octdiff, ValueType, ValueLimits>{
+class octdiff_system : public system_base_<domain_space::octdiff, ValueType, ValueLimits> {
+private:
+    using superclass_ = system_base_<domain_space::octdiff, ValueType, ValueLimits>;
+
+public:
 
 };
 
 } // namespace oct
 
 adl_END_ROOT_MODULE
+
 
 #endif // adl__oct__system__hpp__
