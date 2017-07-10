@@ -197,6 +197,8 @@ public:
     using superclass_::c_;
     static_assert(space == domain_space::octdiff, "Wrong variable type.");
 
+private:
+    friend class octdiff_conjunction<ValueType, VarType>;
     constexpr octdiff_cons& commute() noexcept;
     constexpr octdiff_cons to_commuted() const noexcept;
 };
@@ -278,6 +280,7 @@ public:
 
     // Queries
     constexpr bool equals(octdiff_conjunction const& rhs) const noexcept; // Disregards the constant
+    constexpr int compare(octdiff_conjunction const& rhs) const noexcept; // Disregards the constant
 
     // Operations
     constexpr octdiff_conjunction& invalidate() noexcept;
@@ -297,6 +300,10 @@ public:
     constexpr bool operator!() const noexcept;
     constexpr explicit operator bool() const noexcept;
     constexpr explicit operator std::string() const;
+
+private:
+    constexpr static cons_type init_di_(cons_type di, cons_type dj) noexcept;
+    constexpr static cons_type init_dj_(cons_type di, cons_type dj) noexcept;
 
 private:
     cons_type di_;
@@ -417,6 +424,14 @@ namespace operators {
                     constexpr bool operator>(adl::oct::octdiff_cons<ValueType, VarType> const& lhs, adl::oct::octdiff_cons<ValueType, VarType> const& rhs) noexcept;
 
                 template <typename ValueType,
+                    typename VarType,
+                    typename = std::enable_if_t<adl::oct::var_traits<VarType>::valid && VarType::space == adl::oct::domain_space::octdiff>>
+                    constexpr bool operator<(adl::oct::octdiff_conjunction<ValueType, VarType> const& lhs, adl::oct::octdiff_conjunction<ValueType, VarType> const& rhs) noexcept;
+                template <typename ValueType,
+                    typename VarType,
+                    typename = std::enable_if_t<adl::oct::var_traits<VarType>::valid && VarType::space == adl::oct::domain_space::octdiff>>
+                    constexpr bool operator<=(adl::oct::octdiff_conjunction<ValueType, VarType> const& lhs, adl::oct::octdiff_conjunction<ValueType, VarType> const& rhs) noexcept;
+                template <typename ValueType,
                         typename VarType,
                         typename = std::enable_if_t<adl::oct::var_traits<VarType>::valid && VarType::space == adl::oct::domain_space::octdiff>>
                     constexpr bool operator==(adl::oct::octdiff_conjunction<ValueType, VarType> const& lhs, adl::oct::octdiff_conjunction<ValueType, VarType> const& rhs) noexcept;
@@ -424,6 +439,14 @@ namespace operators {
                         typename VarType,
                         typename = std::enable_if_t<adl::oct::var_traits<VarType>::valid && VarType::space == adl::oct::domain_space::octdiff>>
                     constexpr bool operator!=(adl::oct::octdiff_conjunction<ValueType, VarType> const& lhs, adl::oct::octdiff_conjunction<ValueType, VarType> const& rhs) noexcept;
+                template <typename ValueType,
+                typename VarType,
+                    typename = std::enable_if_t<adl::oct::var_traits<VarType>::valid && VarType::space == adl::oct::domain_space::octdiff>>
+                    constexpr bool operator>=(adl::oct::octdiff_conjunction<ValueType, VarType> const& lhs, adl::oct::octdiff_conjunction<ValueType, VarType> const& rhs) noexcept;
+                template <typename ValueType,
+                    typename VarType,
+                    typename = std::enable_if_t<adl::oct::var_traits<VarType>::valid && VarType::space == adl::oct::domain_space::octdiff>>
+                    constexpr bool operator>(adl::oct::octdiff_conjunction<ValueType, VarType> const& lhs, adl::oct::octdiff_conjunction<ValueType, VarType> const& rhs) noexcept;
             }
         }
     }
@@ -758,7 +781,7 @@ constexpr octdiff_cons<ValueType, VarType> octdiff_cons<ValueType, VarType>::to_
 
 template <typename ValueType, typename VarType>
 constexpr octdiff_conjunction<ValueType, VarType>::octdiff_conjunction(cons_type di, cons_type dj) noexcept :
-    di_(di), dj_(dj) {}
+    di_(init_di_(di, dj)), dj_(init_dj_(di, dj)) {};
 
 template <typename ValueType, typename VarType>
 constexpr octdiff_conjunction<ValueType, VarType>
@@ -832,7 +855,20 @@ constexpr bool octdiff_conjunction<ValueType, VarType>::unit() const noexcept {
 
 template <typename ValueType, typename VarType>
 constexpr bool octdiff_conjunction<ValueType, VarType>::equals(octdiff_conjunction const& rhs) const noexcept {
-    return di_.equals(rhs.di_) && dj_.equals(rhs.dj_);
+    return valid() && rhs.valid() && (
+        di_.equals(rhs.di_)
+            ? dj_.equals(rhs.dj_)
+            : di_.equals(rhs.dj_)
+                ? dj_.equals(rhs.di_)
+                : false
+        );
+}
+
+template <typename ValueType, typename VarType>
+constexpr int octdiff_conjunction<ValueType, VarType>::compare(octdiff_conjunction const& rhs) const noexcept {
+    if (!valid() || !rhs.valid()) return 0;
+    int di_cmp = di_.compare(rhs.di_);
+    return di_cmp != 0 ? di_cmp : dj_.compare(rhs.dj_);
 }
 
 template <typename ValueType, typename VarType>
@@ -888,6 +924,25 @@ constexpr octdiff_conjunction<ValueType, VarType>::operator std::string() const 
     return to_string();
 }
 
+template <typename ValueType, typename VarType>
+constexpr static typename octdiff_conjunction<ValueType, VarType>::cons_type
+octdiff_conjunction<ValueType, VarType>::init_di_(cons_type di, cons_type dj) noexcept {
+    if (!di.valid()
+        || !dj.valid()
+        || di.compare(dj) <= 0)
+        return di;
+    return dj;
+}
+
+template <typename ValueType, typename VarType>
+constexpr static typename octdiff_conjunction<ValueType, VarType>::cons_type
+octdiff_conjunction<ValueType, VarType>::init_dj_(cons_type di, cons_type dj) noexcept {
+    if (!di.valid()
+        || !dj.valid()
+        || dj.compare(di) >= 0)
+        return dj;
+    return di;
+}
 //
 // adl::oct functions
 //
@@ -1056,6 +1111,22 @@ inline namespace comparison {
     }
 
     template <typename ValueType, typename VarType, typename>
+    constexpr bool operator<(
+        adl::oct::octdiff_conjunction<ValueType, VarType> const& lhs,
+        adl::oct::octdiff_conjunction<ValueType, VarType> const& rhs
+    ) noexcept {
+        return lhs.compare(rhs) < 0;
+    }
+
+    template <typename ValueType, typename VarType, typename>
+    constexpr bool operator<=(
+        adl::oct::octdiff_conjunction<ValueType, VarType> const& lhs,
+        adl::oct::octdiff_conjunction<ValueType, VarType> const& rhs
+    ) noexcept {
+        return lhs.compare(rhs) <= 0;
+    }
+
+    template <typename ValueType, typename VarType, typename>
     constexpr bool operator==(
         adl::oct::octdiff_conjunction<ValueType, VarType> const& lhs,
         adl::oct::octdiff_conjunction<ValueType, VarType> const& rhs
@@ -1069,6 +1140,22 @@ inline namespace comparison {
         adl::oct::octdiff_conjunction<ValueType, VarType> const& rhs
     ) noexcept {
         return !lhs.equals(rhs);
+    }
+
+    template <typename ValueType, typename VarType, typename>
+    constexpr bool operator>=(
+        adl::oct::octdiff_conjunction<ValueType, VarType> const& lhs,
+        adl::oct::octdiff_conjunction<ValueType, VarType> const& rhs
+    ) noexcept {
+        return lhs.compare(rhs) >= 0;
+    }
+
+    template <typename ValueType, typename VarType, typename>
+    constexpr bool operator>(
+        adl::oct::octdiff_conjunction<ValueType, VarType> const& lhs,
+        adl::oct::octdiff_conjunction<ValueType, VarType> const& rhs
+    ) noexcept {
+        return lhs.compare(rhs) > 0;
     }
 
 } // namespace comparison

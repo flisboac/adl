@@ -393,7 +393,7 @@ constexpr bool vexpr_base_<VarType>::equals(vexpr_type const& rhs) const noexcep
 
 template <typename VarType>
 constexpr int vexpr_base_<VarType>::compare(vexpr_type const& rhs) const noexcept {
-    int xi_cmp = xi_.compare(rhs.xj_);
+    int xi_cmp = xi_.compare(rhs.xi_);
     return xi_cmp != 0 ? xi_cmp : xj_.compare(rhs.xj_);
 }
 

@@ -83,6 +83,10 @@ target_sources(${api} INTERFACE
     "${api_dir_root}/adl/oct/vexpr.hpp"
     "${api_dir_root}/adl/oct/cons.hpp"
     "${api_dir_root}/adl/oct/system.hpp"
+    "${api_dir_root}/adl/oct/system/var_set_.hpp"
+    "${api_dir_root}/adl/oct/system/system_base_.hpp"
+    "${api_dir_root}/adl/oct/system/oct_system_.hpp"
+    "${api_dir_root}/adl/oct/system/octdiff_system_.hpp"
     )
 
 
