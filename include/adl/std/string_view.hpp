@@ -154,7 +154,8 @@ adl_BEGIN_ROOT_MODULE
 #endif
 
 template <typename Char>
-std::string to_string(basic_string_view<Char> const& str);;
+std::string to_string(basic_string_view<Char> const& str);
+std::string to_string(std::string str);
 
 namespace literals {
     inline namespace string_view {
@@ -188,6 +189,12 @@ adl_END_ROOT_MODULE
         typename adl::basic_string_view<Char, Traits>::size_type rhs,
         typename adl::basic_string_view<Char, Traits>::const_iterator iter
     );
+#endif
+
+
+//
+// [[ IMPLEMENTATION ]]
+//
 adl_BEGIN_ROOT_MODULE
 
 //
@@ -195,12 +202,16 @@ adl_BEGIN_ROOT_MODULE
 //
 
 template <typename Char>
-std::string to_string(basic_string_view<Char> const& str) {
+adl_IMPL std::string to_string(basic_string_view<Char> const& str) {
     return std::string(str.data(), str.size());
 }
 
+adl_IMPL std::string to_string(std::string str) {
+    return str;
+}
+
 template <typename T>
-T const* string_printf_basic_arg_(basic_string_view<T> const& value) noexcept(false) {
+adl_IMPL T const* string_printf_basic_arg_(basic_string_view<T> const& value) noexcept(false) {
     throw std::invalid_argument("Cannot string_printf with a basic_string_view argument.");
 }
 
@@ -225,30 +236,32 @@ namespace literals {
     }
 }
 
-template <class CharT, class Traits>
-std::basic_ostream<CharT, Traits>&
-operator<<(std::basic_ostream<CharT, Traits>& os, adl::basic_string_view<CharT, Traits> v) {
-    auto string = adl::to_string(v);
-    os << string;
-    return os;
-}
+adl_END_ROOT_MODULE
 
-template <typename Char, typename Traits>
-constexpr typename adl::basic_string_view<Char, Traits>::const_iterator operator+(
-    typename adl::basic_string_view<Char, Traits>::size_type rhs,
-    typename adl::basic_string_view<Char, Traits>::const_iterator iter
-) {
-    return iter + rhs;
-}
+#if !adl_CONFIG_LANG_IS_CPP17
+    template <class CharT, class Traits>
+    adl_IMPL std::basic_ostream<CharT, Traits>&
+    operator<<(std::basic_ostream<CharT, Traits>& os, adl::basic_string_view<CharT, Traits> v) {
+        auto string = adl::to_string(v);
+        os << string;
+        return os;
+    }
 
-template <typename Char, typename Traits>
-constexpr typename adl::basic_string_view<Char, Traits>::const_iterator operator-(
-    typename adl::basic_string_view<Char, Traits>::size_type rhs,
-    typename adl::basic_string_view<Char, Traits>::const_iterator iter
-) {
-    return iter - rhs;
-}
+    template <typename Char, typename Traits>
+    constexpr typename adl::basic_string_view<Char, Traits>::const_iterator operator+(
+        typename adl::basic_string_view<Char, Traits>::size_type rhs,
+        typename adl::basic_string_view<Char, Traits>::const_iterator iter
+    ) {
+        return iter + rhs;
+    }
 
+    template <typename Char, typename Traits>
+    constexpr typename adl::basic_string_view<Char, Traits>::const_iterator operator-(
+        typename adl::basic_string_view<Char, Traits>::size_type rhs,
+        typename adl::basic_string_view<Char, Traits>::const_iterator iter
+    ) {
+        return iter - rhs;
+    }
 #endif // !adl_CONFIG_LANG_IS_CPP17
 
 
@@ -256,11 +269,12 @@ constexpr typename adl::basic_string_view<Char, Traits>::const_iterator operator
 // [[ TEMPLATE IMPLEMENTATION ]]
 //
 #if !adl_CONFIG_LANG_IS_CPP17
-;
 
 //
 // basic_string_view
 //
+
+adl_BEGIN_ROOT_MODULE
 
 template <typename Char, typename Traits>
 constexpr basic_string_view<Char, Traits>::basic_string_view(

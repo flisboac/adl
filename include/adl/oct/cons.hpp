@@ -925,7 +925,7 @@ constexpr octdiff_conjunction<ValueType, VarType>::operator std::string() const 
 }
 
 template <typename ValueType, typename VarType>
-constexpr static typename octdiff_conjunction<ValueType, VarType>::cons_type
+constexpr typename octdiff_conjunction<ValueType, VarType>::cons_type
 octdiff_conjunction<ValueType, VarType>::init_di_(cons_type di, cons_type dj) noexcept {
     if (!di.valid()
         || !dj.valid()
@@ -935,7 +935,7 @@ octdiff_conjunction<ValueType, VarType>::init_di_(cons_type di, cons_type dj) no
 }
 
 template <typename ValueType, typename VarType>
-constexpr static typename octdiff_conjunction<ValueType, VarType>::cons_type
+constexpr typename octdiff_conjunction<ValueType, VarType>::cons_type
 octdiff_conjunction<ValueType, VarType>::init_dj_(cons_type di, cons_type dj) noexcept {
     if (!di.valid()
         || !dj.valid()
