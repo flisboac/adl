@@ -29,19 +29,66 @@ private:
     using superclass_ = system_base_<domain_space::octdiff, ValueType, ValueLimits>;
 
 public:
-    using typename superclass_::counterpart_system_type;
-    using typename superclass_::const_iterator;
-    friend class counterpart_system_type;
+    using superclass_::constraints_;
+    using superclass_::variables_;
+    using superclass_::space;
 
-private:
-    template <typename ValueType_, typename VarType_, typename = std::enable_if_t<
-        std::is_convertible<ValueType_, ValueType>::value
-        && common_cons<ValueType_, VarType_>::space == space>>
-        const_iterator insert_(octdiff_conjunction<ValueType_, VarType_> conjunction);
+    using typename superclass_::counterpart_system_type;
+    using typename superclass_::iterator;
+    using typename superclass_::const_iterator;
+    using typename superclass_::value_type;
+
+    octdiff_system() = default;
+    octdiff_system(octdiff_system const&) = default;
+    octdiff_system(octdiff_system &&) noexcept = default;
+    octdiff_system& operator=(octdiff_system const&) = default;
+    octdiff_system& operator=(octdiff_system &&) noexcept = default;
+
+    octdiff_system(counterpart_system_type const&);
+
+    template <typename VarType_, typename = std::enable_if<
+        common_var<VarType_>::space == space>>
+        std::size_t count(octdiff_vexpr<common_var_t<VarType_>> vexpr) const;
+    template <typename VarType_, typename = common_octdiff_conjunction_t<ValueType, VarType_>>
+        std::size_t count(common_octdiff_conjunction_t<ValueType, VarType_> conjunction) const;
+
+    template <typename VarType_, typename = std::enable_if<
+        common_var<VarType_>::space == space>>
+        const_iterator find(octdiff_vexpr<common_var_t<VarType_>> vexpr) const;
+    template <typename VarType_, typename = common_octdiff_conjunction_t<ValueType, VarType_>>
+        const_iterator find(common_octdiff_conjunction_t<ValueType, VarType_> conjunction) const;
+
+    template <typename VarType_, typename = std::enable_if<
+        common_var<VarType_>::space == space>>
+        value_type const& at(octdiff_vexpr<common_var_t<VarType_>> vexpr) const;
+    template <typename VarType_, typename = common_octdiff_conjunction_t<ValueType, VarType_>>
+        value_type const& at(common_octdiff_conjunction_t<ValueType, VarType_> conjunction) const;
+
+    template <typename VarType_, typename = std::enable_if<
+        common_var<VarType_>::space == space>>
+        value_type const& operator[](octdiff_vexpr<common_var_t<VarType_>> vexpr) const;
+    template <typename VarType_, typename = common_octdiff_conjunction_t<ValueType, VarType_>>
+        value_type const& operator[](common_octdiff_conjunction_t<ValueType, VarType_> conjunction) const;
+
 };
 
 } // namespace oct
 
+adl_END_ROOT_MODULE
+
+
+//
+// [[ TEMPLATE IMPLEMENTATION ]]
+//
+adl_BEGIN_ROOT_MODULE
+namespace oct {
+
+//
+// octdiff_system
+//
+
+
+} // namespace oct
 adl_END_ROOT_MODULE
 
 #endif //adl__oct__system__octdiff_system___hpp__

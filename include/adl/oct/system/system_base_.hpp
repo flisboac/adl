@@ -12,10 +12,10 @@
 #include "adl.cfg.hpp"
 
 #include "adl/oct.fwd.hpp"
+#include "adl/oct/limits.hpp"
 #include "adl/oct/traits.hpp"
 #include "adl/oct/var.hpp"
 #include "adl/oct/vexpr.hpp"
-#include "adl/oct/system.hpp"
 
 #include "adl/oct/system/var_set_.hpp"
 
@@ -63,48 +63,20 @@ public:
     constexpr static const auto counterpart_space = domain_space_traits::counterpart_space;
 
 protected:
-    using container_value_type_ = std::conditional<space == domain_space::oct, identity_cons_type, identity_octdiff_conjunction_type>::type;
-    using container_type_ = std::set<container_value_type_>;
+    using container_value_type_ = typename std::conditional<space == domain_space::oct, literal_cons_type, literal_octdiff_conjunction_type>::type;
+    using container_type_ = std::set<container_value_type_, typename container_value_type_::less>;
     using container_const_iterator_ = typename container_type_::const_iterator;
+    using container_iterator_ = typename container_type_::iterator;
+    using container_reverse_iterator_ = typename container_type_::reverse_iterator;
+    using container_const_reverse_iterator_ = typename container_type_::const_reverse_iterator;
 
 public:
-    using value_type = std::conditional<space == domain_space::oct, literal_cons_type, literal_octdiff_conjunction_type>::type;
     using var_set_type = var_set<space>;
-
-    class const_iterator {
-
-        // Type definitions
-        using difference_type = typename container_const_iterator_::difference_type;
-        using value_type = value_type;
-        using pointer = value_type*;
-        using reference = value_type&;
-        using iterator_category = std::random_access_iterator_tag;
-
-        // Defaulted members
-        const_iterator(const_iterator const& rhs) = default;
-        const_iterator(const_iterator && rhs) noexcept = default;
-        const_iterator& operator=(const_iterator const& rhs) = default;
-        const_iterator& operator=(const_iterator && rhs) noexcept = default;
-
-        // Instance construction
-        const_iterator(system_base_ const& parent, container_const_iterator_ iter) noexcept;
-
-        bool operator==(const_iterator rhs) noexcept;
-        bool operator!=(const_iterator rhs) noexcept;
-
-        // Iterator members
-        value_type const& operator*();
-        value_type const* operator->();
-        const_iterator& operator++();
-        const_iterator operator++(int);
-        const_iterator& operator--();
-        const_iterator operator--(int);
-
-    private:
-        system_base_ parent_;
-        container_const_iterator_ iter_;
-        value_type current_;
-    };
+    using value_type = container_value_type_;
+    using const_iterator = container_const_iterator_;
+    using iterator = container_iterator_;
+    using reverse_iterator = container_reverse_iterator_;
+    using const_reverse_iterator = container_const_reverse_iterator_;
 
     system_base_() noexcept = default;
     system_base_(system_base_ const&) = default;
@@ -116,34 +88,11 @@ public:
 
     const_iterator begin() const;
     const_iterator end() const;
-    const_iterator rbegin() const;
-    const_iterator rend() const;
+    const_reverse_iterator rbegin() const;
+    const_reverse_iterator rend() const;
 
     bool empty() const;
     std::size_t size() const;
-
-    template <typename VarType_, typename = std::enable_if<
-        common_vexpr<VarType_>::space == space>>
-        std::size_t count(common_vexpr_t<VarType_> vexpr) const;
-    template <typename VarType_, typename = std::enable_if<
-        common_vexpr<VarType_>::space == space>>
-        const_iterator find(common_vexpr_t<VarType_> vexpr) const;
-    template <typename VarType_, typename = std::enable_if<
-        common_vexpr<VarType_>::space == space>>
-        value_type at(common_vexpr_t<VarType_> vexpr) const noexcept(false);
-    template <typename VarType_, typename = std::enable_if<
-        common_vexpr<VarType_>::space == space>>
-        value_type operator[](common_vexpr_t<VarType_> vexpr) const;
-
-protected:
-    system_base_& clear_();
-    template <typename ValueType_, typename VarType_, typename = std::enable_if<
-        std::is_convertible<ValueType_, ValueType>::value
-        && common_cons<ValueType_, VarType_>::space == space>>
-        const_iterator insert_(common_cons_t<ValueType_, VarType_> cons);
-    template <typename VarType_, typename = std::enable_if<
-        common_vexpr<VarType_>::space == space>>
-        const_iterator erase_(common_vexpr_t<VarType_> vexpr);
 
 protected:
     container_type_ constraints_;
@@ -152,6 +101,61 @@ protected:
 
 } // namespace oct
 
+adl_END_ROOT_MODULE
+
+
+//
+// [[ TEMPLATE IMPLEMENTATION ]]
+//
+
+//
+// system_base_
+//
+
+adl_BEGIN_ROOT_MODULE
+namespace oct {
+
+template <domain_space Domain, typename ValueType, typename ValueLimits>
+adl_IMPL typename system_base_<Domain, ValueType, ValueLimits>::var_set_type const&
+system_base_<Domain, ValueType, ValueLimits>::vars() const {
+    return variables_;
+}
+
+template <domain_space Domain, typename ValueType, typename ValueLimits>
+adl_IMPL typename system_base_<Domain, ValueType, ValueLimits>::const_iterator
+system_base_<Domain, ValueType, ValueLimits>::begin() const {
+    return constraints_.begin();
+}
+
+template <domain_space Domain, typename ValueType, typename ValueLimits>
+adl_IMPL typename system_base_<Domain, ValueType, ValueLimits>::const_iterator
+system_base_<Domain, ValueType, ValueLimits>::end() const {
+    return constraints_.end();
+}
+
+template <domain_space Domain, typename ValueType, typename ValueLimits>
+adl_IMPL typename system_base_<Domain, ValueType, ValueLimits>::const_reverse_iterator
+system_base_<Domain, ValueType, ValueLimits>::rbegin() const {
+    return constraints_.rbegin();
+}
+
+template <domain_space Domain, typename ValueType, typename ValueLimits>
+adl_IMPL typename system_base_<Domain, ValueType, ValueLimits>::const_reverse_iterator
+system_base_<Domain, ValueType, ValueLimits>::rend() const {
+    return constraints_.rend();
+}
+
+template <domain_space Domain, typename ValueType, typename ValueLimits>
+adl_IMPL bool system_base_<Domain, ValueType, ValueLimits>::empty() const {
+    return constraints_.empty();
+}
+
+template <domain_space Domain, typename ValueType, typename ValueLimits>
+adl_IMPL std::size_t system_base_<Domain, ValueType, ValueLimits>::size() const {
+    return constraints_.size();
+}
+
+} // namespace oct
 adl_END_ROOT_MODULE
 
 #endif //adl__oct__system__system_base___hpp__

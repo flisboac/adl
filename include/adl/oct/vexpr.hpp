@@ -48,6 +48,10 @@ public:
     using counterpart_vexpr_type = typename var_traits::counterpart_vexpr_type;
     using identity_vexpr_type = typename var_traits::identity_vexpr_type;
 
+    struct less {
+        constexpr bool operator()(vexpr_type const& lhs, vexpr_type const& rhs) const noexcept;
+    };
+
     //
     // Const-static Variable definitions
     //
@@ -176,20 +180,29 @@ public:
     constexpr octdiff_vexpr to_commuted() const noexcept;
 };
 
+template <typename FirstVarType, typename SecondVarType, bool Specialized = common_var<FirstVarType, SecondVarType>::valid>
+struct common_vexpr_ {
+    constexpr static const bool valid = Specialized;
+};
 
 template <typename FirstVarType, typename SecondVarType>
-struct common_vexpr {
+struct common_vexpr_<FirstVarType, SecondVarType, true> {
+    constexpr static const bool valid = true;
+
 private:
     using var_traits = typename common_var_t<FirstVarType, SecondVarType>::var_traits;
 
 public:
-    constexpr static const bool valid = common_var<FirstVarType, SecondVarType>::valid;
     using type = typename var_traits::vexpr_type;
     constexpr static const domain_space space = common_var<FirstVarType, SecondVarType>::space;
     constexpr static const domain_space counterpart_space = common_var<FirstVarType, SecondVarType>::counterpart_space;
     constexpr static const bool is_oct_space = common_var<FirstVarType, SecondVarType>::is_oct_space;
     constexpr static const bool is_octdiff_space = common_var<FirstVarType, SecondVarType>::is_octdiff_space;
 };
+
+
+template <typename FirstVarType, typename SecondVarType>
+struct common_vexpr : public common_vexpr_<FirstVarType, SecondVarType> {};
 
 
 constexpr oct_vexpr<> make_unit_vexpr(oct_var xi) noexcept;
@@ -286,6 +299,11 @@ std::basic_ostream<char, Traits>& operator<<(
 adl_BEGIN_ROOT_MODULE
 
 namespace oct {
+
+template <typename VarType>
+constexpr bool vexpr_base_<VarType>::less::operator()(vexpr_type const& lhs, vexpr_type const& rhs) const noexcept {
+    return lhs.compare(rhs) < 0;
+}
 
 template <typename VarType>
 constexpr vexpr_base_<VarType>::vexpr_base_(var_type xi, var_type xj) noexcept :

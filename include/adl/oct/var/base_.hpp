@@ -37,6 +37,10 @@ namespace oct {
         using identity_var_type = typename var_traits::identity_var_type;
         using counterpart_var_type = typename var_traits::counterpart_var_type;
 
+        struct less {
+            constexpr bool operator()(var_type const& lhs, var_type const& rhs) const noexcept;
+        };
+
         static_assert(var_traits::valid,
             "A valid var_traits must be provided.");
         static_assert(std::is_same<var_type, typename VarTraits::var_type>::value,
@@ -224,6 +228,7 @@ namespace oct {
 
         // constructors and assignments
         constexpr explicit lit_named_var_base_(long long int id) noexcept;
+        constexpr lit_named_var_base_(identity_var_type id_var) noexcept;
         constexpr lit_named_var_base_(var_type const& base, long long int id) noexcept;
         constexpr lit_named_var_base_(counterpart_var_type const& base, long long int id) noexcept;
         constexpr explicit lit_named_var_base_(string_view name) noexcept;
@@ -253,10 +258,18 @@ namespace oct {
 
 template <typename VarType> constexpr void assert_valid_var_type() noexcept;
 
+template <typename FirstVarType, typename SecondVarType, bool specialized =
+        var_traits<FirstVarType>::valid
+        && var_traits<SecondVarType>::valid>
+struct common_var_ {
+    constexpr static const bool valid = specialized;
+    constexpr static const bool is_oct_space = false;
+    constexpr static const bool is_octdiff_space = false;
+};
+
 template <typename FirstVarType, typename SecondVarType>
-struct common_var {
-    constexpr static const bool valid = var_traits<FirstVarType>::valid
-        && var_traits<SecondVarType>::valid;
+struct common_var_<FirstVarType, SecondVarType, true> {
+    constexpr static const bool valid = true;
     using type = std::enable_if_t<valid,
         std::conditional_t<
             std::is_same<FirstVarType, SecondVarType>::value,
@@ -266,9 +279,12 @@ struct common_var {
                 typename FirstVarType::identity_var_type>>>;
     constexpr static const domain_space space = type::space;
     constexpr static const domain_space counterpart_space = type::counterpart_space;
-    constexpr static const bool is_oct_space = valid && space == domain_space::oct;
-    constexpr static const bool is_octdiff_space = valid && space == domain_space::octdiff;
+    constexpr static const bool is_oct_space = space == domain_space::oct;
+    constexpr static const bool is_octdiff_space = space == domain_space::octdiff;
 };
+
+template <typename FirstVarType, typename SecondVarType>
+struct common_var : public common_var_<FirstVarType, SecondVarType> {};
 
 }
 
@@ -344,6 +360,12 @@ constexpr void assert_valid_var_type() noexcept {
 //
 // var_base_
 //
+
+template <typename VarType, typename VarTraits>
+constexpr bool var_base_<VarType, VarTraits>::less::operator()(var_type const& lhs, var_type const& rhs) const noexcept {
+    return lhs.compare(rhs) < 0;
+}
+
 template <typename VarType, typename VarTraits>
 constexpr var_base_<VarType, VarTraits>::var_base_(long long int id) noexcept :
     id_(id_to_range(id)) {}
@@ -682,6 +704,10 @@ adl_IMPL unnamed_var_base_<VarType, VarTraits>::operator std::string() const {
 template <typename VarType, typename VarTraits>
 constexpr lit_named_var_base_<VarType, VarTraits>::lit_named_var_base_(long long int id) noexcept :
     superclass_(id) {}
+
+template <typename VarType, typename VarTraits>
+constexpr lit_named_var_base_<VarType, VarTraits>::lit_named_var_base_(identity_var_type id_var) noexcept :
+    superclass_(id_var.id()) {}
 
 template <typename VarType, typename VarTraits>
 constexpr lit_named_var_base_<VarType, VarTraits>::lit_named_var_base_(

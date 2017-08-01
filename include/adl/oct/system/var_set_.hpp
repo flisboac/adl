@@ -8,6 +8,7 @@
 
 #include <map>
 #include <iterator>
+#include <cassert>
 
 #include "adl.cfg.hpp"
 
@@ -47,14 +48,24 @@ public:
         value_type& operator=(value_type &&) noexcept = default;
 
         template <typename VarType, typename = common_var_t<VarType>>
-            value_type(VarType var);
+            explicit value_type(VarType var);
 
         bool valid() const noexcept;
         std::string const& name() const noexcept;
         std::size_t count() const noexcept;
         std::size_t positive_count() const noexcept;
         std::size_t negative_count() const noexcept;
-        var_type const& var() const noexcept;
+        var_type const& normalized_var() const noexcept;
+
+        bool equals(value_type const& rhs) const noexcept;
+        int compare(value_type const& rhs) const noexcept;
+
+        bool operator<(value_type const& rhs) const noexcept;
+        bool operator<=(value_type const& rhs) const noexcept;
+        bool operator==(value_type const& rhs) const noexcept;
+        bool operator!=(value_type const& rhs) const noexcept;
+        bool operator>=(value_type const& rhs) const noexcept;
+        bool operator>(value_type const& rhs) const noexcept;
 
         void reset();
         template <typename VarType, typename = common_var_t<VarType>>
@@ -74,7 +85,7 @@ public:
     };
 
 private:
-    using container_type_ = std::map<identity_var_type, value_type>; // normalized (positive-only)
+    using container_type_ = std::set<value_type>; // normalized (positive-only)
 
 public:
     using const_iterator = typename container_type_::const_iterator;
@@ -85,12 +96,15 @@ public:
     const_iterator rbegin() const;
     const_iterator rend() const;
 
-    bool empty() const;
-    std::size_t size() const;
+    bool empty() const noexcept;
+    std::size_t size() const noexcept;
 
     var_set& clear();
+    var_set& reset();
     template <typename VarType, typename = common_var_t<VarType>>
-        std::pair<const_iterator, bool> insert(VarType var);
+        void setup(VarType var);
+    template <typename VarType, typename = common_var_t<VarType>>
+        std::pair<iterator, bool> insert(VarType var);
     template <typename VarType, typename = common_var_t<VarType>>
         void erase_one(VarType var);
 
@@ -101,7 +115,7 @@ public:
     template <typename VarType, typename = common_var_t<VarType>>
         const_iterator find(VarType var) const;
     template <typename VarType, typename = common_var_t<VarType>>
-        value_type const& get(VarType var) const noexcept(false);
+        value_type const& get(VarType var) const;
     template <typename VarType, typename = common_var_t<VarType>>
         value_type const& operator[](VarType var) const; // returns invalid if the var is not included
 
@@ -109,10 +123,11 @@ private:
     template <typename VarType, typename = common_var_t<VarType>>
         iterator find(VarType var);
     template <typename VarType, typename = common_var_t<VarType>>
-        iterator find_or_insert_(VarType var);
+        std::pair<iterator, bool> find_or_insert_(VarType var);
 
 private:
     container_type_ data_;
+    value_type const dummy_data_;
 };
 
 
@@ -135,8 +150,7 @@ var_set<Domain>::value_type::value_type(VarType var) {
         name_ = "";
         normalized_var_ = literal_var_type::invalid();
     }
-    positive_count_ = 0;
-    negative_count_ = 0;
+    reset();
 }
 
 template <domain_space Domain>
@@ -161,8 +175,48 @@ adl_IMPL std::size_t var_set<Domain>::value_type::negative_count() const noexcep
 }
 
 template <domain_space Domain>
-adl_IMPL typename var_set<Domain>::var_type const& var_set<Domain>::value_type::var() const noexcept {
+adl_IMPL typename var_set<Domain>::var_type const& var_set<Domain>::value_type::normalized_var() const noexcept {
     return normalized_var_;
+}
+
+template <domain_space Domain>
+adl_IMPL bool var_set<Domain>::value_type::equals(value_type const& rhs) const noexcept {
+    return normalized_var_.equals(rhs.normalized_var_);
+}
+
+template <domain_space Domain>
+adl_IMPL int var_set<Domain>::value_type::compare(value_type const& rhs) const noexcept {
+    return normalized_var_.compare(rhs.normalized_var_);
+}
+
+template <domain_space Domain>
+adl_IMPL bool var_set<Domain>::value_type::operator<(value_type const& rhs) const noexcept {
+    return compare(rhs) < 0;
+}
+
+template <domain_space Domain>
+adl_IMPL bool var_set<Domain>::value_type::operator<=(value_type const& rhs) const noexcept {
+    return compare(rhs) <= 0;
+}
+
+template <domain_space Domain>
+adl_IMPL bool var_set<Domain>::value_type::operator==(value_type const& rhs) const noexcept {
+    return equals(rhs);
+}
+
+template <domain_space Domain>
+adl_IMPL bool var_set<Domain>::value_type::operator!=(value_type const& rhs) const noexcept {
+    return !equals(rhs);
+}
+
+template <domain_space Domain>
+adl_IMPL bool var_set<Domain>::value_type::operator>=(value_type const& rhs) const noexcept {
+    return compare(rhs) >= 0;
+}
+
+template <domain_space Domain>
+adl_IMPL bool var_set<Domain>::value_type::operator>(value_type const& rhs) const noexcept {
+    return compare(rhs) > 0;
 }
 
 template <domain_space Domain>
@@ -208,7 +262,7 @@ adl_IMPL bool var_set<Domain>::value_type::subtract(VarType var) {
 
 template <domain_space Domain>
 adl_IMPL var_set<Domain>::value_type::operator var_type const&() const noexcept {
-    return var();
+    return normalized_var();
 }
 
 template <domain_space Domain>
@@ -226,22 +280,22 @@ adl_IMPL bool var_set<Domain>::value_type::operator !() const noexcept {
 //
 
 template <domain_space Domain>
-adl_IMPL typename var_set<Domain>::const_iterator var_set<Domain>::begin() const noexcept {
+adl_IMPL typename var_set<Domain>::const_iterator var_set<Domain>::begin() const {
     return data_.begin();
 }
 
 template <domain_space Domain>
-adl_IMPL typename var_set<Domain>::const_iterator var_set<Domain>::end() const noexcept {
+adl_IMPL typename var_set<Domain>::const_iterator var_set<Domain>::end() const {
     return data_.end();
 }
 
 template <domain_space Domain>
-adl_IMPL typename var_set<Domain>::const_iterator var_set<Domain>::rbegin() const noexcept {
+adl_IMPL typename var_set<Domain>::const_iterator var_set<Domain>::rbegin() const {
     return data_.rbegin();
 }
 
 template <domain_space Domain>
-adl_IMPL typename var_set<Domain>::const_iterator var_set<Domain>::rend() const noexcept {
+adl_IMPL typename var_set<Domain>::const_iterator var_set<Domain>::rend() const {
     return data_.rend();
 }
 
@@ -262,22 +316,27 @@ adl_IMPL var_set<Domain>& var_set<Domain>::clear() {
 }
 
 template <domain_space Domain>
+adl_IMPL var_set<Domain>& var_set<Domain>::reset() {
+    for (auto iter = data_.begin(); iter != data_.end(); ++iter) iter->reset();
+    return *this;
+}
+
+template <domain_space Domain>
 template <typename VarType, typename>
-adl_IMPL std::pair<typename var_set<Domain>::const_iterator, bool> var_set<Domain>::insert(VarType var) {
-    auto iter = end();
-    bool inserted = false;
-    auto idx_var = var.to_identity().to_normalized();
-    if (idx_var.valid()) {
-        auto insertion_results = data_.insert(std::make_pair(idx_var, value_type(var)));
-        auto& var_data = *insertion_results.first;
-        inserted = insertion_results.second;
-        if (!var_data.add(var) && inserted) {
-            // Being paranoid here.
-            data_.erase(insertion_results.first);
-        } else {
-            iter = const_iterator(insertion_results.first);
-        }
-    }
+adl_IMPL void var_set<Domain>::setup(VarType var) {
+    auto results = find_or_insert_(var);
+    if (!results.second) throw std::logic_error("Variable already set up.");
+}
+
+template <domain_space Domain>
+template <typename VarType, typename>
+adl_IMPL std::pair<typename var_set<Domain>::iterator, bool> var_set<Domain>::insert(VarType var) {
+    auto results = find_or_insert_(var);
+    auto iter = results.first;
+    bool inserted = results.second;
+    auto& var_data = const_cast<typename iterator::value_type&>(*iter);
+    bool add_result = var_data.add(var);
+    assert(add_result); // Being paranoid here.
     return { iter, inserted };
 }
 
@@ -315,35 +374,40 @@ adl_IMPL std::size_t var_set<Domain>::count_all(VarType var) const {
 template <domain_space Domain>
 template <typename VarType, typename>
 adl_IMPL typename var_set<Domain>::const_iterator var_set<Domain>::find(VarType var) const {
-    return const_cast<var_set&>(*this).find(var);
+    auto idx_var = var.to_identity().to_normalized();
+    if (idx_var.valid()) return data_.find(value_type(idx_var));
+    return data_.end();
 }
 
 template <domain_space Domain>
 template <typename VarType, typename>
 adl_IMPL typename var_set<Domain>::iterator var_set<Domain>::find(VarType var) {
     auto idx_var = var.to_identity().to_normalized();
-    if (idx_var.valid()) return data_.find(idx_var);
+    if (idx_var.valid()) return data_.find(value_type(idx_var));
     return data_.end();
 }
 
 template <domain_space Domain>
 template <typename VarType, typename>
-adl_IMPL typename var_set<Domain>::iterator var_set<Domain>::find_or_insert_(VarType var) {
+adl_IMPL std::pair<typename var_set<Domain>::iterator, bool> var_set<Domain>::find_or_insert_(VarType var) {
     auto idx_var = var.to_identity().to_normalized();
     if (idx_var.valid()) {
-        auto iter = data_.find(idx_var);
-        if (iter == data_.end()) return data_.insert(std::make_pair(idx_var, value_type(var))).first;
-        return iter;
+        value_type value(idx_var);
+        iterator iter = data_.find(value);
+        if (iter == data_.end()) {
+            return data_.insert(value);
+        }
+        return { iter, false };
     }
-    return data_.end();
+    throw std::logic_error("Invalid variable.");
 }
 
 template <domain_space Domain>
 template <typename VarType, typename>
-adl_IMPL typename var_set<Domain>::value_type const& var_set<Domain>::get(VarType var) const noexcept(false) {
+adl_IMPL typename var_set<Domain>::value_type const& var_set<Domain>::get(VarType var) const {
     auto iter = find(var);
-    if (iter != end()) return iter->var();
-    return var_type::invalid();
+    if (iter != end()) return *iter;
+    return dummy_data_;
 }
 
 template <domain_space Domain>

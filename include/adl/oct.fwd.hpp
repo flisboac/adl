@@ -100,6 +100,10 @@ template <typename ValueType, typename VarType = octdiff_var> class octdiff_conj
 template <typename ValueType, typename FirstVarType, typename SecondVarType = FirstVarType> struct common_cons;
 template <typename ValueType, typename FirstVarType, typename SecondVarType = FirstVarType> using common_cons_t = typename common_cons<ValueType, FirstVarType, SecondVarType>::type;
 
+template <typename ValueType, typename FirstVarType, typename SecondVarType = FirstVarType> struct common_octdiff_conjunction;
+template <typename ValueType, typename FirstVarType, typename SecondVarType = FirstVarType> using common_octdiff_conjunction_t = typename common_octdiff_conjunction<ValueType, FirstVarType, SecondVarType>::type;
+
+
 //
 // system.hpp
 //

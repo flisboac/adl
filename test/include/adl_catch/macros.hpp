@@ -8,8 +8,8 @@
 
 #include "catch.hpp"
 
-#define adl_UNIT_TEST_NAME(module_name__, element_type__) "unit:" module_name__ ":" adl_STRFY(element_type__) // element can be a C++ type, as long as it's not parameterized (template)
-#define adl_UNIT_TEST_STRNAME(module_name__, element_name__) "unit:" module_name__ ":" element_name__ // Element must be a string.
+#define adl_UNIT_TEST_NAME(module_name__, element_type__) "unit:" module_name__ "#" adl_STRFY(element_type__) // element can be a C++ type, as long as it's not parameterized (template)
+#define adl_UNIT_TEST_STRNAME(module_name__, element_name__) "unit:" module_name__ "#" element_name__ // Element must be a string.
 #define adl_UNIT_TEST_FLAGS(module_name__) "[unit][" module_name__ "]"
 
 #define REQUIRE_TRUE_NOTHROW(test__) REQUIRE_NOTHROW( REQUIRE( (test__) ) )
