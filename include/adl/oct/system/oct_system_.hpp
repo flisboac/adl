@@ -26,17 +26,20 @@ template <typename ValueType, typename ValueLimits>
 class oct_system : public system_base_<domain_space::oct, ValueType, ValueLimits> {
 private:
     using superclass_ = system_base_<domain_space::oct, ValueType, ValueLimits>;
+
+public:
     using typename superclass_::counterpart_system_type;
     using typename superclass_::identity_cons_type;
     using typename superclass_::value_type;
     using typename superclass_::literal_var_type;
     using typename superclass_::iterator;
     using typename superclass_::const_iterator;
+    using typename superclass_::constant_type;
+
     using superclass_::space;
     using superclass_::constraints_;
     using superclass_::variables_;
 
-public:
     template <typename VarType_, typename = std::enable_if<common_var<VarType_>::is_oct_space> >
         std::size_t count(oct_vexpr<VarType_> vexpr) const;
     template <typename VarType_, typename = std::enable_if<common_var<VarType_>::is_oct_space> >
@@ -44,9 +47,7 @@ public:
     template <typename VarType_, typename = std::enable_if<common_var<VarType_>::is_oct_space> >
         value_type const& at(oct_vexpr<VarType_> vexpr) const;
     template <typename VarType_, typename = std::enable_if<common_var<VarType_>::is_oct_space> >
-        value_type const& operator[](oct_vexpr<VarType_> vexpr) const;
-    template <typename VarType_, typename = std::enable_if<common_var<VarType_>::is_oct_space> >
-        value_type& operator[](oct_vexpr<VarType_> vexpr);
+        constant_type const& operator[](oct_vexpr<VarType_> vexpr) const;
 
     oct_system& clear();
     oct_system& reset();
@@ -79,6 +80,11 @@ private:
 } // namespace oct
 
 adl_END_ROOT_MODULE
+
+template <typename CharType, typename CharTraits, typename ValueType, typename ValueLimits>
+std::basic_ostream<CharType, CharTraits>& operator<<(
+    std::basic_ostream<CharType, CharTraits>& os,
+    adl::oct::oct_system<ValueType, ValueLimits> const& system);
 
 //
 // [[ TEMPLATE IMPLEMENTATION ]]
@@ -116,17 +122,9 @@ oct_system<ValueType, ValueLimits>::at(oct_vexpr<VarType_> vexpr) const {
 
 template <typename ValueType, typename ValueLimits>
 template <typename VarType_, typename>
-inline typename oct_system<ValueType, ValueLimits>::value_type const&
+inline typename oct_system<ValueType, ValueLimits>::constant_type const&
 oct_system<ValueType, ValueLimits>::operator[](oct_vexpr<VarType_> vexpr) const {
-    return at(vexpr);
-}
-
-template <typename ValueType, typename ValueLimits>
-template <typename VarType_, typename>
-inline typename oct_system<ValueType, ValueLimits>::value_type&
-oct_system<ValueType, ValueLimits>::operator[](oct_vexpr<VarType_> vexpr) {
-    auto idx = to_value_(vexpr);
-    return constraints_[idx];
+    return at(vexpr).c();
 }
 
 template <typename ValueType, typename ValueLimits>
@@ -227,5 +225,13 @@ oct_system<ValueType, ValueLimits>::to_var_(VarType_ var) {
 } // namespace oct
 adl_END_ROOT_MODULE
 
+template <typename CharType, typename CharTraits, typename ValueType, typename ValueLimits>
+std::basic_ostream<CharType, CharTraits>& operator<<(
+    std::basic_ostream<CharType, CharTraits>& os,
+    adl::oct::oct_system<ValueType, ValueLimits> const& system
+) {
+    os << system.to_string();
+    return os;
+}
 
 #endif //adl__oct__system__oct_system___hpp__

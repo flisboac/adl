@@ -95,8 +95,8 @@ public:
     constexpr var_type xI() const noexcept;
     constexpr var_type xj() const noexcept; // always invalid if `unit() && space == domain_space::oct`
     constexpr var_type xJ() const noexcept;
-    constexpr value_type c() const noexcept;
-    constexpr value_type constant() const noexcept;
+    constexpr value_type const& c() const noexcept;
+    constexpr value_type const& constant() const noexcept;
     constexpr var_type last_var() const noexcept;
     constexpr std::size_t last_var_index() const noexcept;
     constexpr bool valid() const noexcept;
@@ -133,7 +133,8 @@ public:
     constexpr bool operator!() const noexcept;
     constexpr explicit operator bool() const noexcept;
     constexpr explicit operator std::string() const;
-    constexpr explicit operator vexpr_type() const noexcept;
+    constexpr operator vexpr_type() const noexcept;
+    constexpr explicit operator value_type() const noexcept;
 
 private:
     constexpr subclass_& as_subclass_() noexcept;
@@ -234,7 +235,7 @@ public:
 
     // Cons types
     typedef typename var_traits::template cons_type<ValueType> cons_type;
-    typedef typename var_traits::template counterpart_cons_type<ValueType> counterpart_cons_type;
+    typedef typename var_traits::template counterpart_cons_type<ValueType> counterpart_cons_type; // always oct_cons
     typedef typename var_traits::template identity_cons_type<ValueType> identity_cons_type;
     typedef typename var_traits::template octdiff_conjunction_type<ValueType> octdiff_conjunction_type;
 
@@ -307,6 +308,7 @@ public:
     constexpr octdiff_conjunction& as_valid() noexcept;
     constexpr octdiff_conjunction to_valid() const noexcept;
     std::string to_string() const;
+    constexpr counterpart_cons_type to_oct() const noexcept;
 
     // conversion operators
     constexpr bool operator!() const noexcept;
@@ -577,13 +579,13 @@ cons_base_<ValueType, VarType>::xJ() const noexcept {
 }
 
 template <typename ValueType, typename VarType>
-constexpr typename cons_base_<ValueType, VarType>::value_type
+constexpr typename cons_base_<ValueType, VarType>::value_type const&
 cons_base_<ValueType, VarType>::c() const noexcept {
     return c_;
 }
 
 template <typename ValueType, typename VarType>
-constexpr typename cons_base_<ValueType, VarType>::value_type
+constexpr typename cons_base_<ValueType, VarType>::value_type const&
 cons_base_<ValueType, VarType>::constant() const noexcept {
     return c();
 }
@@ -705,6 +707,11 @@ constexpr cons_base_<ValueType, VarType>::operator std::string() const {
 template <typename ValueType, typename VarType>
 constexpr cons_base_<ValueType, VarType>::operator vexpr_type() const noexcept {
     return to_vexpr();
+}
+
+template <typename ValueType, typename VarType>
+constexpr cons_base_<ValueType, VarType>::operator value_type() const noexcept {
+    return c();
 }
 
 template <typename ValueType, typename VarType>
@@ -969,8 +976,18 @@ octdiff_conjunction<ValueType, VarType>::to_valid() const noexcept {
 }
 
 template <typename ValueType, typename VarType>
-std::string octdiff_conjunction<ValueType, VarType>::to_string() const {
+inline std::string octdiff_conjunction<ValueType, VarType>::to_string() const {
     return std::string("(") + (unit() ? di_.to_string() : di_.to_string() + " && " + dj_.to_string()) + ")";
+}
+
+template <typename ValueType, typename VarType>
+constexpr typename octdiff_conjunction<ValueType, VarType>::counterpart_cons_type
+octdiff_conjunction<ValueType, VarType>::to_oct() const noexcept {
+    return this->valid()
+        ? unit()
+            ? counterpart_cons_type(counterpart_vexpr_type::make_unit(di().xi().to_counterpart()), di().c() / 2)
+            : counterpart_cons_type(counterpart_vexpr_type(di().xi().to_counterpart(), di().xj().to_counterpart()), di().c())
+        : counterpart_cons_type::invalid();
 }
 
 template <typename ValueType, typename VarType>
@@ -1001,6 +1018,7 @@ octdiff_conjunction<ValueType, VarType>::init_di_(cons_type di, cons_type dj) no
 template <typename ValueType, typename VarType>
 constexpr typename octdiff_conjunction<ValueType, VarType>::cons_type
 octdiff_conjunction<ValueType, VarType>::init_dj_(cons_type di, cons_type dj) noexcept {
+    if (di.equals(dj)) return cons_type::invalid(); // for unit oct-constraints of type xi <= c or xi >= c
     if (!di.valid()
         || !dj.valid()
         || dj.compare(di) >= 0)

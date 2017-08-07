@@ -1,4 +1,6 @@
 // $flisboac 2017-06-26
+#include <iostream>
+
 #include "adl_catch.hpp"
 #include "adl/assert.hpp"
 
@@ -15,6 +17,11 @@ adl::oct::oct_system<double> make_system() {
 
     auto xi = "x1"_ov;
     auto xj = "x2"_ov;
+    auto cons = -xi - xj <= 10.1;
+    oct_vexpr<oct_lvar> vexpr = cons;
+    auto split = cons.split();
+    auto converted_cons = split.to_oct();
+    INFO(split.to_string() << " -> {" << cons.to_string() << "} == {" << converted_cons.to_string() << "}");
     oct_system<double> system;
     // CLion doesn't like SFINAE
     system.insert(xi - xj <= 10.2);
@@ -23,11 +30,14 @@ adl::oct::oct_system<double> make_system() {
         system.insert(xj >= 30);
     }
     INFO("count(xj) = " << system.vars().get(xj).count());
+    INFO("x1 - x2 <= " << system[vexpr]);
     return system;
 }
 
 TEST_CASE("unit:adl/oct/system") {
 
     auto system = make_system();
-    //auto diff_system = system.to_counterpart();
+    INFO(system.to_string());
+    auto diff_system = system.to_counterpart();
+    INFO("diff_system = " << diff_system.to_string());
 }

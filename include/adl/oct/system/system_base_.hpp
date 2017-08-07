@@ -38,6 +38,8 @@ private:
     using subclass_ = typename domain_space_traits::template system_type<ValueType, ValueLimits>;
 
 public:
+    using constant_type = ValueType;
+
     using identity_var_type = typename domain_space_traits::identity_var_type;
     using literal_var_type = typename domain_space_traits::literal_var_type;
     using counterpart_identity_var_type = typename domain_space_traits::counterpart_identity_var_type;
@@ -63,7 +65,7 @@ public:
     constexpr static const auto counterpart_space = domain_space_traits::counterpart_space;
 
 protected:
-    using container_value_type_ = typename std::conditional<space == domain_space::oct, literal_cons_type, literal_octdiff_conjunction_type>::type;
+    using container_value_type_ = literal_cons_type; //typename std::conditional<space == domain_space::oct, literal_cons_type, literal_octdiff_conjunction_type>::type;
     using container_type_ = std::set<container_value_type_, typename container_value_type_::less>;
     using container_const_iterator_ = typename container_type_::const_iterator;
     using container_iterator_ = typename container_type_::iterator;
@@ -93,6 +95,8 @@ public:
 
     bool empty() const;
     std::size_t size() const;
+
+    std::string to_string() const;
 
 protected:
     container_type_ constraints_;
@@ -153,6 +157,19 @@ adl_IMPL bool system_base_<Domain, ValueType, ValueLimits>::empty() const {
 template <domain_space Domain, typename ValueType, typename ValueLimits>
 adl_IMPL std::size_t system_base_<Domain, ValueType, ValueLimits>::size() const {
     return constraints_.size();
+}
+
+template <domain_space Domain, typename ValueType, typename ValueLimits>
+adl_IMPL std::string system_base_<Domain, ValueType, ValueLimits>::to_string() const {
+    std::string repr = "{";
+    char const* sep = "";
+    for (auto& constraint : constraints_) {
+        repr += sep;
+        repr += constraint.to_string();
+        sep = ", ";
+    }
+    repr += "}";
+    return repr;
 }
 
 } // namespace oct
