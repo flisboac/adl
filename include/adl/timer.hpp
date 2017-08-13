@@ -47,8 +47,6 @@ public:
     using time_point_type = typename clock_type_::time_point;
     using duration_type = typename clock_type_::duration;
 
-    constexpr static const bool has_handle = true;
-
     class run_info {
     public:
         run_info() = default;
@@ -169,15 +167,6 @@ private:
     run_info best_run_;
     run_info worst_run_;
 };
-
-
-template <typename TimerType>
-    std::enable_if_t<TimerType::has_handle, typename TimerType::run_handle>
-    start_timer(TimerType& timer);
-
-template <typename TimerType, typename Callable, typename... Args>
-    std::enable_if_t<TimerType::has_handle, typename TimerType::run_handle>
-    run_timer(TimerType& timer, Callable callable, Args... args);
 
 
 adl_END_ROOT_MODULE
@@ -371,12 +360,7 @@ average_timer_base_<TimerType>::run(Callable callable, Args... args) {
 
 template <typename TimerType>
 inline void average_timer_base_<TimerType>::add_run_(run_info info) {
-    if (run_count_ > 1) {
-        auto last_count = run_count_ - 1;
-        average_ = (last_count * average_ + info.duration()) / (last_count + 1);
-    } else {
-        average_ = info.duration();
-    }
+    average_ = ((run_count_ - 1) * average_ + info.duration()) / run_count_;
     return (void) as_subclass_().on_finished_run_(info);
 }
 

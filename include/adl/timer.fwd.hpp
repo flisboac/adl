@@ -27,8 +27,8 @@ namespace timer_functions {
 }
 
 template <typename TimerType> class average_timer_base_;
-class average_timer;
-template <typename LessFunction = timer_functions::less_by_run_duration> class average_stats_timer;
+class average_timer; // Not thread-safe!
+template <typename LessFunction = timer_functions::less_by_run_duration> class average_stats_timer; // Not thread-safe!
 
 adl_END_ROOT_MODULE
 
