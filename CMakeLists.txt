@@ -61,6 +61,8 @@ target_sources(${api} INTERFACE
     "${api_dir_root}/adl/error.hpp"
     "${api_dir_root}/adl/char_helper.hpp"
     "${api_dir_root}/adl/char_helper.fwd.hpp"
+    "${api_dir_root}/adl/timer.hpp"
+    "${api_dir_root}/adl/timer.fwd.hpp"
 
     # adl/std
     "${api_dir_root}/adl/std/optional.hpp"
@@ -132,6 +134,7 @@ add_executable(${test}
     "${test_dir_unit}/adl/error.unit.cpp"
     "${test_dir_unit}/adl/char_helper.unit.cpp"
     "${test_dir_unit}/adl/std/string_view.unit.cpp"
+    "${test_dir_unit}/adl/timer.unit.cpp"
 
     # unit:adl/oct
     "${test_dir_unit}/adl/oct/limits.unit.cpp"
