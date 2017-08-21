@@ -69,10 +69,6 @@ target_sources(${api} INTERFACE
     "${api_dir_root}/adl/std/impl/optional.hpp"
     "${api_dir_root}/adl/std/string_view.hpp"
 
-    # adl/util
-    "${api_dir_root}/adl/util.hpp"
-    "${api_dir_root}/adl/util.fwd.hpp"
-
     # adl/oct
     "${api_dir_root}/adl/oct.hpp"
     "${api_dir_root}/adl/oct.fwd.hpp"
@@ -89,6 +85,12 @@ target_sources(${api} INTERFACE
     "${api_dir_root}/adl/oct/system/system_base_.hpp"
     "${api_dir_root}/adl/oct/system/oct_system_.hpp"
     "${api_dir_root}/adl/oct/system/octdiff_system_.hpp"
+    "${api_dir_root}/adl/oct/oper.hpp"
+    "${api_dir_root}/adl/oct/dbm.hpp"
+    "${api_dir_root}/adl/oct/dbm/traits.hpp"
+    "${api_dir_root}/adl/oct/dbm/dbm_base_.hpp"
+    "${api_dir_root}/adl/oct/dbm/dense_dbm.hpp"
+    "${api_dir_root}/adl/oct/dbm/coherent_dbm.hpp"
     )
 
 
@@ -143,6 +145,11 @@ add_executable(${test}
     "${test_dir_unit}/adl/oct/vexpr.unit.cpp"
     "${test_dir_unit}/adl/oct/cons.unit.cpp"
     "${test_dir_unit}/adl/oct/system.unit.cpp"
+    "${test_dir_unit}/adl/oct/oper.unit.cpp"
+
+    # unit:adl/oct/dbm
+    "${test_dir_unit}/adl/oct/dbm/dense_dbm.unit.cpp"
+    "${test_dir_unit}/adl/oct/dbm/coherent_dbm.unit.cpp"
 )
 target_link_libraries(${test} ${test_iapi})
 enable_testing()

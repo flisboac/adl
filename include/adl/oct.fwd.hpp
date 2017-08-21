@@ -5,7 +5,7 @@
 #ifndef adl__oct__fwd__hpp__
 #define adl__oct__fwd__hpp__
 
-
+#include <type_traits>
 #include <limits>
 
 #include "adl.cfg.hpp"
@@ -112,6 +112,35 @@ template <domain_space Domain, typename ValueType, typename ValueLimits = value_
 template <typename ValueType, typename ValueLimits = value_limits<ValueType>> class oct_system;
 template <typename ValueType, typename ValueLimits = value_limits<ValueType>> class octdiff_system;
 
+
+//
+// buffer.hpp
+//
+using default_buffer_flags_type = int;
+enum class buffer_barrier : default_buffer_flags_type;
+
+
+//
+// dbm.hpp
+//
+enum class dbm_major {
+    row, col
+};
+
+// dbm/traits.hpp
+template <typename ValueType, typename ValueLimits = value_limits<ValueType>> class dbm_types_;
+template <typename DbmType> struct dbm_traits;
+
+// dbm/base_.hpp
+template <typename Subclass, typename ValueType, typename ValueLimits = value_limits<ValueType>> class dbm_base_;
+
+// dbm/dense_dbm.hpp
+template <typename Subclass, typename ValueType, typename ValueLimits = value_limits<ValueType>> class dense_dbm_base_;
+template <typename ValueType, typename ValueLimits = value_limits<ValueType>, typename Allocator = std::allocator<ValueType>> class dense_dbm;
+
+// dbm/coherent_dbm.hpp
+template <typename Subclass, typename ValueType, typename ValueLimits = value_limits<ValueType>> class coherent_dbm_base_;
+template <typename ValueType, typename ValueLimits = value_limits<ValueType>, typename Allocator = std::allocator<ValueType>> class coherent_dbm;
 
 
 adl_END_MAIN_MODULE

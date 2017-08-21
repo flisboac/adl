@@ -64,8 +64,11 @@ public:
         time_point_type start_time() const noexcept;
         time_point_type stop_time() const noexcept;
         bool valid() const noexcept;
+        bool equals(run_info const& rhs) const noexcept;
+        bool operator==(run_info const& rhs) const noexcept;
+        bool operator!=(run_info const& rhs) const noexcept;
 
-        void stop_time(time_point_type stop_time); // Only happens once, even if called twice
+        void stop_time(time_point_type stop_time);
 
     private:
         subclass_* timer_ = nullptr;
@@ -91,12 +94,16 @@ public:
     public:
         ~run_handle();
 
-        run_info const& info();
+        run_info const& info() const noexcept;
         subclass_ const& timer() const;
-        std::intmax_t run_index() const;
-        duration_type duration() const;
-        time_point_type start_time() const;
-        time_point_type stop_time() const;
+        std::intmax_t run_index() const noexcept;
+        duration_type duration() const noexcept;
+        time_point_type start_time() const noexcept;
+        time_point_type stop_time() const noexcept;
+        bool valid() const noexcept;
+        bool equals(run_handle const& rhs) const noexcept;
+        bool operator==(run_handle const& rhs) const noexcept;
+        bool operator!=(run_handle const& rhs) const noexcept;
 
         void stop();
 
@@ -253,7 +260,25 @@ average_timer_base_<TimerType>::run_info::stop_time() const noexcept {
 
 template <typename TimerType>
 inline bool average_timer_base_<TimerType>::run_info::valid() const noexcept {
-    return timer != nullptr && start_time_ > time_point_type() && stop_time_ > start_time_;
+    return timer_ != nullptr && (          // Must always have a parent timer
+        start_time_ <= time_point_type()   // Hasn't started yet.
+        || stop_time_ <= time_point_type() // Has started but not stopped
+        || stop_time_ >= start_time_);     // started and stopped
+}
+
+template <typename TimerType>
+inline bool average_timer_base_<TimerType>::run_info::equals(run_info const& rhs) const noexcept {
+    return (timer_ == rhs.timer_ && run_index_ == rhs.run_index_) || (timer_ == nullptr && rhs.timer_ == nullptr);
+}
+
+template <typename TimerType>
+inline bool average_timer_base_<TimerType>::run_info::operator==(run_info const& rhs) const noexcept {
+    return equals(rhs);
+}
+
+template <typename TimerType>
+inline bool average_timer_base_<TimerType>::run_info::operator!=(run_info const& rhs) const noexcept {
+    return !equals(rhs);
 }
 
 template <typename TimerType>
@@ -286,7 +311,8 @@ inline average_timer_base_<TimerType>::run_handle::~run_handle() {
 }
 
 template <typename TimerType>
-inline typename average_timer_base_<TimerType>::run_info const& average_timer_base_<TimerType>::run_handle::info() {
+inline typename average_timer_base_<TimerType>::run_info const&
+average_timer_base_<TimerType>::run_handle::info() const noexcept {
     return info_;
 }
 
@@ -297,26 +323,46 @@ average_timer_base_<TimerType>::run_handle::timer() const {
 }
 
 template <typename TimerType>
-inline std::intmax_t average_timer_base_<TimerType>::run_handle::run_index() const {
+inline std::intmax_t average_timer_base_<TimerType>::run_handle::run_index() const noexcept {
     return info_.run_index();
 }
 
 template <typename TimerType>
 inline typename average_timer_base_<TimerType>::duration_type
-average_timer_base_<TimerType>::run_handle::duration() const {
+average_timer_base_<TimerType>::run_handle::duration() const noexcept {
     return info_.duration();
 }
 
 template <typename TimerType>
 inline typename average_timer_base_<TimerType>::time_point_type
-average_timer_base_<TimerType>::run_handle::start_time() const {
+average_timer_base_<TimerType>::run_handle::start_time() const noexcept {
     return info_.start_time();
 }
 
 template <typename TimerType>
 inline typename average_timer_base_<TimerType>::time_point_type
-average_timer_base_<TimerType>::run_handle::stop_time() const {
+average_timer_base_<TimerType>::run_handle::stop_time() const noexcept {
     return info_.stop_time();
+}
+
+template <typename TimerType>
+inline bool average_timer_base_<TimerType>::run_handle::valid() const noexcept {
+    return info_.valid();
+}
+
+template <typename TimerType>
+inline bool average_timer_base_<TimerType>::run_handle::equals(run_handle const& rhs) const noexcept {
+    return info_.equals(rhs.info_);
+}
+
+template <typename TimerType>
+inline bool average_timer_base_<TimerType>::run_handle::operator==(run_handle const& rhs) const noexcept {
+    return equals(rhs);
+}
+
+template <typename TimerType>
+inline bool average_timer_base_<TimerType>::run_handle::operator!=(run_handle const& rhs) const noexcept {
+    return !equals(rhs);
 }
 
 template <typename TimerType>

@@ -19,11 +19,11 @@ adl_BEGIN_MAIN_MODULE(oct)
  * @tparam ValueType The value's type.
  */
 template <typename ValueType>
-struct value_limits : public std::numeric_limits<ValueType> {
+struct value_limits {
     using value_type = ValueType;
     using numeric_limits = std::numeric_limits<ValueType>;
 
-    static_assert(value_limits::is_specialized,
+    static_assert(numeric_limits::is_specialized,
           "The value_limits class is not valid. Please, specialize it correctly "
           "for the provided value type.");
 
