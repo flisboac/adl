@@ -290,19 +290,19 @@ TEST_CASE("unit:adl/oct/traits:var_id", "[unit][adl][adl/oct][adl/oct/traits]") 
         REQUIRE_TRUE_NOTHROW( (oct_traits::increment_id(ov_e) == ov_0) );
         REQUIRE_TRUE_NOTHROW( (oct_traits::increment_id(ov_E) == ov_0) );
         REQUIRE_TRUE_NOTHROW( (oct_traits::increment_id(ov_p1) == ov_p2) );
-        REQUIRE_TRUE_NOTHROW( (oct_traits::increment_id(ov_n1) == ov_p2) );
+        REQUIRE_TRUE_NOTHROW( (oct_traits::increment_id(ov_n1) == ov_n2) );
         REQUIRE_TRUE_NOTHROW( (oct_traits::increment_id(ov_p3, 2) == ov_p1) );
-        REQUIRE_TRUE_NOTHROW( (oct_traits::increment_id(ov_n3, 2) == ov_p1) );
+        REQUIRE_TRUE_NOTHROW( (oct_traits::increment_id(ov_n3, 2) == ov_n1) );
 
         adl_static_assert( (octdiff_traits::increment_id(0), true) );
         REQUIRE_TRUE_NOTHROW( (octdiff_traits::increment_id(odv_0) == odv_0) );
         REQUIRE_TRUE_NOTHROW( (octdiff_traits::increment_id(odv_e) == odv_0) );
         REQUIRE_TRUE_NOTHROW( (octdiff_traits::increment_id(odv_E) == odv_0) );
         REQUIRE_TRUE_NOTHROW( (octdiff_traits::increment_id(odv_n) == odv_0) );
-        REQUIRE_TRUE_NOTHROW( (octdiff_traits::increment_id(odv_p1) == odv_p2) );
+        REQUIRE_TRUE_NOTHROW( (octdiff_traits::increment_id(odv_p1) == odv_n1) );
         REQUIRE_TRUE_NOTHROW( (octdiff_traits::increment_id(odv_n1) == odv_p2) );
-        REQUIRE_TRUE_NOTHROW( (octdiff_traits::increment_id(odv_p3, 2) == odv_p1) );
-        REQUIRE_TRUE_NOTHROW( (octdiff_traits::increment_id(odv_n3, 2) == odv_p1) );
+        REQUIRE_TRUE_NOTHROW( (octdiff_traits::increment_id(odv_p3, 4) == odv_p1) );
+        REQUIRE_TRUE_NOTHROW( (octdiff_traits::increment_id(odv_n3, 4) == odv_n1) );
     }
 
     SECTION("decrement_id(id) [should decrement the normalized value of id, resulting in a positive variable]") {
@@ -312,19 +312,19 @@ TEST_CASE("unit:adl/oct/traits:var_id", "[unit][adl][adl/oct][adl/oct/traits]") 
         REQUIRE_TRUE_NOTHROW( (oct_traits::decrement_id(ov_e) == ov_0) );
         REQUIRE_TRUE_NOTHROW( (oct_traits::decrement_id(ov_E) == ov_0) );
         REQUIRE_TRUE_NOTHROW( (oct_traits::decrement_id(ov_p2) == ov_p1) );
-        REQUIRE_TRUE_NOTHROW( (oct_traits::decrement_id(ov_n2) == ov_p1) );
+        REQUIRE_TRUE_NOTHROW( (oct_traits::decrement_id(ov_n2) == ov_n1) );
         REQUIRE_TRUE_NOTHROW( (oct_traits::decrement_id(ov_p1, 2) == ov_p3) );
-        REQUIRE_TRUE_NOTHROW( (oct_traits::decrement_id(ov_n1, 2) == ov_p3) );
+        REQUIRE_TRUE_NOTHROW( (oct_traits::decrement_id(ov_n1, 2) == ov_n3) );
 
         adl_static_assert( (octdiff_traits::decrement_id(0), true) );
         REQUIRE_TRUE_NOTHROW( (octdiff_traits::decrement_id(odv_0) == odv_0) );
         REQUIRE_TRUE_NOTHROW( (octdiff_traits::decrement_id(odv_e) == odv_0) );
         REQUIRE_TRUE_NOTHROW( (octdiff_traits::decrement_id(odv_E) == odv_0) );
         REQUIRE_TRUE_NOTHROW( (octdiff_traits::decrement_id(odv_n) == odv_0) );
-        REQUIRE_TRUE_NOTHROW( (octdiff_traits::decrement_id(odv_p2) == odv_p1) );
-        REQUIRE_TRUE_NOTHROW( (octdiff_traits::decrement_id(odv_n2) == odv_p1) );
-        REQUIRE_TRUE_NOTHROW( (octdiff_traits::decrement_id(odv_p1, 2) == odv_p3) );
-        REQUIRE_TRUE_NOTHROW( (octdiff_traits::decrement_id(odv_n1, 2) == odv_p3) );
+        REQUIRE_TRUE_NOTHROW( (octdiff_traits::decrement_id(odv_p2) == odv_n1) );
+        REQUIRE_TRUE_NOTHROW( (octdiff_traits::decrement_id(odv_n2) == odv_p2) );
+        REQUIRE_TRUE_NOTHROW( (octdiff_traits::decrement_id(odv_p1, 4) == odv_p3) );
+        REQUIRE_TRUE_NOTHROW( (octdiff_traits::decrement_id(odv_n1, 4) == odv_n3) );
     }
 
     SECTION("id_equals(a, b) [should compare ids a and b, considering negated-ness, positive ids before]") {

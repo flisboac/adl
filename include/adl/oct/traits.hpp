@@ -53,6 +53,7 @@ struct var_id_traits {
     constexpr static const char* id_sign_format(var_id_type id) noexcept;
 
     // static conversion functions
+    constexpr static var_id_type index_to_id(std::size_t index) noexcept;
     constexpr static var_id_type name_to_id(char const* name) noexcept;
     constexpr static var_id_type name_to_id(string_view name) noexcept;
     static var_id_type name_to_id(std::string const& name);
@@ -309,9 +310,14 @@ var_id_traits<Domain, VarIdLimits>::increment_id(
     var_id_type id,
     size_t offset
 ) noexcept {
+    //return is_valid_id(id)
+    //    ? normalize_id(raw_normalize_id_(id) + (var_id_limits::space == domain_space::octdiff ? offset << 1 : offset))
+    //    : var_id_limits::invalid_var_id;
     return is_valid_id(id)
-        ? normalize_id(raw_normalize_id_(id) + (var_id_limits::space == domain_space::octdiff ? offset << 1 : offset))
-        : var_id_limits::invalid_var_id;
+        ? var_id_limits::space == domain_space::octdiff
+            ? id_to_valid(id + offset)
+            : id_to_valid(id < 0 ? id - offset : id + offset)
+        : 0;
 }
 
 template <domain_space Domain, typename VarIdLimits>
@@ -320,9 +326,14 @@ var_id_traits<Domain, VarIdLimits>::decrement_id(
     var_id_type id,
     size_t offset
 ) noexcept {
+    //return is_valid_id(id)
+    //    ? normalize_id(raw_normalize_id_(id) - (var_id_limits::space == domain_space::octdiff ? offset << 1 : offset))
+    //    : var_id_limits::invalid_var_id;
     return is_valid_id(id)
-        ? normalize_id(raw_normalize_id_(id) - (var_id_limits::space == domain_space::octdiff ? offset << 1 : offset))
-        : var_id_limits::invalid_var_id;
+        ? var_id_limits::space == domain_space::octdiff
+            ? id_to_valid(id - offset)
+            : id_to_valid(id < 0 ? id + offset : id - offset)
+        : 0;
 }
 
 template <domain_space Domain, typename VarIdLimits>
@@ -361,6 +372,12 @@ var_id_traits<Domain, VarIdLimits>::raw_normalize_id_(var_id_type id) noexcept {
         ? (id < 0) ? -id : id
         : (id & 1) ? id : id - 1;
 }
+
+template <domain_space Domain, typename VarIdLimits>
+constexpr typename var_id_traits<Domain, VarIdLimits>::var_id_type
+var_id_traits<Domain, VarIdLimits>::index_to_id(std::size_t index) noexcept {
+    return arithmetic_to_valid(index + 1);
+};
 
 template <domain_space Domain, typename VarIdLimits>
 constexpr typename var_id_traits<Domain, VarIdLimits>::var_id_type

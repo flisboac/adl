@@ -71,6 +71,7 @@ namespace oct {
         template <typename N> constexpr static var_id_type id_to_valid(N id) noexcept;
         template <typename N> constexpr static var_type from_range(N id) noexcept;
         template <typename N> constexpr static var_type from_valid(N id) noexcept;
+        constexpr static var_type from_index(std::size_t id) noexcept;
         constexpr static var_type invalid() noexcept;
         constexpr static var_type first() noexcept;
         constexpr static var_type last() noexcept;
@@ -586,6 +587,12 @@ constexpr typename var_base_<VarType, VarTraits>::var_type
 var_base_<VarType, VarTraits>::from_range(N id) noexcept {
     return var_type(id);
 }
+
+template <typename VarType, typename VarTraits>
+constexpr typename var_base_<VarType, VarTraits>::var_type
+var_base_<VarType, VarTraits>::from_index(std::size_t id) noexcept {
+    return var_type(var_id_traits::arithmetic_to_valid(id));
+};
 
 template <typename VarType, typename VarTraits>
 template <typename N>

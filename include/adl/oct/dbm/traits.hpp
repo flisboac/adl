@@ -67,8 +67,10 @@ struct dbm_traits<dense_dbm<ValueType, ValueLimits, Allocator>> : public dbm_typ
     using dbm_type = dense_dbm<ValueType, ValueLimits, Allocator>;
     constexpr const static bool valid = true;
 
+    constexpr const static dbm_major default_major = dbm_major::row;
     constexpr const static bool is_always_dense = true;
-    constexpr const static bool is_always_auto_coherent = false;
+    constexpr const static bool is_always_autocoherent = false;
+    constexpr const static bool is_always_default_major = false;
 };
 
 template <typename ValueType, typename ValueLimits, typename Allocator>
@@ -76,8 +78,10 @@ struct dbm_traits<coherent_dbm<ValueType, ValueLimits, Allocator>> : public dbm_
     constexpr const static bool valid = true;
     using dbm_type = coherent_dbm<ValueType, ValueLimits, Allocator>;
 
+    constexpr const static dbm_major default_major = dbm_major::row;
     constexpr const static bool is_always_dense = true;
-    constexpr const static bool is_always_auto_coherent = false;
+    constexpr const static bool is_always_autocoherent = false;
+    constexpr const static bool is_always_default_major = false;
 };
 
 } // namespace oct
