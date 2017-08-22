@@ -8,6 +8,7 @@
 #include "adl.cfg.hpp"
 
 #include "adl/oct.fwd.hpp"
+#include "adl/oct/var.hpp"
 #include "adl/oct/dbm/traits.hpp"
 
 adl_BEGIN_ROOT_MODULE
@@ -23,8 +24,22 @@ protected:
     subclass_ const& as_subclass_() const noexcept;
 };
 
+template <typename CharType,
+        typename CharTraits,
+        typename DbmType,
+        typename = adl::oct::dbm_t<DbmType>>
+void print(std::basic_ostream<CharType, CharTraits>& os, DbmType const& dbm);
+
 } // namespace oct
 adl_END_ROOT_MODULE
+
+template <typename CharType,
+        typename CharTraits,
+        typename DbmType,
+        typename = adl::oct::dbm_t<DbmType>>
+std::basic_ostream<CharType, CharTraits>& operator<<(
+        std::basic_ostream<CharType, CharTraits>& os,
+        DbmType const& dbm);
 
 
 //
@@ -48,5 +63,14 @@ dbm_base_<SubClass, ValueType, ValueLimits>::as_subclass_() const noexcept {
 
 } // namespace oct
 adl_END_ROOT_MODULE
+
+template <typename CharType, typename CharTraits, typename DbmType, typename>
+inline std::basic_ostream<CharType, CharTraits>& operator<<(
+        std::basic_ostream<CharType, CharTraits>& os,
+        DbmType const& dbm
+) {
+    adl::oct::print(os, dbm);
+    return os;
+};
 
 #endif //adl__oct__dbm__base___hpp__

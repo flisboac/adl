@@ -26,7 +26,7 @@ public:
 template <typename ValueType, typename ValueLimits, typename Allocator>
 class coherent_dbm : public coherent_dbm_base_<coherent_dbm<ValueType, ValueLimits>, ValueType, ValueLimits> {
 private:
-    using superclass_ = coherent_dbm_base_<coherent_dbm<ValueType, ValueLimits>, ValueType, ValueLimits>;
+    using superclass_ = coherent_dbm_base_<coherent_dbm, ValueType, ValueLimits>;
 
 public:
 

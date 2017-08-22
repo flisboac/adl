@@ -81,7 +81,7 @@ struct dbm_traits<coherent_dbm<ValueType, ValueLimits, Allocator>> : public dbm_
     constexpr const static dbm_major default_major = dbm_major::row;
     constexpr const static bool is_always_dense = true;
     constexpr const static bool is_always_autocoherent = false;
-    constexpr const static bool is_always_default_major = false;
+    constexpr const static bool is_always_default_major = true;
 };
 
 } // namespace oct

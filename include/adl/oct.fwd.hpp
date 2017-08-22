@@ -130,6 +130,7 @@ enum class dbm_major {
 // dbm/traits.hpp
 template <typename ValueType, typename ValueLimits = value_limits<ValueType>> class dbm_types_;
 template <typename DbmType> struct dbm_traits;
+template <typename DbmType> using dbm_t = std::enable_if_t<dbm_traits<DbmType>::valid, DbmType>;
 
 // dbm/base_.hpp
 template <typename Subclass, typename ValueType, typename ValueLimits = value_limits<ValueType>> class dbm_base_;
