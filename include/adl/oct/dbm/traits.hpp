@@ -9,7 +9,6 @@
 
 #include "adl/oct.fwd.hpp"
 #include "adl/oct/limits.hpp"
-#include "adl/oct/traits.hpp"
 
 adl_BEGIN_ROOT_MODULE
 namespace oct {
@@ -63,7 +62,7 @@ struct dbm_traits {
 };
 
 template <typename ValueType, typename ValueLimits, typename Allocator>
-struct dbm_traits<dense_dbm<ValueType, ValueLimits, Allocator>> : public dbm_types_<ValueType, ValueLimits> {
+struct dbm_traits<oct::dense_dbm<ValueType, ValueLimits, Allocator>> : public dbm_types_<ValueType, ValueLimits> {
     using dbm_type = dense_dbm<ValueType, ValueLimits, Allocator>;
     constexpr const static bool valid = true;
 
@@ -74,7 +73,7 @@ struct dbm_traits<dense_dbm<ValueType, ValueLimits, Allocator>> : public dbm_typ
 };
 
 template <typename ValueType, typename ValueLimits, typename Allocator>
-struct dbm_traits<coherent_dbm<ValueType, ValueLimits, Allocator>> : public dbm_types_<ValueType, ValueLimits> {
+struct dbm_traits<oct::coherent_dbm<ValueType, ValueLimits, Allocator>> : public dbm_types_<ValueType, ValueLimits> {
     constexpr const static bool valid = true;
     using dbm_type = coherent_dbm<ValueType, ValueLimits, Allocator>;
 

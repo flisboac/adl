@@ -34,8 +34,10 @@ public:
     using typename superclass_::identity_var_type;
     using typename superclass_::constant_type;
     using typename superclass_::value_limits;
+    using typename superclass_::identity_cons_type;
 
-    dense_dbm_base_() noexcept = default;
+    using typename superclass_::no_index;
+
     dense_dbm_base_(dense_dbm_base_ const&) noexcept = default;
     dense_dbm_base_(dense_dbm_base_ &&) noexcept = default;
     dense_dbm_base_& operator=(dense_dbm_base_ const&) noexcept = default;
@@ -52,25 +54,18 @@ public:
             typename = std::enable_if_t<std::is_convertible<ValueType, ValueType_>::value> >
         dense_dbm_base_(octdiff_system<ValueType_, ValueLimits_> const& rhs);
 
-    //dbm_major major() const noexcept;
-    identity_var_type last_var() const noexcept;
     bool dense() const noexcept;
     bool autocoherent() const noexcept;
+    bool empty() const noexcept;
 
-    std::size_t first_xi(std::size_t xj = 0) const;
-    std::size_t first_xj(std::size_t xi = 0) const;
-    std::size_t end_xi(std::size_t xj = 0) const;
-    std::size_t end_xj(std::size_t xi = 0) const;
-    template <typename VarType_ = identity_var_type, typename = common_var_t<VarType_>>
-        VarType_ first_xi(VarType_ xj = VarType_::invalid()) const;
-    template <typename VarType_ = identity_var_type, typename = common_var_t<VarType_>>
-        VarType_ first_xj(VarType_ xi = VarType_::invalid()) const;
-    template <typename VarType_ = identity_var_type, typename = common_var_t<VarType_>>
-        VarType_ end_xi(VarType_ xj = VarType_::invalid()) const;
-    template <typename VarType_ = identity_var_type, typename = common_var_t<VarType_>>
-        VarType_ end_xj(VarType_ xi = VarType_::invalid()) const;
+    template <typename VarTypeA_, typename VarTypeB_, typename = std::enable_if<
+        common_var<VarTypeA_>::valid && common_var<VarTypeB_>::valid>>
+        identity_cons_type get(VarTypeA_ xi, VarTypeB_ xj) const;
+    template <typename VarType_, typename = std::enable_if<common_var<VarType_>::is_octdiff_space>>
+        identity_cons_type get(octdiff_vexpr<VarType_> vexpr) const;
+    template <typename VarType_, typename = std::enable_if<common_var<VarType_>::is_oct_space>>
+        identity_cons_type get(oct_vexpr<VarType_> vexpr) const;
 
-    constant_type const& at(std::size_t i, std::size_t j) const;
     template <typename VarTypeA_, typename VarTypeB_, typename = std::enable_if<
         common_var<VarTypeA_>::valid && common_var<VarTypeB_>::valid>>
         constant_type const& at(VarTypeA_ xi, VarTypeB_ xj) const;
@@ -79,22 +74,26 @@ public:
     template <typename VarType_, typename = std::enable_if<common_var<VarType_>::is_oct_space>>
         constant_type const& at(oct_vexpr<VarType_> vexpr) const;
 
-    void set(std::size_t i, std::size_t j, constant_type value);
     template <typename VarTypeA_, typename VarTypeB_, typename = std::enable_if<
         common_var<VarTypeA_>::valid && common_var<VarTypeB_>::valid>>
-        void set(VarTypeA_ xi, VarTypeB_ xj, constant_type value);
+        constant_type& at(VarTypeA_ xi, VarTypeB_ xj);
     template <typename VarType_, typename = std::enable_if<common_var<VarType_>::is_octdiff_space>>
-        void set(octdiff_vexpr<VarType_> vexpr, constant_type value);
+        constant_type& at(octdiff_vexpr<VarType_> vexpr);
     template <typename VarType_, typename = std::enable_if<common_var<VarType_>::is_oct_space>>
-        void set(oct_vexpr<VarType_> vexpr, constant_type value);
+        constant_type& at(oct_vexpr<VarType_> vexpr);
 
     template <typename VarType_, typename = std::enable_if<common_var<VarType_>::is_octdiff_space>>
         constant_type const& operator[](octdiff_vexpr<VarType_> vexpr) const;
     template <typename VarType_, typename = std::enable_if<common_var<VarType_>::is_oct_space>>
         constant_type const& operator[](oct_vexpr<VarType_> vexpr) const;
 
+    template <typename VarType_, typename = std::enable_if<common_var<VarType_>::is_octdiff_space>>
+        constant_type& operator[](octdiff_vexpr<VarType_> vexpr);
+    template <typename VarType_, typename = std::enable_if<common_var<VarType_>::is_oct_space>>
+        constant_type& operator[](oct_vexpr<VarType_> vexpr);
+
 protected:
-    dbm_major const major_ = traits_::default_major;
+    dbm_major const major_;
 };
 
 template <typename ValueType, typename ValueLimits, typename Allocator>
@@ -108,19 +107,25 @@ public:
     using typename superclass_::traits_;
     using typename superclass_::identity_var_type;
     using typename superclass_::constant_type;
+    using typename superclass_::value_limits;
 
     using allocator_type = Allocator;
 
-    dense_dbm() = default;
+    dense_dbm();
     dense_dbm(dense_dbm const&) = default;
     dense_dbm(dense_dbm &&) noexcept = default;
     dense_dbm& operator=(dense_dbm const&) = default;
     dense_dbm& operator=(dense_dbm &&) noexcept = default;
 
-    explicit dense_dbm(std::size_t max_vars, constant_type value = value_limits::top(), dbm_major major = traits_::default_major);
+    explicit dense_dbm(std::size_t max_vars, dbm_major major = traits_::default_major);
     template <typename VarType_, typename = common_var_t<VarType_>>
-        explicit dense_dbm(VarType_ last_var, constant_type value = value_limits::top(), dbm_major major = traits_::default_major);
+        explicit dense_dbm(VarType_ last_var, dbm_major major = traits_::default_major);
 
+    explicit dense_dbm(std::size_t max_vars, constant_type value, dbm_major major = traits_::default_major);
+    template <typename VarType_, typename = common_var_t<VarType_>>
+        explicit dense_dbm(VarType_ last_var, constant_type value, dbm_major major = traits_::default_major);
+
+    static dense_dbm const null();
     static dense_dbm top(std::size_t max_vars, dbm_major major = traits_::default_major);
     template <typename VarType_, typename = common_var_t<VarType_>>
         static dense_dbm top(VarType_ last_var, dbm_major major = traits_::default_major);
@@ -128,21 +133,17 @@ public:
     template <typename VarType_, typename = common_var_t<VarType_>>
         static dense_dbm bottom(VarType_ last_var, dbm_major major = traits_::default_major);
 
-    std::size_t var_count() const noexcept;
+    std::size_t size() const noexcept;
     allocator_type get_allocator() const;
 
     void initialize(constant_type value);
-    void resize(std::size_t max_vars);
-    void resize(std::size_t max_vars, constant_type value);
+    void resize(std::size_t new_size, constant_type value = value_limits::top());
     template <typename VarType_, typename = common_var_t<VarType_>>
-        void resize(VarType_ last_var);
-    template <typename VarType_, typename = common_var_t<VarType_>>
-        void resize(VarType_ last_var, constant_type value);
+        void resize(VarType_ new_last_var, constant_type value = value_limits::top());
 
 private:
-    constant_type& value_(std::size_t index);
-    constant_type const& value_(std::size_t index) const;
-    constant_type& value_(std::size_t index, constant_type value);
+    constant_type& constant_(std::size_t index);
+    constant_type const& constant_(std::size_t index) const;
 
 private:
     container_type_ data_;
@@ -150,6 +151,15 @@ private:
 
 } // namespace oct
 adl_END_ROOT_MODULE
+
+
+template <typename CharType,
+        typename CharTraits,
+        typename DbmType,
+        typename = adl::oct::dbm_t<DbmType>>
+std::basic_ostream<CharType, CharTraits>& operator<<(
+        std::basic_ostream<CharType, CharTraits>& os,
+        adl::oct::dense_dbm_base_<DbmType, typename DbmType::value_type, typename DbmType::value_limits> const& dbm);
 
 
 //

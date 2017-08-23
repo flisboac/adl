@@ -376,7 +376,9 @@ var_id_traits<Domain, VarIdLimits>::raw_normalize_id_(var_id_type id) noexcept {
 template <domain_space Domain, typename VarIdLimits>
 constexpr typename var_id_traits<Domain, VarIdLimits>::var_id_type
 var_id_traits<Domain, VarIdLimits>::index_to_id(std::size_t index) noexcept {
-    return arithmetic_to_valid(index + 1);
+    return var_id_limits::space == domain_space::octdiff
+        ? arithmetic_to_valid(index + 1)
+        : id_to_counterpart(counterpart_var_id_traits::index_to_id(index));
 };
 
 template <domain_space Domain, typename VarIdLimits>
