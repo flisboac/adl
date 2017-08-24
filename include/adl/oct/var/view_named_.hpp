@@ -89,6 +89,11 @@ public:
     using lit_named_var_base_<octdiff_lvar>::operator=;
 };
 
+adl_API oct_lvar to_oct(oct_lvar var);
+adl_API oct_lvar to_oct(octdiff_lvar var);
+adl_API octdiff_lvar to_octdiff(oct_lvar var);
+adl_API octdiff_lvar to_octdiff(octdiff_lvar var);
+
 } // namespace oct
 
 namespace literals {
@@ -104,6 +109,26 @@ adl_END_ROOT_MODULE
 // [[ IMPLEMENTATION ]]
 //
 adl_BEGIN_ROOT_MODULE
+
+namespace oct {
+
+adl_IMPL oct_lvar to_oct(oct_lvar var) {
+    return var;
+}
+
+adl_IMPL oct_lvar to_oct(octdiff_lvar var) {
+    return var.to_counterpart();
+}
+
+adl_IMPL octdiff_lvar to_octdiff(oct_lvar var) {
+    return var;
+}
+
+adl_IMPL octdiff_lvar to_octdiff(octdiff_lvar var) {
+    return var.to_counterpart();
+}
+
+}
 
 namespace literals {
 inline namespace oct {

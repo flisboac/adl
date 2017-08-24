@@ -24,6 +24,7 @@ protected:
 
     subclass_& as_subclass_() noexcept;
     subclass_ const& as_subclass_() const noexcept;
+    subclass_& as_const_() const noexcept;
 
 public:
     using typename superclass_::identity_var_type;
@@ -51,15 +52,21 @@ adl_BEGIN_ROOT_MODULE
 namespace oct {
 
 template <typename SubClass, typename ValueType, typename ValueLimits>
-typename dbm_base_<SubClass, ValueType, ValueLimits>::subclass_&
+inline typename dbm_base_<SubClass, ValueType, ValueLimits>::subclass_&
 dbm_base_<SubClass, ValueType, ValueLimits>::as_subclass_() noexcept {
     return static_cast<subclass_&>(*this);
 }
 
 template <typename SubClass, typename ValueType, typename ValueLimits>
-typename dbm_base_<SubClass, ValueType, ValueLimits>::subclass_ const&
+inline typename dbm_base_<SubClass, ValueType, ValueLimits>::subclass_ const&
 dbm_base_<SubClass, ValueType, ValueLimits>::as_subclass_() const noexcept {
     return static_cast<subclass_&>(*this);
+}
+
+template <typename SubClass, typename ValueType, typename ValueLimits>
+inline typename dbm_base_<SubClass, ValueType, ValueLimits>::subclass_&
+dbm_base_<SubClass, ValueType, ValueLimits>::as_const_() const noexcept {
+    return const_cast<subclass_&>(*this);
 }
 
 template <typename SubClass, typename ValueType, typename ValueLimits>
