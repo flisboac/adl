@@ -40,7 +40,7 @@ public:
 template <typename CharType,
         typename CharTraits,
         typename DbmType,
-        typename = adl::oct::dbm_t<DbmType>>
+        typename = adl::oct::is_valid_dbm_t<DbmType>>
 void print(std::basic_ostream<CharType, CharTraits>& os, DbmType const& dbm);
 
 } // namespace oct

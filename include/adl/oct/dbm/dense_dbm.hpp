@@ -152,7 +152,7 @@ adl_END_ROOT_MODULE
 template <typename CharType,
         typename CharTraits,
         typename DbmType,
-        typename = adl::oct::dbm_t<DbmType>>
+        typename = adl::oct::is_valid_dbm_t<DbmType>>
 std::basic_ostream<CharType, CharTraits>& operator<<(
         std::basic_ostream<CharType, CharTraits>& os,
         adl::oct::dense_dbm_base_<DbmType, typename DbmType::value_type, typename DbmType::value_limits> const& dbm);

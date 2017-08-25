@@ -169,6 +169,12 @@ public:
     using superclass_::invalidate;
     static_assert(space == domain_space::oct, "Wrong variable type.");
 
+    constexpr oct_cons() = default;
+    constexpr oct_cons(oct_cons const&) = default;
+    constexpr oct_cons(oct_cons &&) noexcept = default;
+    oct_cons& operator=(oct_cons const&) = default;
+    oct_cons& operator=(oct_cons &&) noexcept = default;
+
     constexpr oct_cons(var_type xi, value_type c);
     constexpr static oct_cons make_upper_limit(var_type xi, value_type c) noexcept; // xi <= c
     constexpr static oct_cons make_upper_limit(vexpr_type vexpr, value_type c) noexcept; // +-xi [+- xj] <= c

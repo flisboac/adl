@@ -154,6 +154,12 @@ public:
     using superclass_::xj_;
     static_assert(space == domain_space::oct, "Wrong domain space.");
 
+    constexpr oct_vexpr() noexcept = default;
+    constexpr oct_vexpr(oct_vexpr const&) noexcept = default;
+    constexpr oct_vexpr(oct_vexpr &&) noexcept = default;
+    constexpr oct_vexpr& operator=(oct_vexpr const&) noexcept = default;
+    constexpr oct_vexpr& operator=(oct_vexpr &&) noexcept = default;
+
     constexpr oct_vexpr(var_type xi) noexcept;
     constexpr oct_vexpr(var_type xi, var_type xj) noexcept;
     constexpr static oct_vexpr make_unit(var_type xi) noexcept;

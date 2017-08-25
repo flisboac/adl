@@ -112,13 +112,11 @@ template <domain_space Domain, typename ValueType, typename ValueLimits = value_
 template <typename ValueType, typename ValueLimits = value_limits<ValueType>> class oct_system;
 template <typename ValueType, typename ValueLimits = value_limits<ValueType>> class octdiff_system;
 
-
 //
-// buffer.hpp
+// oper.hpp
 //
-using default_buffer_flags_type = int;
-enum class buffer_barrier : default_buffer_flags_type;
-
+enum class oper_timing;
+enum class oper_kind;
 
 //
 // dbm.hpp
@@ -130,7 +128,7 @@ enum class dbm_major {
 // dbm/traits.hpp
 template <typename ValueType, typename ValueLimits = value_limits<ValueType>> class dbm_types_;
 template <typename DbmType> struct dbm_traits;
-template <typename DbmType> using dbm_t = std::enable_if_t<dbm_traits<DbmType>::valid, DbmType>;
+template <typename DbmType> using is_valid_dbm_t = std::enable_if_t<dbm_traits<DbmType>::valid, typename dbm_traits<DbmType>::dbm_type>;
 
 // dbm/base_.hpp
 template <typename Subclass, typename ValueType, typename ValueLimits = value_limits<ValueType>> class dbm_base_;

@@ -9,6 +9,7 @@
 
 #include "adl/oct.fwd.hpp"
 #include "adl/oct/limits.hpp"
+#include "adl/oct/traits.hpp"
 
 adl_BEGIN_ROOT_MODULE
 namespace oct {

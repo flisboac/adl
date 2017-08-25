@@ -13,6 +13,13 @@
 adl_BEGIN_ROOT_MODULE
 namespace oct {
 
+enum class oper_timing {
+    total, // Total time, from start to finish.
+    queue, // The total time the operation waited to be launched, if any.
+    launch, // Time it took for the operation to be launched (e.g. sending to device, creating helper objects)
+    execution // Time it took for the operation to be executed. May include destruction/deallocation time.
+};
+
 enum class oper_kind {
     custom = -1,
     invalid = 0,
