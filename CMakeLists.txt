@@ -90,7 +90,6 @@ target_sources(${api} INTERFACE
     "${api_dir_root}/adl/oct/dbm/traits.hpp"
     "${api_dir_root}/adl/oct/dbm/dbm_base_.hpp"
     "${api_dir_root}/adl/oct/dbm/dense_dbm.hpp"
-    "${api_dir_root}/adl/oct/dbm/coherent_dbm.hpp"
     )
 
 
@@ -149,7 +148,6 @@ add_executable(${test}
 
     # unit:adl/oct/dbm
     "${test_dir_unit}/adl/oct/dbm/dense_dbm.unit.cpp"
-    "${test_dir_unit}/adl/oct/dbm/coherent_dbm.unit.cpp"
 )
 target_link_libraries(${test} ${test_iapi})
 enable_testing()

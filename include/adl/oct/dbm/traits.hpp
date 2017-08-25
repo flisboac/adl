@@ -72,17 +72,6 @@ struct dbm_traits<oct::dense_dbm<ValueType, ValueLimits, Allocator>> : public db
     constexpr const static bool is_always_default_major = false;
 };
 
-template <typename ValueType, typename ValueLimits, typename Allocator>
-struct dbm_traits<oct::coherent_dbm<ValueType, ValueLimits, Allocator>> : public dbm_types_<ValueType, ValueLimits> {
-    constexpr const static bool valid = true;
-    using dbm_type = coherent_dbm<ValueType, ValueLimits, Allocator>;
-
-    constexpr const static dbm_major default_major = dbm_major::row;
-    constexpr const static bool is_always_dense = true;
-    constexpr const static bool is_always_autocoherent = false;
-    constexpr const static bool is_always_default_major = true;
-};
-
 } // namespace oct
 adl_END_ROOT_MODULE
 

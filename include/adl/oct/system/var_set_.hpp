@@ -107,6 +107,7 @@ public:
         std::pair<iterator, bool> insert(VarType var);
     template <typename VarType, typename = common_var_t<VarType>>
         void erase_one(VarType var);
+    var_type last_var() const;
 
     template <typename VarType, typename = common_var_t<VarType>>
         std::size_t count(VarType var) const; // unnormalized occurences
@@ -348,6 +349,11 @@ adl_IMPL void var_set<Domain>::erase_one(VarType var) {
         iter->subtract(var);
         //if (!iter->valid()) data_.erase(iter);
     }
+}
+
+template <domain_space Domain>
+typename var_set<Domain>::var_type var_set<Domain>::last_var() const {
+    return data_.rbegin()->normalized_var();
 }
 
 template <domain_space Domain>

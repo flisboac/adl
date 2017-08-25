@@ -139,10 +139,6 @@ template <typename Subclass, typename ValueType, typename ValueLimits = value_li
 template <typename Subclass, typename ValueType, typename ValueLimits = value_limits<ValueType>> class dense_dbm_base_;
 template <typename ValueType, typename ValueLimits = value_limits<ValueType>, typename Allocator = std::allocator<ValueType>> class dense_dbm;
 
-// dbm/coherent_dbm.hpp
-template <typename Subclass, typename ValueType, typename ValueLimits = value_limits<ValueType>> class coherent_dbm_base_;
-template <typename ValueType, typename ValueLimits = value_limits<ValueType>, typename Allocator = std::allocator<ValueType>> class coherent_dbm;
-
 
 adl_END_MAIN_MODULE
 

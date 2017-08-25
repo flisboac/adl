@@ -8,6 +8,5 @@
 #include "adl/oct/dbm/traits.hpp"
 #include "adl/oct/dbm/dbm_base_.hpp"
 #include "adl/oct/dbm/dense_dbm.hpp"
-#include "adl/oct/dbm/coherent_dbm.hpp"
 
 #endif //adl__oct__dbm__hpp__
