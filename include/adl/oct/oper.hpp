@@ -37,8 +37,6 @@ enum class oper_kind {
     is_strongly_closed, // Accounts for strong closure (for reals) and tight closure (for integers). Not applicable after tightening!
     is_tightly_closed, // Applicable only for the result of tighten
     is_weakly_closed, // Applicable only for the result of tighten
-    is_top,
-    is_bottom,
 
     // comparison
     equals,             // ==
@@ -47,18 +45,23 @@ enum class oper_kind {
     is_subset,          // <=
     is_superset,        // >=
     is_proper_superset, // >
+    is_top,
+    is_bottom,
 
     // set operations
     set_union,          // |
     set_intersection,   // &
 
-    // System construction
+    // Basic system construction
     to_top,
     to_bottom,
     copy,
     forget_oct_var,
     add_oct_cons,
     add_octdiff_cons,
+    add_dbm,
+
+    // Abstraction-based system construction
     add_oct_test,
     add_oct_assignment, // assign(var, assigned_var, constant)
     add_oct_backward_assignment,

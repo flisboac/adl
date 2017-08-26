@@ -20,7 +20,7 @@ static void payload(std::size_t passes_count, TimerHandleType && timer_handle) {
 
 template <typename DurationType>
 static double ms(DurationType duration) {
-    return std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
+    return std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
 }
 
 static void execute() {
@@ -53,7 +53,19 @@ static void execute() {
     }
     all_timer_handle.stop();
     WARN("Outside - average time: " << ms(all_timer_handle.duration() / global_passes));
+
+    using namespace adl;
+    adl::static_mark_timer<4> mark_timer;
+    for (std::size_t i = mark_timer.size(); i < mark_timer.max_size() - 1; ++i) {
+        mark_timer.mark();
+        for (int i = 0; i < global_passes; ++i) {
+            payload(function_passes, 0);
+        }
+    }
+    mark_timer.mark();
+    WARN("Mark - timings: " << ms(mark_timer.time(0)) << ", " << ms(mark_timer.time(1)) << ", " << ms(mark_timer.time(2)));
 }
+
 
 TEST_CASE("unit:adl/timer", "[adl][unit]") {
     //execute();

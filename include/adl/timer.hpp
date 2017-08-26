@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <chrono>
 #include <set>
+#include <array>
 
 #include "adl.cfg.hpp"
 #include "timer.fwd.hpp"
@@ -173,6 +174,36 @@ private:
     LessFunction less_function_ = LessFunction();
     run_info best_run_;
     run_info worst_run_;
+};
+
+template <std::size_t MeasurementsCount>
+class static_mark_timer {
+private:
+    using clock_type_ = default_timer_clock_type_;
+
+public:
+    using time_point_type = typename clock_type_::time_point;
+    using duration_type = typename clock_type_::duration;
+
+public:
+    static_mark_timer() = default;
+    static_mark_timer(static_mark_timer const&) = default;
+    static_mark_timer(static_mark_timer &&) noexcept = default;
+    static_mark_timer& operator=(static_mark_timer const&) = default;
+    static_mark_timer& operator=(static_mark_timer &&) noexcept = default;
+
+    void mark();
+    std::size_t max_size() const noexcept;
+    std::size_t size() const noexcept;
+
+    time_point_type measurement(std::size_t measurement_index) const;
+    duration_type total_time() const;
+    duration_type time(std::size_t initial_index) const;
+    duration_type time(std::size_t initial_index, std::size_t final_index) const;
+
+private:
+    std::array<time_point_type, MeasurementsCount> measurements_;
+    std::size_t size_ = 0;
 };
 
 
@@ -460,6 +491,50 @@ inline void average_stats_timer<LessFunction>::on_finished_run_(run_info hnd) {
         best_run_ = hnd;
         worst_run_ = hnd;
     }
+}
+
+//
+// static_mark_timer
+//
+
+template <std::size_t MeasurementsCount>
+inline void static_mark_timer<MeasurementsCount>::mark() {
+    if (size_ >= MeasurementsCount) throw std::logic_error("Measurement overflow");
+    measurements_[size_++] = clock_type_::now();
+}
+
+template <std::size_t MeasurementsCount>
+inline std::size_t static_mark_timer<MeasurementsCount>::max_size() const noexcept {
+    return MeasurementsCount;
+}
+
+template <std::size_t MeasurementsCount>
+inline std::size_t static_mark_timer<MeasurementsCount>::size() const noexcept {
+    return size_;
+}
+
+template <std::size_t MeasurementsCount>
+inline typename static_mark_timer<MeasurementsCount>::time_point_type
+static_mark_timer<MeasurementsCount>::measurement(std::size_t measurement_index) const {
+    return measurements_.at(measurement_index);
+}
+
+template <std::size_t MeasurementsCount>
+inline typename static_mark_timer<MeasurementsCount>::duration_type
+static_mark_timer<MeasurementsCount>::total_time() const {
+    return time(0, size_ - 1);
+}
+
+template <std::size_t MeasurementsCount>
+inline typename static_mark_timer<MeasurementsCount>::duration_type
+static_mark_timer<MeasurementsCount>::time(std::size_t initial_index) const {
+    return time(initial_index, initial_index + 1);
+}
+
+template <std::size_t MeasurementsCount>
+inline typename static_mark_timer<MeasurementsCount>::duration_type
+static_mark_timer<MeasurementsCount>::time(std::size_t initial_index, std::size_t final_index) const {
+    return measurement(final_index) - measurement(initial_index);
 }
 
 adl_END_ROOT_MODULE
