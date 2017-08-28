@@ -150,7 +150,7 @@ inline dense_dbm<ContextType, ValueType, ValueLimits>::dense_dbm(
 
 template <typename ContextType, typename ValueType, typename ValueLimits>
 inline std::size_t dense_dbm<ContextType, ValueType, ValueLimits>::size() const noexcept {
-    return data_.size() >> 1;
+    return data_.size();
 };
 
 template <typename ContextType, typename ValueType, typename ValueLimits>
@@ -161,7 +161,8 @@ inline void dense_dbm<ContextType, ValueType, ValueLimits>::initialize(constant_
 template <typename ContextType, typename ValueType, typename ValueLimits>
 template <typename VarType_, typename>
 inline void dense_dbm<ContextType, ValueType, ValueLimits>::resize(VarType_ new_last_var, constant_type value) {
-    data_.resize(to_end_index_(new_last_var), value);
+    auto new_size = to_end_index_(new_last_var);
+    data_.resize(new_size, value);
 };
 
 template <typename ContextType, typename ValueType, typename ValueLimits>
