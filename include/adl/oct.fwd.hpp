@@ -115,6 +115,7 @@ template <typename ValueType, typename ValueLimits = value_limits<ValueType>> cl
 //
 // oper.hpp
 //
+enum class oper_state;
 enum class oper_timing;
 enum class oper_kind;
 
@@ -137,6 +138,66 @@ template <typename Subclass, typename ValueType, typename ValueLimits = value_li
 template <typename Subclass, typename ValueType, typename ValueLimits = value_limits<ValueType>> class dense_dbm_base_;
 template <typename ValueType, typename ValueLimits = value_limits<ValueType>, typename Allocator = std::allocator<ValueType>> class dense_dbm;
 
+//
+// cpu.hpp
+//
+namespace cpu {
+    class seq_context;
+    class async_context;
+
+    template <typename SubType, typename DbmType, typename ContextType, typename ResultType> class oper_base_;
+
+    template <typename ContextType, typename ValueType, typename ValueLimits = value_limits<ValueType>> class dense_dbm;
+
+    // Specific
+    template <typename DbmType, typename ContextType> class null_oper;
+
+    // Closure
+    template <typename DbmType, typename ContextType> class shortest_path_oper;
+    template <typename DbmType, typename ContextType> class strengthen_oper;
+    template <typename DbmType, typename ContextType> class tighten_oper;
+    template <typename DbmType, typename ContextType> class closure_oper;
+
+    // Validity
+    template <typename DbmType, typename ContextType> class is_coherent_oper;
+    template <typename DbmType, typename ContextType> class is_consistent_oper;
+    template <typename DbmType, typename ContextType> class is_closed_oper;
+    template <typename DbmType, typename ContextType> class is_strongly_closed_oper;
+    template <typename DbmType, typename ContextType> class is_tightly_closed_oper;
+    template <typename DbmType, typename ContextType> class is_weakly_closed_oper;
+
+    // comparison
+    template <typename DbmType, typename ContextType> class equals_oper;
+    template <typename DbmType, typename ContextType> class not_equals_oper;
+    template <typename DbmType, typename ContextType> class is_proper_subset_oper;
+    template <typename DbmType, typename ContextType> class is_subset_oper;
+    template <typename DbmType, typename ContextType> class is_proper_superset_oper;
+    template <typename DbmType, typename ContextType> class is_superset_oper;
+    template <typename DbmType, typename ContextType> class is_top_oper;
+    template <typename DbmType, typename ContextType> class is_bottom_oper;
+
+    // set operations
+    template <typename DbmType, typename ContextType> class set_union_oper;
+    template <typename DbmType, typename ContextType> class set_intersection_oper;
+
+    // Basic system construction
+    template <typename DbmType, typename ContextType> class to_top_oper;
+    template <typename DbmType, typename ContextType> class to_bottom_oper;
+    template <typename DbmType, typename ContextType> class copy_oper;
+    template <typename DbmType, typename ContextType> class forget_oct_var_oper;
+    template <typename DbmType, typename ContextType> class add_oct_cons_oper;
+    template <typename DbmType, typename ContextType> class add_octdiff_cons_oper;
+    template <typename DbmType, typename ContextType> class add_dbm_oper;
+
+    // Abstraction-based system construction
+    template <typename DbmType, typename ContextType> class add_oct_test_oper;
+    template <typename DbmType, typename ContextType> class add_oct_assignment_oper;
+    template <typename DbmType, typename ContextType> class add_oct_backward_assignment_oper;
+
+    // Extrapolation
+    template <typename DbmType, typename ContextType> class widen_oper;
+    template <typename DbmType, typename ContextType> class narrow_oper;
+}
 
 adl_END_MAIN_MODULE
 

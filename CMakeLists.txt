@@ -57,6 +57,8 @@ target_sources(${api} INTERFACE
     "${api_dir_root}/adl.cfg.hpp"
     "${api_dir_root}/adl/config.hpp"
     "${api_dir_root}/adl/intl.hpp"
+    "${api_dir_root}/adl/crtp.fwd.hpp"
+    "${api_dir_root}/adl/crtp.hpp"
     "${api_dir_root}/adl/error.fwd.hpp"
     "${api_dir_root}/adl/error.hpp"
     "${api_dir_root}/adl/char_helper.hpp"
@@ -86,10 +88,19 @@ target_sources(${api} INTERFACE
     "${api_dir_root}/adl/oct/system/oct_system_.hpp"
     "${api_dir_root}/adl/oct/system/octdiff_system_.hpp"
     "${api_dir_root}/adl/oct/oper.hpp"
+
+    # adl/oct/dbm
     "${api_dir_root}/adl/oct/dbm.hpp"
     "${api_dir_root}/adl/oct/dbm/traits.hpp"
     "${api_dir_root}/adl/oct/dbm/dbm_base_.hpp"
     "${api_dir_root}/adl/oct/dbm/dense_dbm.hpp"
+
+    #adl/oct/cpu
+    "${api_dir_root}/adl/oct/cpu.hpp"
+    "${api_dir_root}/adl/oct/cpu/oper_base_.hpp"
+    "${api_dir_root}/adl/oct/cpu/seq_context.hpp"
+    "${api_dir_root}/adl/oct/cpu/async_context.hpp"
+    "${api_dir_root}/adl/oct/cpu/dense_dbm.hpp"
     )
 
 
@@ -148,6 +159,11 @@ add_executable(${test}
 
     # unit:adl/oct/dbm
     "${test_dir_unit}/adl/oct/dbm/dense_dbm.unit.cpp"
+
+    # unit:adl/oct/cpu
+    "${test_dir_unit}/adl/oct/cpu/seq_context.unit.cpp"
+    "${test_dir_unit}/adl/oct/cpu/async_context.unit.cpp"
+    "${test_dir_unit}/adl/oct/cpu/dense_dbm.unit.cpp"
 )
 target_link_libraries(${test} ${test_iapi})
 enable_testing()

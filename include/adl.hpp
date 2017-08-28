@@ -15,6 +15,7 @@
 // Utility components/modules
 #include "adl/config.hpp"
 #include "adl/intl.hpp"
+#include "adl/crtp.hpp"
 #include "adl/error.hpp"
 #include "adl/char_helper.hpp"
 #include "adl/timer.hpp"

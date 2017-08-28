@@ -13,6 +13,13 @@
 adl_BEGIN_ROOT_MODULE
 namespace oct {
 
+enum class oper_state {
+    waiting,   // e.g. CL_QUEUED, std::launch::lazy's lazy evaluation
+    launching, // Preparing for execution
+    started,   // Executing
+    finished   // Finished execution
+};
+
 enum class oper_timing {
     total, // Total time, from start to finish.
     queue, // The total time the operation waited to be launched, if any.
@@ -70,6 +77,9 @@ enum class oper_kind {
     widen,
     narrow
 };
+
+template <typename DbmType, typename ContextType>
+class null_oper {};
 
 } // namespace oct
 adl_END_ROOT_MODULE

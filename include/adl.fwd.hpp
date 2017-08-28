@@ -8,6 +8,7 @@
 #include "adl.cfg.hpp"
 
 // Utility components/modules
+#include "adl/crtp.fwd.hpp"
 #include "adl/error.fwd.hpp"
 #include "adl/char_helper.fwd.hpp"
 #include "adl/timer.fwd.hpp"
