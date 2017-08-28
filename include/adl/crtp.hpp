@@ -37,7 +37,7 @@ inline typename crtp_base<SubClass>::subclass_& crtp_base<SubClass>::as_subclass
 
 template <typename SubClass>
 inline typename crtp_base<SubClass>::subclass_ const& crtp_base<SubClass>::as_subclass_() const noexcept {
-    return static_cast<subclass_&>(*this);
+    return static_cast<subclass_ const&>(*this);
 }
 
 template <typename SubClass>

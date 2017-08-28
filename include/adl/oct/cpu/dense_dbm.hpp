@@ -5,6 +5,8 @@
 #ifndef adl__oct__cpu__dense_dbm__hpp__
 #define adl__oct__cpu__dense_dbm__hpp__
 
+#include <type_traits>
+
 #include "adl.cfg.hpp"
 
 #include "adl/oct/dbm/traits.hpp"
@@ -27,7 +29,7 @@ struct dbm_traits<cpu::dense_dbm<ContextType, ValueType, ValueLimits>> : public 
 namespace cpu {
 
 template <typename ContextType, typename ValueType, typename ValueLimits>
-class dense_dbm : public dense_dbm_base_<adl::oct::cpu::dense_dbm<ContextType, ValueType, ValueLimits>, ValueType, ValueLimits> {
+class dense_dbm : public dense_dbm_base_<dense_dbm<ContextType, ValueType, ValueLimits>, ValueType, ValueLimits> {
 private:
     using superclass_ = dense_dbm_base_<dense_dbm, ValueType, ValueLimits>;
     using container_type_ = std::vector<ValueType>;
@@ -39,9 +41,12 @@ public:
     using typename superclass_::constant_type;
     using typename superclass_::value_limits;
 
+    using superclass_::to_end_index_;
+
     using context_type = ContextType;
 
-    constexpr static const dbm_major default_major = traits_::defaut_major;
+    constexpr static const dbm_major default_major = dbm_major::row;
+    constexpr static constant_type default_constant() noexcept;
 
     dense_dbm();
     dense_dbm(dense_dbm const&) = default;
@@ -51,11 +56,25 @@ public:
 
     template <typename ValueType_,
             typename ValueLimits_,
-            typename = std::enable_if_t<std::is_convertible<ValueType, ValueType_>::value> >
-        dense_dbm(octdiff_system<ValueType_, ValueLimits_> const& rhs, constant_type default_value, dbm_major major = default_major);
+            typename = std::enable_if_t<std::is_convertible<ValueType_, constant_type>::value> >
+        dense_dbm(
+            dbm_tags::create_from_octdiff_system_tag tag,
+            context_type& context,
+            octdiff_system<ValueType_, ValueLimits_> const& rhs,
+            ValueType_ default_value = default_constant(),
+            dbm_major major = default_major);
 
-    template <typename VarType_, typename = common_var_t<VarType_>>
-        explicit dense_dbm(VarType_ last_var, constant_type value, dbm_major major = default_major);
+    template <typename ValueType_,
+            typename VarType_,
+            typename = std::enable_if_t<
+                common_var<VarType_>::valid
+                && std::is_convertible<constant_type, ValueType_>::value>>
+        explicit dense_dbm(
+            dbm_tags::create_from_last_var_tag tag,
+            context_type& context,
+            VarType_ last_var,
+            ValueType_ value = default_constant(),
+            dbm_major major = default_major);
 
     std::size_t size() const noexcept;
 
@@ -95,14 +114,22 @@ namespace cpu {
 // dense_dbm
 //
 template <typename ContextType, typename ValueType, typename ValueLimits>
+constexpr typename dense_dbm<ContextType, ValueType, ValueLimits>::constant_type
+dense_dbm<ContextType, ValueType, ValueLimits>::default_constant() noexcept {
+    return value_limits::top();
+};
+
+template <typename ContextType, typename ValueType, typename ValueLimits>
 inline dense_dbm<ContextType, ValueType, ValueLimits>::dense_dbm()
     : superclass_(default_major) {};
 
 template <typename ContextType, typename ValueType, typename ValueLimits>
 template <typename ValueType_, typename ValueLimits_, typename>
 inline dense_dbm<ContextType, ValueType, ValueLimits>::dense_dbm(
+    dbm_tags::create_from_octdiff_system_tag tag,
+    context_type& context,
     octdiff_system<ValueType_, ValueLimits_> const& rhs,
-    constant_type default_value,
+    ValueType_ default_value,
     dbm_major major
 ) : superclass_(major) {
     resize(rhs.vars().last_var(), default_value);
@@ -110,13 +137,15 @@ inline dense_dbm<ContextType, ValueType, ValueLimits>::dense_dbm(
 };
 
 template <typename ContextType, typename ValueType, typename ValueLimits>
-template <typename VarType_, typename>
+template <typename ValueType_, typename VarType_, typename>
 inline dense_dbm<ContextType, ValueType, ValueLimits>::dense_dbm(
+    dbm_tags::create_from_last_var_tag tag,
+    context_type& context,
     VarType_ last_var,
-    constant_type value,
+    ValueType_ value,
     dbm_major major
 ) : superclass_(major) {
-    resize(to_end_index_(last_var), value);
+    resize(last_var, value);
 };
 
 template <typename ContextType, typename ValueType, typename ValueLimits>

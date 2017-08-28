@@ -17,7 +17,7 @@ adl_BEGIN_ROOT_MODULE
 namespace oct {
 
 template <typename SubClass, typename ValueType, typename ValueLimits>
-class dbm_base_ : public dbm_types_<ValueType, ValueLimits>, crtp_base<SubClass> {
+class dbm_base_ : public dbm_types_<ValueType, ValueLimits>, public crtp_base<SubClass> {
 private:
     using superclass_ = dbm_types_<ValueType, ValueLimits>;
 

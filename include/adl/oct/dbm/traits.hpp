@@ -14,6 +14,11 @@
 adl_BEGIN_ROOT_MODULE
 namespace oct {
 
+namespace dbm_tags {
+    struct create_from_last_var_tag {};
+    struct create_from_octdiff_system_tag {};
+}
+
 template <typename ValueType, typename ValueLimits>
 class dbm_types_ {
 public:

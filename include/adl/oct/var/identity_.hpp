@@ -119,11 +119,11 @@ adl_IMPL oct_var to_oct(octdiff_var var) {
 }
 
 adl_IMPL octdiff_var to_octdiff(oct_var var) {
-    return var;
+    return var.to_counterpart();
 }
 
 adl_IMPL octdiff_var to_octdiff(octdiff_var var) {
-    return var.to_counterpart();
+    return var;
 }
 
 } // namespace oct
