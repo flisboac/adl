@@ -175,6 +175,22 @@ TEST_CASE_METHOD(literal_var_test_<OCTDIFF_LVAR_CLASS_>,
     test_all();
 }
 
+TEST_CASE("unit:adl/oct/var.hpp Conversion", "[unit][adl][adl/oct][adl/oct/var]") {
+    using namespace adl::operators;
+    using namespace adl::literals;
+    using namespace adl::oct;
+
+    auto oiv = 1_ov;
+    auto olv = "1"_ov;
+
+    octdiff_var ioct_to_idiff = oiv;
+    oct_var idiff_to_ioct = ioct_to_idiff;
+
+    octdiff_lvar loct_to_ldiff = olv;
+    oct_lvar ldiff_to_loct = loct_to_ldiff;
+
+    octdiff_var loct_to_idiff = olv;
+}
 
 //
 // [[ IMPLEMENTATION ]]

@@ -35,6 +35,7 @@ namespace oct {
         using var_traits = VarTraits;
         using var_type = VarType;
         using identity_var_type = typename var_traits::identity_var_type;
+        using counterpart_identity_var_type = typename var_traits::counterpart_identity_var_type;
         using counterpart_var_type = typename var_traits::counterpart_var_type;
 
         struct less {
@@ -209,6 +210,7 @@ namespace oct {
         using typename superclass_::var_id_traits;
         using typename superclass_::var_id_limits;
         using typename superclass_::identity_var_type;
+        using typename superclass_::counterpart_identity_var_type;
 
         using superclass_::id;
         using superclass_::to_identity;
@@ -252,6 +254,7 @@ namespace oct {
         // conversion operators
         explicit operator std::string() const;
         constexpr operator identity_var_type() const noexcept;
+        constexpr operator counterpart_identity_var_type() const noexcept;
 
     private:
         string_view name_ { "", 0 };
@@ -763,6 +766,10 @@ constexpr lit_named_var_base_<VarType, VarTraits>::operator identity_var_type() 
     return to_identity();
 };
 
+template <typename VarType, typename VarTraits>
+constexpr lit_named_var_base_<VarType, VarTraits>::operator counterpart_identity_var_type() const noexcept {
+    return this->to_counterpart().to_identity();
+};
 
 adl_END_MAIN_MODULE
 adl_BEGIN_ROOT_MODULE
