@@ -65,7 +65,7 @@ template <domain_space DomainSpace> struct domain_space_traits;
 // var.hpp
 //
 template <typename VarType, typename VarTraits = var_traits<VarType>> class var_base_;
-template <typename VarType, typename VarTraits = var_traits<VarType>> class unnamed_var_base_;
+template <typename VarType, typename VarTraits = var_traits<VarType>> class identity_var_base_;
 template <typename VarType, typename VarTraits = var_traits<VarType>> class lit_named_var_base_;
 
 class oct_var;

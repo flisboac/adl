@@ -18,5 +18,5 @@ TEST_CASE("unit:adl/oct/cpu/dense_dbm.hpp", "[unit][adl][adl/oct][adl/oct/cpu]")
     INFO(dbm.size());
     REQUIRE( (dbm.size() == 200) );
     INFO(dbm.last_var().to_string());
-    REQUIRE( ( dbm.last_var().equals(100_ov) ) );
+    REQUIRE( ( dbm.last_var() == "x100"_ov++ ) );
 }

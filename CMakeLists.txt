@@ -76,12 +76,18 @@ target_sources(${api} INTERFACE
     "${api_dir_root}/adl/oct.fwd.hpp"
     "${api_dir_root}/adl/oct/limits.hpp"
     "${api_dir_root}/adl/oct/traits.hpp"
+
+    # adl/oct/var
     "${api_dir_root}/adl/oct/var.hpp"
-    "${api_dir_root}/adl/oct/var/base_.hpp"
-    #"${api_dir_root}/adl/oct/var/identity_.hpp"
-    "${api_dir_root}/adl/oct/var/view_named_.hpp"
+    "${api_dir_root}/adl/oct/var/var_base_.hpp"
+    "${api_dir_root}/adl/oct/var/identity_var_base_.hpp"
+    "${api_dir_root}/adl/oct/var/literal_var_base_.hpp"
     "${api_dir_root}/adl/oct/var/oct_var.hpp"
     "${api_dir_root}/adl/oct/var/octdiff_var.hpp"
+    "${api_dir_root}/adl/oct/var/oct_lvar.hpp"
+    "${api_dir_root}/adl/oct/var/octdiff_lvar.hpp"
+
+    # adl/oct
     "${api_dir_root}/adl/oct/vexpr.hpp"
     "${api_dir_root}/adl/oct/cons.hpp"
     "${api_dir_root}/adl/oct/system.hpp"
@@ -89,6 +95,8 @@ target_sources(${api} INTERFACE
     "${api_dir_root}/adl/oct/system/system_base_.hpp"
     "${api_dir_root}/adl/oct/system/oct_system_.hpp"
     "${api_dir_root}/adl/oct/system/octdiff_system_.hpp"
+
+    # adl/oct/oper
     "${api_dir_root}/adl/oct/oper.hpp"
 
     # adl/oct/dbm
