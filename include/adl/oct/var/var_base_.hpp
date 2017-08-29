@@ -42,6 +42,10 @@ public:
         constexpr bool operator()(var_type const& lhs, var_type const& rhs) const noexcept;
     };
 
+    struct hash {
+        constexpr std::size_t operator()(var_type const& lhs) const noexcept;
+    };
+
     static_assert(var_traits::valid,
         "A valid var_traits must be provided.");
     static_assert(std::is_same<var_type, typename VarTraits::var_type>::value,
@@ -261,6 +265,7 @@ std::basic_ostream<char, Traits>& operator<<(std::basic_ostream<char, Traits>& o
     return os;
 };
 
+
 //
 // [[ TEMPLATE IMPLEMENTATION ]]
 //
@@ -276,6 +281,11 @@ template <typename VarType, typename VarTraits>
 constexpr bool var_base_<VarType, VarTraits>::less::operator()(var_type const& lhs, var_type const& rhs) const noexcept {
     return lhs.compare(rhs) < 0;
 }
+
+template <typename VarType, typename VarTraits>
+constexpr std::size_t var_base_<VarType, VarTraits>::hash::operator()(var_type const& lhs) const noexcept {
+    return std::hash<var_id_type>()(lhs.id);
+};
 
 template <typename VarType, typename VarTraits>
 constexpr var_base_<VarType, VarTraits>::var_base_(long long int id) noexcept :

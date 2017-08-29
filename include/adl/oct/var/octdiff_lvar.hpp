@@ -90,6 +90,11 @@ constexpr octdiff_var to_octdiff_identity(octdiff_lvar var);
 
 adl_END_ROOT_MODULE
 
+namespace std {
+    template<> struct hash<::adl::oct::octdiff_lvar> : public ::adl::oct::octdiff_lvar::hash {};
+    template<> struct less<::adl::oct::octdiff_lvar> : public ::adl::oct::octdiff_lvar::less {};
+}
+
 #include "adl/oct/var/oct_lvar.hpp"
 
 //

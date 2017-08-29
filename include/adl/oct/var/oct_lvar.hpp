@@ -95,6 +95,11 @@ namespace literals {
 
 adl_END_ROOT_MODULE
 
+namespace std {
+    template<> struct hash<::adl::oct::oct_lvar> : public ::adl::oct::oct_lvar::hash {};
+    template<> struct less<::adl::oct::oct_lvar> : public ::adl::oct::oct_lvar::less {};
+}
+
 #include "adl/oct/var/octdiff_lvar.hpp"
 
 //
