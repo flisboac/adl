@@ -31,6 +31,9 @@ protected:
     using traits_ = dbm_traits<Subclass>;
 
 public:
+    friend class crtp_base<Subclass>;
+
+    using typename superclass_::subclass_;
     using typename superclass_::identity_var_type;
     using typename superclass_::constant_type;
     using typename superclass_::value_limits;
@@ -97,6 +100,7 @@ private:
 
 public:
     using typename superclass_::superclass_;
+    using typename superclass_::subclass_;
     using typename superclass_::traits_;
     using typename superclass_::identity_var_type;
     using typename superclass_::constant_type;
@@ -141,7 +145,7 @@ private:
     constant_type& constant_(std::size_t index);
     constant_type const& constant_(std::size_t index) const;
 
-private:
+public:
     container_type_ data_;
 };
 
@@ -235,11 +239,11 @@ template <typename VarTypeA_, typename VarTypeB_, typename>
 inline typename dense_dbm_base_<SubClass, ValueType, ValueLimits>::constant_type&
 dense_dbm_base_<SubClass, ValueType, ValueLimits>::at(VarTypeA_ xi, VarTypeB_ xj) {
     if (xi.invalid() || xj.invalid()) throw std::logic_error("Invalid variables passed as indexes to DBM.");
-    auto real_xi = major_ == dbm_major::row ? xi.to_identity() : xj.to_identity();
-    auto real_xj = major_ == dbm_major::row ? xj.to_identity() : xi.to_identity();
+    auto real_xi = major_ == dbm_major::row ? to_octdiff_identity(xi) : to_octdiff_identity(xj);
+    auto real_xj = major_ == dbm_major::row ? to_octdiff_identity(xj) : to_octdiff_identity(xi);
     std::size_t var_size = this->as_subclass_().size();
     std::size_t index = real_xi.to_index() * var_size + real_xj.to_index();
-    return this->as_subclass_().value_(index);
+    return this->as_subclass_().constant_(index);
 };
 
 template <typename SubClass, typename ValueType, typename ValueLimits>

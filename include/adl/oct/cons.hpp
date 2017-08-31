@@ -125,15 +125,13 @@ public:
     constexpr cons_type& as_valid() noexcept;
     constexpr cons_type to_valid() const noexcept;
     constexpr cons_type to_identity() const noexcept;
-    constexpr vexpr_type to_vexpr() const noexcept;
-    constexpr vexpr_type to_identity_vexpr() const noexcept;
+    constexpr identity_vexpr_type to_identity_vexpr() const noexcept;
     std::string to_string() const;
 
     // conversion operators
     constexpr bool operator!() const noexcept;
     constexpr explicit operator bool() const noexcept;
     constexpr explicit operator std::string() const;
-    constexpr operator vexpr_type() const noexcept;
     constexpr explicit operator value_type() const noexcept;
 
 private:
@@ -175,6 +173,11 @@ public:
     oct_cons& operator=(oct_cons const&) = default;
     oct_cons& operator=(oct_cons &&) noexcept = default;
 
+    template <typename ValueType_,
+        typename VarType_,
+        typename = std::enable_if_t<common_var<VarType_>::is_oct_space && std::is_convertible<ValueType_, value_type>::value>>
+    constexpr oct_cons(oct_cons<ValueType_, VarType_> cons);
+
     constexpr oct_cons(var_type xi, value_type c);
     constexpr static oct_cons make_upper_limit(var_type xi, value_type c) noexcept; // xi <= c
     constexpr static oct_cons make_upper_limit(vexpr_type vexpr, value_type c) noexcept; // +-xi [+- xj] <= c
@@ -184,6 +187,14 @@ public:
     template <typename ValueType_, typename =
         std::enable_if_t<std::is_convertible<ValueType, ValueType_>::value> >
         constexpr oct_cons& operator=(ValueType_ constant) noexcept;
+
+    template <typename VarType_ = var_type,
+            typename = std::enable_if_t<common_var<VarType_>::is_oct_space>>
+    constexpr oct_vexpr<VarType_> to_vexpr() const noexcept;
+
+    template <typename VarType_ = var_type,
+            typename = std::enable_if_t<common_var<VarType_>::is_oct_space>>
+    constexpr operator oct_vexpr<VarType_>() const noexcept;
 
     constexpr oct_cons& simplify() noexcept;
     constexpr oct_cons to_simplified() const noexcept;
@@ -211,6 +222,27 @@ public:
     using superclass_::vexpr_;
     using superclass_::c_;
     static_assert(space == domain_space::octdiff, "Wrong variable type.");
+
+    constexpr octdiff_cons() noexcept = default;
+    constexpr octdiff_cons(octdiff_cons const&) noexcept = default;
+    constexpr octdiff_cons(octdiff_cons &&) noexcept = default;
+    constexpr octdiff_cons& operator=(octdiff_cons const&) noexcept = default;
+    constexpr octdiff_cons& operator=(octdiff_cons &&) noexcept = default;
+
+    constexpr octdiff_cons(vexpr_type vexpr, value_type c);
+
+    template <typename ValueType_,
+            typename VarType_,
+            typename = std::enable_if_t<common_var<VarType_>::is_octdiff_space && std::is_convertible<ValueType_, value_type>::value>>
+    constexpr octdiff_cons(octdiff_cons<ValueType_, VarType_> cons);
+
+    template <typename VarType_ = var_type,
+            typename = std::enable_if_t<common_var<VarType_>::is_octdiff_space>>
+    constexpr octdiff_vexpr<VarType_> to_vexpr() const noexcept;
+
+    template <typename VarType_ = var_type,
+            typename = std::enable_if_t<common_var<VarType_>::is_octdiff_space>>
+    constexpr operator octdiff_vexpr<VarType_>() const noexcept;
 
 private:
     friend class octdiff_conjunction<ValueType, VarType>;
@@ -677,13 +709,7 @@ cons_base_<ValueType, VarType>::to_identity() const noexcept {
 }
 
 template <typename ValueType, typename VarType>
-constexpr typename cons_base_<ValueType, VarType>::vexpr_type
-cons_base_<ValueType, VarType>::to_vexpr() const noexcept {
-    return vexpr_;
-}
-
-template <typename ValueType, typename VarType>
-constexpr typename cons_base_<ValueType, VarType>::vexpr_type
+constexpr typename cons_base_<ValueType, VarType>::identity_vexpr_type
 cons_base_<ValueType, VarType>::to_identity_vexpr() const noexcept {
     return vexpr_.to_identity();
 }
@@ -711,11 +737,6 @@ constexpr cons_base_<ValueType, VarType>::operator std::string() const {
 }
 
 template <typename ValueType, typename VarType>
-constexpr cons_base_<ValueType, VarType>::operator vexpr_type() const noexcept {
-    return to_vexpr();
-}
-
-template <typename ValueType, typename VarType>
 constexpr cons_base_<ValueType, VarType>::operator value_type() const noexcept {
     return c();
 }
@@ -737,6 +758,11 @@ cons_base_<ValueType, VarType>::as_subclass_() const noexcept {
 //
 
 template <typename ValueType, typename VarType>
+template <typename ValueType_, typename VarType_, typename>
+constexpr oct_cons<ValueType, VarType>::oct_cons(oct_cons<ValueType_, VarType_> cons)
+    : oct_cons(vexpr_type(var_type(cons.xi()), var_type(cons.xj())), value_type(cons.c())) {};
+
+template <typename ValueType, typename VarType>
 constexpr oct_cons<ValueType, VarType>::oct_cons(var_type xi, value_type c) :
     superclass_(vexpr_type::make_unit(xi), c) {}
 
@@ -747,6 +773,18 @@ oct_cons<ValueType, VarType>::operator=(ValueType_ constant) noexcept {
     c_ = constant;
     return *this;
 }
+
+template <typename ValueType, typename VarType>
+template <typename VarType_, typename>
+constexpr oct_vexpr<VarType_> oct_cons<ValueType, VarType>::to_vexpr() const noexcept {
+    return oct_vexpr<VarType_>(this->xi(), this->xj());
+};
+
+template <typename ValueType, typename VarType>
+template <typename VarType_, typename>
+constexpr oct_cons<ValueType, VarType>::operator oct_vexpr<VarType_>() const noexcept {
+    return to_vexpr<VarType_>();
+};
 
 template <typename ValueType, typename VarType>
 constexpr oct_cons<ValueType, VarType> oct_cons<ValueType, VarType>::make_upper_limit(
@@ -832,6 +870,26 @@ constexpr oct_cons<ValueType, VarType>::operator octdiff_conjunction_type() cons
 //
 // adl::oct::octdiff_cons
 //
+
+template <typename ValueType, typename VarType>
+constexpr octdiff_cons<ValueType, VarType>::octdiff_cons(vexpr_type vexpr, value_type c) : superclass_(vexpr, c) {};
+
+template <typename ValueType, typename VarType>
+template <typename ValueType_, typename VarType_, typename>
+constexpr octdiff_cons<ValueType, VarType>::octdiff_cons(octdiff_cons<ValueType_, VarType_> cons)
+    : octdiff_cons(vexpr_type(cons.xi(), cons.xj()), cons.c()) {};
+
+template <typename ValueType, typename VarType>
+template <typename VarType_, typename>
+constexpr octdiff_vexpr<VarType_> octdiff_cons<ValueType, VarType>::to_vexpr() const noexcept {
+    return oct_vexpr<VarType_>(this->xi(), this->xj());
+};
+
+template <typename ValueType, typename VarType>
+template <typename VarType_, typename>
+constexpr octdiff_cons<ValueType, VarType>::operator octdiff_vexpr<VarType_>() const noexcept {
+    return to_vexpr<VarType_>();
+};
 
 template <typename ValueType, typename VarType>
 constexpr octdiff_cons<ValueType, VarType>& octdiff_cons<ValueType, VarType>::commute() noexcept {

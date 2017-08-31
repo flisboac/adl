@@ -35,7 +35,8 @@ private:
     using container_type_ = std::vector<ValueType>;
 
 public:
-    using typename superclass_::superclass_;
+    friend class crtp_base<dense_dbm>;
+
     using typename superclass_::traits_;
     using typename superclass_::identity_var_type;
     using typename superclass_::constant_type;
@@ -82,7 +83,7 @@ public:
     template <typename VarType_, typename = common_var_t<VarType_>>
         void resize(VarType_ new_last_var, constant_type value = value_limits::top());
 
-private:
+public:
     constant_type& constant_(std::size_t index);
     constant_type const& constant_(std::size_t index) const;
 
@@ -133,7 +134,10 @@ inline dense_dbm<ContextType, ValueType, ValueLimits>::dense_dbm(
     dbm_major major
 ) : superclass_(major) {
     resize(rhs.vars().last_var(), default_value);
-    for (auto cons : rhs) superclass_::at(cons) = cons.c();
+    for (auto& cons : rhs) {
+        auto vexpr = cons.to_identity_vexpr();
+        this->at(vexpr) = cons.c();
+    }
 };
 
 template <typename ContextType, typename ValueType, typename ValueLimits>
@@ -150,7 +154,7 @@ inline dense_dbm<ContextType, ValueType, ValueLimits>::dense_dbm(
 
 template <typename ContextType, typename ValueType, typename ValueLimits>
 inline std::size_t dense_dbm<ContextType, ValueType, ValueLimits>::size() const noexcept {
-    return data_.size();
+    return static_cast<std::size_t>( std::sqrt(data_.size()) );
 };
 
 template <typename ContextType, typename ValueType, typename ValueLimits>
@@ -162,7 +166,7 @@ template <typename ContextType, typename ValueType, typename ValueLimits>
 template <typename VarType_, typename>
 inline void dense_dbm<ContextType, ValueType, ValueLimits>::resize(VarType_ new_last_var, constant_type value) {
     auto new_size = to_end_index_(new_last_var);
-    data_.resize(new_size, value);
+    data_.resize(new_size * new_size, value);
 };
 
 template <typename ContextType, typename ValueType, typename ValueLimits>

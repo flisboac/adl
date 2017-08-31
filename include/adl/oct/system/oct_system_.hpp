@@ -5,6 +5,7 @@
 #ifndef adl__oct__system__oct_system___hpp__
 #define adl__oct__system__oct_system___hpp__
 
+#include <initializer_list>
 
 #include "adl.cfg.hpp"
 
@@ -12,6 +13,7 @@
 #include "adl/oct/traits.hpp"
 #include "adl/oct/var.hpp"
 #include "adl/oct/vexpr.hpp"
+#include "adl/oct/cons.hpp"
 
 #include "adl/oct/system/system_base_.hpp"
 
@@ -35,10 +37,31 @@ public:
     using typename superclass_::iterator;
     using typename superclass_::const_iterator;
     using typename superclass_::constant_type;
+    using typename superclass_::literal_cons_type;
 
     using superclass_::space;
     using superclass_::constraints_;
     using superclass_::variables_;
+
+    oct_system() = default;
+    oct_system(oct_system const&) = default;
+    oct_system(oct_system &&) = default;
+    oct_system& operator=(oct_system const&) = default;
+    oct_system& operator=(oct_system &&) = default;
+
+    template <typename ValueType_,
+        typename VarType_,
+        typename = std::enable_if_t<
+            std::is_convertible<ValueType_, value_type>::value
+            && common_var<VarType_>::is_oct_space>>
+    oct_system(std::initializer_list<adl::oct::oct_cons<ValueType_, VarType_>> const& list);
+
+    template <typename ValueType_,
+            typename VarType_,
+            typename = std::enable_if_t<
+                    std::is_convertible<ValueType_, value_type>::value
+                    && common_var<VarType_>::is_oct_space>>
+    oct_system(std::initializer_list<adl::oct::oct_cons<ValueType_, VarType_>> && list);
 
     template <typename VarType_, typename = std::enable_if<common_var<VarType_>::is_oct_space> >
         std::size_t count(oct_vexpr<VarType_> vexpr) const;
@@ -95,6 +118,22 @@ namespace oct {
 //
 // oct_system
 //
+template <typename ValueType, typename ValueLimits>
+template <typename ValueType_, typename VarType_, typename>
+inline oct_system<ValueType, ValueLimits>::oct_system(
+    std::initializer_list<adl::oct::oct_cons<ValueType_, VarType_>> const& list
+) {
+    for (auto cons : list) {
+        value_type value = cons.constant();
+        insert(literal_cons_type(cons.to_vexpr(), value));
+    }
+};
+
+template <typename ValueType, typename ValueLimits>
+template <typename ValueType_, typename VarType_, typename>
+inline oct_system<ValueType, ValueLimits>::oct_system(
+        std::initializer_list<adl::oct::oct_cons<ValueType_, VarType_>> && list
+) : oct_system(list) {};
 
 template <typename ValueType, typename ValueLimits>
 template <typename VarType_, typename>
