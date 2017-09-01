@@ -205,7 +205,7 @@ template <typename SubClass, typename ValueType, typename ValueLimits>
 template <typename VarType_, typename>
 inline typename dense_dbm_base_<SubClass, ValueType, ValueLimits>::identity_cons_type
 dense_dbm_base_<SubClass, ValueType, ValueLimits>::get(basic_oct_vexpr<VarType_> vexpr) const {
-    const oct_cons<VarType_, ValueType> cons(vexpr, ValueType());
+    const basic_oct_cons<VarType_, ValueType> cons(vexpr, ValueType());
     auto conj = cons.split();
     auto constant_di = at(conj.di());
     auto constant_dj = at(conj.dj());
@@ -257,7 +257,7 @@ template <typename SubClass, typename ValueType, typename ValueLimits>
 template <typename VarType_, typename>
 inline typename dense_dbm_base_<SubClass, ValueType, ValueLimits>::constant_type&
 dense_dbm_base_<SubClass, ValueType, ValueLimits>::at(basic_oct_vexpr<VarType_> vexpr) {
-    const oct_cons<VarType_, ValueType> cons(vexpr, ValueType());
+    const basic_oct_cons<VarType_, ValueType> cons(vexpr, ValueType());
     auto conj = cons.split();
     return at(conj.di());
 };

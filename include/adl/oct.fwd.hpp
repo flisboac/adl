@@ -84,6 +84,7 @@ enum class vexpr_oper;
 template <typename VarType> class vexpr_base_;
 template <typename VarType = oct_var> class basic_oct_vexpr;
 template <typename VarType = octdiff_var> class basic_octdiff_vexpr;
+
 using oct_vexpr = basic_oct_vexpr<oct_var>;
 using oct_lvexpr = basic_oct_vexpr<oct_lvar>;
 using octdiff_vexpr = basic_octdiff_vexpr<octdiff_var>;
@@ -97,9 +98,16 @@ template <typename FirstVarType, typename SecondVarType = FirstVarType> using co
 // cons.hpp
 //
 template <typename ValueType, typename VarType> class cons_base_;
-template <typename ValueType, typename VarType = oct_var> class oct_cons;
-template <typename ValueType, typename VarType = octdiff_var> class octdiff_cons;
-template <typename ValueType, typename VarType = octdiff_var> class octdiff_conjunction;
+template <typename ValueType, typename VarType = oct_var> class basic_oct_cons;
+template <typename ValueType, typename VarType = octdiff_var> class basic_octdiff_cons;
+template <typename ValueType, typename VarType = octdiff_var> class basic_octdiff_conjunction;
+
+template <typename ValueType> using oct_cons = basic_oct_cons<ValueType, oct_var>;
+template <typename ValueType> using oct_lcons = basic_oct_cons<ValueType, oct_lvar>;
+template <typename ValueType> using octdiff_cons = basic_octdiff_cons<ValueType, octdiff_var>;
+template <typename ValueType> using octdiff_lcons = basic_octdiff_cons<ValueType, octdiff_lvar>;
+template <typename ValueType> using octdiff_conjunction = basic_octdiff_cons<ValueType, octdiff_var>;
+template <typename ValueType> using octdiff_lconjunction = basic_octdiff_cons<ValueType, octdiff_lvar>;
 
 template <typename ValueType, typename FirstVarType, typename SecondVarType = FirstVarType> struct common_cons;
 template <typename ValueType, typename FirstVarType, typename SecondVarType = FirstVarType> using common_cons_t = typename common_cons<ValueType, FirstVarType, SecondVarType>::type;

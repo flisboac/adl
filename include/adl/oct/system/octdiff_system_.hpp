@@ -72,7 +72,7 @@ private:
     template <typename VarType_, typename ValueType_, typename = std::enable_if<
         std::is_convertible<ValueType, ValueType_>::value
         && common_var<VarType_>::is_octdiff_space>>
-        std::pair<iterator, bool> insert_(octdiff_cons<ValueType_, VarType_> cons);
+        std::pair<iterator, bool> insert_(basic_octdiff_cons<ValueType_, VarType_> cons);
     template <typename VarType_, typename = std::enable_if_t<common_var<VarType_>::is_octdiff_space>>
         value_type to_value_(basic_octdiff_vexpr<VarType_> vexpr) const;
     template <typename VarType_, typename = std::enable_if_t<common_var<VarType_>::is_oct_space>>
@@ -185,7 +185,7 @@ octdiff_system<ValueType, ValueLimits>::operator[](basic_oct_vexpr<VarType_> vex
 template <typename ValueType, typename ValueLimits>
 template <typename VarType_, typename ValueType_, typename>
 inline std::pair<typename octdiff_system<ValueType, ValueLimits>::iterator, bool>
-octdiff_system<ValueType, ValueLimits>::insert_(octdiff_cons<ValueType_, VarType_> cons) {
+octdiff_system<ValueType, ValueLimits>::insert_(basic_octdiff_cons<ValueType_, VarType_> cons) {
     if (cons.valid()) {
         auto iter = constraints_.insert(cons);
         if (cons.xi().valid()) variables_.insert(cons.xi());
@@ -207,7 +207,7 @@ template <typename VarType_, typename>
 inline typename octdiff_system<ValueType, ValueLimits>::literal_octdiff_conjunction_type
 octdiff_system<ValueType, ValueLimits>::split_(basic_oct_vexpr<VarType_> vexpr) const {
     if (vexpr.valid()) {
-        const oct_cons<value_type, VarType_> cons(vexpr, value_type());
+        const basic_oct_cons<value_type, VarType_> cons(vexpr, value_type());
         auto split = cons.split();
         return split;
     }

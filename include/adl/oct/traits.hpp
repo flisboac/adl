@@ -140,15 +140,15 @@ struct domain_space_traits<domain_space::oct> {
     //
     // Octagonal constraint types
     //
-    template <typename ValueType, typename VarType = identity_var_type> using cons_type = oct_cons<ValueType, VarType>;
+    template <typename ValueType, typename VarType = identity_var_type> using cons_type = basic_oct_cons<ValueType, VarType>;
     template <typename ValueType> using identity_cons_type = cons_type<ValueType, identity_var_type>;
     template <typename ValueType> using literal_cons_type = cons_type<ValueType, literal_var_type>;
 
-    template <typename ValueType, typename VarType = counterpart_identity_var_type> using counterpart_cons_type = octdiff_cons<ValueType, VarType>;
+    template <typename ValueType, typename VarType = counterpart_identity_var_type> using counterpart_cons_type = basic_octdiff_cons<ValueType, VarType>;
     template <typename ValueType> using counterpart_identity_cons_type = counterpart_cons_type<ValueType, counterpart_identity_var_type>;
     template <typename ValueType> using counterpart_literal_cons_type = counterpart_cons_type<ValueType, counterpart_literal_var_type>;
 
-    template <typename ValueType, typename VarType = identity_var_type> using octdiff_conjunction_type = octdiff_conjunction<ValueType, VarType>;
+    template <typename ValueType, typename VarType = identity_var_type> using octdiff_conjunction_type = basic_octdiff_conjunction<ValueType, VarType>;
     template <typename ValueType> using identity_octdiff_conjunction_type = octdiff_conjunction_type<ValueType, counterpart_identity_var_type>;
     template <typename ValueType> using literal_octdiff_conjunction_type = octdiff_conjunction_type<ValueType, counterpart_literal_var_type>;
 
@@ -202,19 +202,19 @@ public:
     // Octagonal-difference constraint types
     //
 private:
-    template <typename ValueType, typename VarType = identity_var_type> using cons_type = octdiff_cons<ValueType, VarType>;
+    template <typename ValueType, typename VarType = identity_var_type> using cons_type = basic_octdiff_cons<ValueType, VarType>;
 public:
     template <typename ValueType> using identity_cons_type = cons_type<ValueType, identity_var_type>;
     template <typename ValueType> using literal_cons_type = cons_type<ValueType, literal_var_type>;
 
 private:
-    template <typename ValueType, typename VarType = counterpart_identity_var_type> using counterpart_cons_type = oct_cons<ValueType, VarType>;
+    template <typename ValueType, typename VarType = counterpart_identity_var_type> using counterpart_cons_type = basic_oct_cons<ValueType, VarType>;
 public:
     template <typename ValueType> using counterpart_identity_cons_type = counterpart_cons_type<ValueType, counterpart_identity_var_type>;
     template <typename ValueType> using counterpart_literal_cons_type = counterpart_cons_type<ValueType, counterpart_literal_var_type>;
 
 private:
-    template <typename ValueType, typename VarType = identity_var_type> using octdiff_conjunction_type = octdiff_conjunction<ValueType, VarType>;
+    template <typename ValueType, typename VarType = identity_var_type> using octdiff_conjunction_type = basic_octdiff_conjunction<ValueType, VarType>;
 public:
     template <typename ValueType> using identity_octdiff_conjunction_type = octdiff_conjunction_type<ValueType, identity_var_type>;
     template <typename ValueType> using literal_octdiff_conjunction_type = octdiff_conjunction_type<ValueType, literal_var_type>;

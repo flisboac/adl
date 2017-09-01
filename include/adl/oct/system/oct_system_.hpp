@@ -54,14 +54,14 @@ public:
         typename = std::enable_if_t<
             std::is_convertible<ValueType_, value_type>::value
             && common_var<VarType_>::is_oct_space>>
-    oct_system(std::initializer_list<adl::oct::oct_cons<ValueType_, VarType_>> const& list);
+    oct_system(std::initializer_list<adl::oct::basic_oct_cons<ValueType_, VarType_>> const& list);
 
     template <typename ValueType_,
             typename VarType_,
             typename = std::enable_if_t<
                     std::is_convertible<ValueType_, value_type>::value
                     && common_var<VarType_>::is_oct_space>>
-    oct_system(std::initializer_list<adl::oct::oct_cons<ValueType_, VarType_>> && list);
+    oct_system(std::initializer_list<adl::oct::basic_oct_cons<ValueType_, VarType_>> && list);
 
     template <typename VarType_, typename = std::enable_if<common_var<VarType_>::is_oct_space> >
         std::size_t count(basic_oct_vexpr<VarType_> vexpr) const;
@@ -79,7 +79,7 @@ public:
     template <typename ValueType_, typename VarType_, typename = std::enable_if<
         std::is_convertible<ValueType_, ValueType>::value
         && common_cons<ValueType_, VarType_>::is_oct_space>>
-        std::pair<iterator, bool> insert(oct_cons<ValueType_, VarType_> cons);
+        std::pair<iterator, bool> insert(basic_oct_cons<ValueType_, VarType_> cons);
     template <typename VarType_, typename = std::enable_if<
         common_var<VarType_>::space == space>>
         std::size_t erase(basic_oct_vexpr<common_var_t<VarType_>> vexpr);
@@ -93,7 +93,7 @@ private:
         value_type to_value_(basic_oct_vexpr<VarType_> vexpr);
     template <typename ValueType_, typename VarType_, typename = std::enable_if_t<
         common_cons<ValueType_, VarType_>::valid && std::is_convertible<ValueType, ValueType_>::value> >
-        value_type to_value_(oct_cons<ValueType_, VarType_> cons);
+        value_type to_value_(basic_oct_cons<ValueType_, VarType_> cons);
     template <typename VarType_, typename = common_var_t<VarType_>>
         literal_var_type to_var_(VarType_ var) const;
     template <typename VarType_, typename = common_var_t<VarType_>>
@@ -121,7 +121,7 @@ namespace oct {
 template <typename ValueType, typename ValueLimits>
 template <typename ValueType_, typename VarType_, typename>
 inline oct_system<ValueType, ValueLimits>::oct_system(
-    std::initializer_list<adl::oct::oct_cons<ValueType_, VarType_>> const& list
+    std::initializer_list<adl::oct::basic_oct_cons<ValueType_, VarType_>> const& list
 ) {
     for (auto cons : list) {
         value_type value = cons.constant();
@@ -132,7 +132,7 @@ inline oct_system<ValueType, ValueLimits>::oct_system(
 template <typename ValueType, typename ValueLimits>
 template <typename ValueType_, typename VarType_, typename>
 inline oct_system<ValueType, ValueLimits>::oct_system(
-        std::initializer_list<adl::oct::oct_cons<ValueType_, VarType_>> && list
+        std::initializer_list<adl::oct::basic_oct_cons<ValueType_, VarType_>> && list
 ) : oct_system(list) {};
 
 template <typename ValueType, typename ValueLimits>
@@ -191,7 +191,7 @@ inline void oct_system<ValueType, ValueLimits>::setup_var(VarType var) {
 template <typename ValueType, typename ValueLimits>
 template <typename ValueType_, typename VarType_, typename>
 inline std::pair<typename oct_system<ValueType, ValueLimits>::iterator, bool>
-oct_system<ValueType, ValueLimits>::insert(oct_cons<ValueType_, VarType_> cons) {
+oct_system<ValueType, ValueLimits>::insert(basic_oct_cons<ValueType_, VarType_> cons) {
     auto value = to_value_(cons);
     return constraints_.insert(value);
 }
@@ -235,7 +235,7 @@ oct_system<ValueType, ValueLimits>::to_value_(basic_oct_vexpr<VarType_> vexpr) {
 template <typename ValueType, typename ValueLimits>
 template <typename ValueType_, typename VarType_, typename>
 inline typename oct_system<ValueType, ValueLimits>::value_type
-oct_system<ValueType, ValueLimits>::to_value_(oct_cons<ValueType_, VarType_> cons) {
+oct_system<ValueType, ValueLimits>::to_value_(basic_oct_cons<ValueType_, VarType_> cons) {
     if (!cons.valid()) throw std::logic_error("Invalid constraint.");
     auto real_xi = to_var_(cons.xi());
     auto real_xj = (cons.xj().valid()) ? to_var_(cons.xj()) : literal_var_type::invalid();;
