@@ -21,7 +21,7 @@ adl::oct::oct_system<double> make_system() {
     auto xi = "x1"_ov;
     auto xj = "x2"_ov;
     auto cons = -xi - xj <= 10.1;
-    oct_vexpr<oct_lvar> vexpr = cons;
+    basic_oct_vexpr<oct_lvar> vexpr = cons;
     auto split = cons.split();
     auto converted_cons = split.to_oct();
     INFO(split.to_string() << " -> {" << cons.to_string() << "} == {" << converted_cons.to_string() << "}");

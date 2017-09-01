@@ -34,9 +34,9 @@ struct adl_CLASS var_traits<octdiff_var> {
     using identity_var_type = var_type;
     using counterpart_identity_var_type = counterpart_var_type;
 
-    using vexpr_type = octdiff_vexpr<var_type>;
-    using counterpart_vexpr_type = oct_vexpr<counterpart_var_type>;
-    using identity_vexpr_type = octdiff_vexpr<identity_var_type>;
+    using vexpr_type = basic_octdiff_vexpr<var_type>;
+    using counterpart_vexpr_type = basic_oct_vexpr<counterpart_var_type>;
+    using identity_vexpr_type = basic_octdiff_vexpr<identity_var_type>;
 
     template <typename ValueType> using cons_type = octdiff_cons<ValueType, var_type>;
     template <typename ValueType> using counterpart_cons_type = oct_cons<ValueType, counterpart_var_type>;

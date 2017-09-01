@@ -82,8 +82,12 @@ template <typename FirstVarType, typename SecondVarType = FirstVarType> using co
 //
 enum class vexpr_oper;
 template <typename VarType> class vexpr_base_;
-template <typename VarType = oct_var> class oct_vexpr;
-template <typename VarType = octdiff_var> class octdiff_vexpr;
+template <typename VarType = oct_var> class basic_oct_vexpr;
+template <typename VarType = octdiff_var> class basic_octdiff_vexpr;
+using oct_vexpr = basic_oct_vexpr<oct_var>;
+using oct_lvexpr = basic_oct_vexpr<oct_lvar>;
+using octdiff_vexpr = basic_octdiff_vexpr<octdiff_var>;
+using octdiff_lvexpr = basic_octdiff_vexpr<octdiff_lvar>;
 
 template <typename FirstVarType, typename SecondVarType = FirstVarType> struct common_vexpr;
 template <typename FirstVarType, typename SecondVarType = FirstVarType> using common_vexpr_t = typename common_vexpr<FirstVarType, SecondVarType>::type;

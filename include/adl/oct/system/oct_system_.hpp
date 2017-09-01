@@ -64,13 +64,13 @@ public:
     oct_system(std::initializer_list<adl::oct::oct_cons<ValueType_, VarType_>> && list);
 
     template <typename VarType_, typename = std::enable_if<common_var<VarType_>::is_oct_space> >
-        std::size_t count(oct_vexpr<VarType_> vexpr) const;
+        std::size_t count(basic_oct_vexpr<VarType_> vexpr) const;
     template <typename VarType_, typename = std::enable_if<common_var<VarType_>::is_oct_space> >
-        const_iterator find(oct_vexpr<VarType_> vexpr) const;
+        const_iterator find(basic_oct_vexpr<VarType_> vexpr) const;
     template <typename VarType_, typename = std::enable_if<common_var<VarType_>::is_oct_space> >
-        value_type const& get(oct_vexpr <VarType_> vexpr) const;
+        value_type const& get(basic_oct_vexpr <VarType_> vexpr) const;
     template <typename VarType_, typename = std::enable_if<common_var<VarType_>::is_oct_space> >
-        constant_type const& operator[](oct_vexpr<VarType_> vexpr) const;
+        constant_type const& operator[](basic_oct_vexpr<VarType_> vexpr) const;
 
     oct_system& clear();
     oct_system& reset();
@@ -82,15 +82,15 @@ public:
         std::pair<iterator, bool> insert(oct_cons<ValueType_, VarType_> cons);
     template <typename VarType_, typename = std::enable_if<
         common_var<VarType_>::space == space>>
-        std::size_t erase(oct_vexpr<common_var_t<VarType_>> vexpr);
+        std::size_t erase(basic_oct_vexpr<common_var_t<VarType_>> vexpr);
 
     counterpart_system_type to_counterpart() const;
 
 private:
     template <typename VarType_, typename = common_var_t<VarType_>>
-        value_type to_value_(oct_vexpr<VarType_> vexpr) const;
+        value_type to_value_(basic_oct_vexpr<VarType_> vexpr) const;
     template <typename VarType_, typename = common_var_t<VarType_>>
-        value_type to_value_(oct_vexpr<VarType_> vexpr);
+        value_type to_value_(basic_oct_vexpr<VarType_> vexpr);
     template <typename ValueType_, typename VarType_, typename = std::enable_if_t<
         common_cons<ValueType_, VarType_>::valid && std::is_convertible<ValueType, ValueType_>::value> >
         value_type to_value_(oct_cons<ValueType_, VarType_> cons);
@@ -137,7 +137,7 @@ inline oct_system<ValueType, ValueLimits>::oct_system(
 
 template <typename ValueType, typename ValueLimits>
 template <typename VarType_, typename>
-inline std::size_t oct_system<ValueType, ValueLimits>::count(oct_vexpr<VarType_> vexpr) const {
+inline std::size_t oct_system<ValueType, ValueLimits>::count(basic_oct_vexpr<VarType_> vexpr) const {
     auto idx = to_value_(vexpr);
     return constraints_.count(idx);
 }
@@ -145,7 +145,7 @@ inline std::size_t oct_system<ValueType, ValueLimits>::count(oct_vexpr<VarType_>
 template <typename ValueType, typename ValueLimits>
 template <typename VarType_, typename>
 inline typename oct_system<ValueType, ValueLimits>::const_iterator
-oct_system<ValueType, ValueLimits>::find(oct_vexpr<VarType_> vexpr) const {
+oct_system<ValueType, ValueLimits>::find(basic_oct_vexpr<VarType_> vexpr) const {
     auto idx = to_value_(vexpr);
     return constraints_.find(idx);
 }
@@ -153,7 +153,7 @@ oct_system<ValueType, ValueLimits>::find(oct_vexpr<VarType_> vexpr) const {
 template <typename ValueType, typename ValueLimits>
 template <typename VarType_, typename>
 inline typename oct_system<ValueType, ValueLimits>::value_type const&
-oct_system<ValueType, ValueLimits>::get(oct_vexpr <VarType_> vexpr) const {
+oct_system<ValueType, ValueLimits>::get(basic_oct_vexpr <VarType_> vexpr) const {
     auto iter = find(vexpr);
     if (iter == this->end()) throw std::logic_error("Constraint not found.");
     return *iter;
@@ -162,7 +162,7 @@ oct_system<ValueType, ValueLimits>::get(oct_vexpr <VarType_> vexpr) const {
 template <typename ValueType, typename ValueLimits>
 template <typename VarType_, typename>
 inline typename oct_system<ValueType, ValueLimits>::constant_type const&
-oct_system<ValueType, ValueLimits>::operator[](oct_vexpr<VarType_> vexpr) const {
+oct_system<ValueType, ValueLimits>::operator[](basic_oct_vexpr<VarType_> vexpr) const {
     return get(vexpr).c();
 }
 
@@ -199,7 +199,7 @@ oct_system<ValueType, ValueLimits>::insert(oct_cons<ValueType_, VarType_> cons) 
 template <typename ValueType, typename ValueLimits>
 template <typename VarType_, typename>
 inline std::size_t
-oct_system<ValueType, ValueLimits>::erase(oct_vexpr<common_var_t<VarType_>> vexpr) {
+oct_system<ValueType, ValueLimits>::erase(basic_oct_vexpr<common_var_t<VarType_>> vexpr) {
     auto value = to_value_(vexpr);
     return constraints_.erase(value);
 }
@@ -213,7 +213,7 @@ oct_system<ValueType, ValueLimits>::to_counterpart() const {
 template <typename ValueType, typename ValueLimits>
 template <typename VarType_, typename>
 inline typename oct_system<ValueType, ValueLimits>::value_type
-oct_system<ValueType, ValueLimits>::to_value_(oct_vexpr<VarType_> vexpr) const {
+oct_system<ValueType, ValueLimits>::to_value_(basic_oct_vexpr<VarType_> vexpr) const {
     if (!vexpr.valid()) throw std::logic_error("Invalid variable expression.");
     auto real_xi = to_var_(vexpr.xi());
     auto real_xj = (vexpr.xj().valid()) ? to_var_(vexpr.xj()) : literal_var_type::invalid();
@@ -224,7 +224,7 @@ oct_system<ValueType, ValueLimits>::to_value_(oct_vexpr<VarType_> vexpr) const {
 template <typename ValueType, typename ValueLimits>
 template <typename VarType_, typename>
 inline typename oct_system<ValueType, ValueLimits>::value_type
-oct_system<ValueType, ValueLimits>::to_value_(oct_vexpr<VarType_> vexpr) {
+oct_system<ValueType, ValueLimits>::to_value_(basic_oct_vexpr<VarType_> vexpr) {
     if (!vexpr.valid()) throw std::logic_error("Invalid variable expression.");
     auto real_xi = to_var_(vexpr.xi());
     auto real_xj = (vexpr.xj().valid()) ? to_var_(vexpr.xj()) : literal_var_type::invalid();

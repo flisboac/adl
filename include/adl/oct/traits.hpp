@@ -90,8 +90,8 @@ struct var_traits {
     using var_id_type = typename var_id_traits::var_id_type
     using var_type = VarType;
     using counterpart_var_type = VarType;
-    using vexpr_type = oct_vexpr<VarType>;
-    using counterpart_vexpr_type = octdiff_vexpr<VarType>;
+    using vexpr_type = basic_oct_vexpr<VarType>;
+    using counterpart_vexpr_type = basic_octdiff_vexpr<VarType>;
 
     // Constexpr static values
     constexpr static bool valid = false;
@@ -129,11 +129,11 @@ struct domain_space_traits<domain_space::oct> {
     //
     // Variable expression types
     //
-    template <typename VarType> using vexpr_type = oct_vexpr<VarType>;
+    template <typename VarType> using vexpr_type = basic_oct_vexpr<VarType>;
     using identity_vexpr_type = vexpr_type<identity_var_type>;
     using literal_vexpr_type = vexpr_type<literal_var_type>;
 
-    template <typename VarType> using counterpart_vexpr_type = octdiff_vexpr<VarType>;
+    template <typename VarType> using counterpart_vexpr_type = basic_octdiff_vexpr<VarType>;
     using counterpart_identity_vexpr_type = counterpart_vexpr_type<counterpart_identity_var_type>;
     using counterpart_literal_vexpr_type = counterpart_vexpr_type<counterpart_literal_var_type>;
 
@@ -187,13 +187,13 @@ struct domain_space_traits<domain_space::octdiff> {
     // Variable expression types
     //
 private:
-    template <typename VarType> using vexpr_type = octdiff_vexpr<VarType>;
+    template <typename VarType> using vexpr_type = basic_octdiff_vexpr<VarType>;
 public:
     using identity_vexpr_type = vexpr_type<identity_var_type>;
     using literal_vexpr_type = vexpr_type<literal_var_type>;
 
 private:
-    template <typename VarType> using counterpart_vexpr_type = oct_vexpr<VarType>;
+    template <typename VarType> using counterpart_vexpr_type = basic_oct_vexpr<VarType>;
 public:
     using counterpart_identity_vexpr_type = counterpart_vexpr_type<counterpart_identity_var_type>;
     using counterpart_literal_vexpr_type = counterpart_vexpr_type<counterpart_literal_var_type>;
