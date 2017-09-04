@@ -101,30 +101,20 @@ public:
 
     var_set& clear();
     var_set& reset();
-    template <typename VarType, typename = common_var_t<VarType>>
-        void setup(VarType var);
-    template <typename VarType, typename = common_var_t<VarType>>
-        std::pair<iterator, bool> insert(VarType var);
-    template <typename VarType, typename = common_var_t<VarType>>
-        void erase_one(VarType var);
+    void setup(var_type var);
+    std::pair<iterator, bool> insert(var_type var);
+    void erase_one(var_type var);
     var_type last_var() const;
 
-    template <typename VarType, typename = common_var_t<VarType>>
-        std::size_t count(VarType var) const; // unnormalized occurences
-    template <typename VarType, typename = common_var_t<VarType>>
-        std::size_t count_all(VarType var) const; // considers all occurrences, positive + negative
-    template <typename VarType, typename = common_var_t<VarType>>
-        const_iterator find(VarType var) const;
-    template <typename VarType, typename = common_var_t<VarType>>
-        value_type const& get(VarType var) const;
-    template <typename VarType, typename = common_var_t<VarType>>
-        value_type const& operator[](VarType var) const; // returns invalid if the var is not included
+    std::size_t count(var_type var) const; // unnormalized occurences
+    std::size_t count_all(var_type var) const; // considers all occurrences, positive + negative
+    const_iterator find(var_type var) const;
+    value_type const& get(var_type var) const;
+    value_type const& operator[](var_type var) const; // returns invalid if the var is not included
 
 private:
-    template <typename VarType, typename = common_var_t<VarType>>
-        iterator find(VarType var);
-    template <typename VarType, typename = common_var_t<VarType>>
-        std::pair<iterator, bool> find_or_insert_(VarType var);
+    iterator find(var_type var);
+    std::pair<iterator, bool> find_or_insert_(var_type var);
 
 private:
     container_type_ data_;
@@ -323,15 +313,13 @@ adl_IMPL var_set<Domain>& var_set<Domain>::reset() {
 }
 
 template <domain_space Domain>
-template <typename VarType, typename>
-adl_IMPL void var_set<Domain>::setup(VarType var) {
+adl_IMPL void var_set<Domain>::setup(var_type var) {
     auto results = find_or_insert_(var);
     if (!results.second) throw std::logic_error("Variable already set up.");
 }
 
 template <domain_space Domain>
-template <typename VarType, typename>
-adl_IMPL std::pair<typename var_set<Domain>::iterator, bool> var_set<Domain>::insert(VarType var) {
+adl_IMPL std::pair<typename var_set<Domain>::iterator, bool> var_set<Domain>::insert(var_type var) {
     auto results = find_or_insert_(var);
     auto iter = results.first;
     bool inserted = results.second;
@@ -342,8 +330,7 @@ adl_IMPL std::pair<typename var_set<Domain>::iterator, bool> var_set<Domain>::in
 }
 
 template <domain_space Domain>
-template <typename VarType, typename>
-adl_IMPL void var_set<Domain>::erase_one(VarType var) {
+adl_IMPL void var_set<Domain>::erase_one(var_type var) {
     auto iter = find(var);
     if (iter != end()) {
         iter->subtract(var);
@@ -357,8 +344,7 @@ typename var_set<Domain>::var_type var_set<Domain>::last_var() const {
 }
 
 template <domain_space Domain>
-template <typename VarType, typename>
-adl_IMPL std::size_t var_set<Domain>::count(VarType var) const {
+adl_IMPL std::size_t var_set<Domain>::count(var_type var) const {
     std::size_t total = 0;
     auto iter = find(var);
     if (iter != end()) {
@@ -369,8 +355,7 @@ adl_IMPL std::size_t var_set<Domain>::count(VarType var) const {
 }
 
 template <domain_space Domain>
-template <typename VarType, typename>
-adl_IMPL std::size_t var_set<Domain>::count_all(VarType var) const {
+adl_IMPL std::size_t var_set<Domain>::count_all(var_type var) const {
     std::size_t total = 0;
     auto iter = find(var);
     if (iter != end()) total = iter->count();
@@ -378,24 +363,21 @@ adl_IMPL std::size_t var_set<Domain>::count_all(VarType var) const {
 };
 
 template <domain_space Domain>
-template <typename VarType, typename>
-adl_IMPL typename var_set<Domain>::const_iterator var_set<Domain>::find(VarType var) const {
+adl_IMPL typename var_set<Domain>::const_iterator var_set<Domain>::find(var_type var) const {
     auto idx_var = var.to_identity().to_normalized();
     if (idx_var.valid()) return data_.find(value_type(idx_var));
     return data_.end();
 }
 
 template <domain_space Domain>
-template <typename VarType, typename>
-adl_IMPL typename var_set<Domain>::iterator var_set<Domain>::find(VarType var) {
+adl_IMPL typename var_set<Domain>::iterator var_set<Domain>::find(var_type var) {
     auto idx_var = var.to_identity().to_normalized();
     if (idx_var.valid()) return data_.find(value_type(idx_var));
     return data_.end();
 }
 
 template <domain_space Domain>
-template <typename VarType, typename>
-adl_IMPL std::pair<typename var_set<Domain>::iterator, bool> var_set<Domain>::find_or_insert_(VarType var) {
+adl_IMPL std::pair<typename var_set<Domain>::iterator, bool> var_set<Domain>::find_or_insert_(var_type var) {
     auto idx_var = var.to_identity().to_normalized();
     if (idx_var.valid()) {
         value_type value(idx_var);
@@ -409,16 +391,14 @@ adl_IMPL std::pair<typename var_set<Domain>::iterator, bool> var_set<Domain>::fi
 }
 
 template <domain_space Domain>
-template <typename VarType, typename>
-adl_IMPL typename var_set<Domain>::value_type const& var_set<Domain>::get(VarType var) const {
+adl_IMPL typename var_set<Domain>::value_type const& var_set<Domain>::get(var_type var) const {
     auto iter = find(var);
     if (iter != end()) return *iter;
     return dummy_data_;
 }
 
 template <domain_space Domain>
-template <typename VarType, typename>
-adl_IMPL typename var_set<Domain>::value_type const& var_set<Domain>::operator[](VarType var) const {
+adl_IMPL typename var_set<Domain>::value_type const& var_set<Domain>::operator[](var_type var) const {
     return get(var);
 }
 

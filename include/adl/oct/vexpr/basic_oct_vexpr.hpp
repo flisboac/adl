@@ -47,6 +47,14 @@ public:
     constexpr basic_oct_vexpr& operator=(basic_oct_vexpr const&) noexcept = default;
     constexpr basic_oct_vexpr& operator=(basic_oct_vexpr &&) noexcept = default;
 
+    template <
+        typename VarType_,
+        typename = std::enable_if_t<
+                !std::is_same<VarType_, var_type>::value
+                && common_var<VarType_>::is_oct_space
+                && std::is_convertible<VarType_, var_type>::value>>
+    constexpr basic_oct_vexpr(basic_oct_vexpr<VarType_>  const& vexpr) noexcept
+            : basic_oct_vexpr(vexpr.xi(), vexpr.xj()) {};
     constexpr basic_oct_vexpr(var_type xi) noexcept;
     constexpr basic_oct_vexpr(var_type xi, var_type xj) noexcept;
     constexpr static basic_oct_vexpr make_unit(var_type xi) noexcept;

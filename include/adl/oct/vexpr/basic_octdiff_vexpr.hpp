@@ -45,6 +45,14 @@ public:
     constexpr basic_octdiff_vexpr& operator=(basic_octdiff_vexpr &&) noexcept = default;
 
     constexpr basic_octdiff_vexpr(var_type xi, var_type xj) noexcept;
+    template <
+        typename VarType_,
+        typename = std::enable_if_t<
+                !std::is_same<VarType_, var_type>::value
+                && common_var<VarType_>::is_octdiff_space
+                && std::is_convertible<VarType_, var_type>::value>>
+    constexpr basic_octdiff_vexpr(basic_octdiff_vexpr<VarType> const& vexpr) noexcept
+            : basic_octdiff_vexpr(vexpr.xi(), vexpr.xj()) {};
 
     constexpr basic_octdiff_vexpr& commute() noexcept;
     constexpr basic_octdiff_vexpr to_commuted() const noexcept;
