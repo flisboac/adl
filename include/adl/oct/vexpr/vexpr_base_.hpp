@@ -116,6 +116,8 @@ public:
 
     // Operations
     constexpr vexpr_type& invalidate() noexcept;
+    template <typename CharTraits = std::char_traits<char>>
+        void print(std::basic_ostream<char, CharTraits>& os) const;
 
     //
     // CONVERSIONS
@@ -167,8 +169,251 @@ public:
 template <typename FirstVarType, typename SecondVarType>
 struct common_vexpr : public common_vexpr_<FirstVarType, SecondVarType> {};
 
+template <typename VarTypeA, typename VarTypeB, typename = std::enable_if_t<common_var<VarTypeA, VarTypeB>::is_oct_space>>
+constexpr common_vexpr_t<VarTypeA, VarTypeB> make_sub_vexpr(VarTypeA xi, VarTypeB xj) noexcept {
+    return common_vexpr_t<VarTypeA, VarTypeB>::make_sub(xi, xj);
+};
+
 } // namespace oct
 
+adl_END_ROOT_MODULE
+
+
+//
+// [[ TEMPLATE IMPLEMENTATION ]]
+//
+adl_BEGIN_ROOT_MODULE
+
+namespace oct {
+
+template <typename VarType>
+constexpr bool vexpr_base_<VarType>::less::operator()(vexpr_type const& lhs, vexpr_type const& rhs) const noexcept {
+    return lhs.compare(rhs) < 0;
+}
+
+template <typename VarType>
+constexpr std::size_t vexpr_base_<VarType>::hash::operator()(vexpr_type const& lhs) const noexcept {
+    if (!lhs.valid()) return 0;
+    typename var_type::hash hasher;
+    std::size_t xi_hash = lhs.xi().valid() ? hasher(lhs.xi()) : 0;
+    std::size_t xj_hash = lhs.xj().valid() ? hasher(lhs.xj()) : 0;
+    return xi_hash * 31 + xj_hash;
+}
+
+template <typename VarType>
+constexpr vexpr_base_<VarType>::vexpr_base_(var_type xi, var_type xj) noexcept :
+    xi_(xi.as_valid()),
+    xj_(xj.as_valid()) {}
+
+/// Returns an invalid variable expression.
+template <typename VarType>
+constexpr typename vexpr_base_<VarType>::vexpr_type
+vexpr_base_<VarType>::invalid() noexcept {
+    return vexpr_type();
+}
+
+/// Returns a new subtraction variable expression.
+template <typename VarType>
+constexpr typename vexpr_base_<VarType>::vexpr_type
+vexpr_base_<VarType>::make_sub(var_type xi, var_type xj) noexcept {
+    return vexpr_type(xi, xj.to_negated());
+}
+
+template <typename VarType>
+constexpr typename vexpr_base_<VarType>::var_type
+vexpr_base_<VarType>::xi() const noexcept {
+    return xi_;
+}
+
+template <typename VarType>
+constexpr typename vexpr_base_<VarType>::var_type
+vexpr_base_<VarType>::xI() const noexcept {
+    return xi_.to_negated();
+}
+
+template <typename VarType>
+constexpr typename vexpr_base_<VarType>::var_type
+vexpr_base_<VarType>::xj() const noexcept {
+    return xj_;
+}
+
+template <typename VarType>
+constexpr typename vexpr_base_<VarType>::var_type
+vexpr_base_<VarType>::xJ() const noexcept {
+    return xj_.to_negated();
+}
+
+template <typename VarType>
+constexpr typename vexpr_base_<VarType>::var_type
+vexpr_base_<VarType>::last_var() const noexcept {
+    return xi_.compare(xj_) >= 0 ? xi_ : xj_;
+}
+
+template <typename VarType>
+constexpr std::size_t vexpr_base_<VarType>::end_var_index() const noexcept {
+    auto var = last_var();
+    return var.valid() ? last_var().increment().to_index() : 0;
+}
+
+template <typename VarType>
+constexpr bool vexpr_base_<VarType>::valid() const noexcept {
+    bool valid = xi_.valid();                   // xi must be always valid...
+
+    // This is an excellent candidate for `if constexpr`!
+    if (space == domain_space::oct) {
+        valid = valid && (
+            !xj_.valid() || (     // ... and if xj is given
+                xi_.sign() == xj_.sign()            // ... their signs must be equal (valid for duplicated_var() or not)
+                || !xi_
+                    .is_same_normal_id(xj_)) //     or they must be two different variables (e.g. `x1 - x1` is a zero-sum)
+        );
+    } else {
+        valid = valid && xj_.valid()            // ... Must contain two valid difference variables
+                && (
+                    !xi_.is_same_oct_id(xj_)        //     ... referring to different octagonal vars
+                    || xi_.sign() != xj_.sign());   //         or to equal octagonal vars with different occurrences.
+    }
+
+    return valid;
+}
+
+template <typename VarType>
+constexpr bool vexpr_base_<VarType>::unit() const noexcept {
+    return space == domain_space::oct
+           ? !xj_.valid()
+           : xi_.is_same_oct_id(xj_);
+}
+
+template <typename VarType>
+constexpr bool vexpr_base_<VarType>::duplicated_var() const noexcept {
+    return xj_.valid() && xi_.equals(xj_);
+}
+
+template <typename VarType>
+constexpr vexpr_oper vexpr_base_<VarType>::operation() const noexcept {
+    return space == domain_space::oct
+           ? !xj_.valid()
+             ? vexpr_oper::unit
+             : xi_.equals(xj_)
+               ? vexpr_oper::unit
+               : xj_.negative()
+                 ? vexpr_oper::sub
+                 : vexpr_oper::add
+           : vexpr_oper::sub;
+}
+
+template <typename VarType>
+constexpr bool vexpr_base_<VarType>::equals(vexpr_type const& rhs) const noexcept {
+    return xi_.equals(rhs.xi_) && xj_.equals(rhs.xj_);
+}
+
+template <typename VarType>
+constexpr int vexpr_base_<VarType>::compare(vexpr_type const& rhs) const noexcept {
+    int xi_cmp = xi_.compare(rhs.xi_);
+    return xi_cmp != 0 ? xi_cmp : xj_.compare(rhs.xj_);
+}
+
+template <typename VarType>
+constexpr typename vexpr_base_<VarType>::vexpr_type&
+vexpr_base_<VarType>::invalidate() noexcept {
+    xi_ = var_type::invalid();
+    xj_ = var_type::invalid();
+    return as_subclass_();
+}
+
+template <typename VarType>
+template <typename CharTraits>
+inline void vexpr_base_<VarType>::print(std::basic_ostream<char, CharTraits>& os) const {
+    os << this->to_string();
+}
+
+template <typename VarType>
+constexpr typename vexpr_base_<VarType>::vexpr_type&
+vexpr_base_<VarType>::ensure_valid() {
+    return valid() ? as_subclass_() : throw std::logic_error("Invalid vexpr");
+}
+
+template <typename VarType>
+constexpr typename vexpr_base_<VarType>::vexpr_type const&
+vexpr_base_<VarType>::ensure_valid() const {
+    return valid() ? as_subclass_() : throw std::logic_error("Invalid vexpr");
+}
+
+template <typename VarType>
+constexpr typename vexpr_base_<VarType>::vexpr_type&
+vexpr_base_<VarType>::as_valid() noexcept {
+    if (!valid()) invalidate();
+    return as_subclass_();
+}
+
+template <typename VarType>
+constexpr typename vexpr_base_<VarType>::vexpr_type
+vexpr_base_<VarType>::to_valid() const noexcept {
+    return valid() ? as_subclass_() : invalid();
+}
+
+template <typename VarType>
+std::string vexpr_base_<VarType>::to_string() const {
+    std::string value;
+
+    if (valid()) {
+        if (space == domain_space::octdiff) {
+            value = xi_.to_string() + " - " + xj_.to_string();
+
+        } else {
+            if (duplicated_var()) {
+                value = std::string("2 * (") + xi_.to_string() + ")";
+
+            } else if (xj_.valid()) {
+                if (xj_.negative()) {
+                    value = xi_.to_string() + " - " + xj_.to_negated().to_string();
+                } else {
+                    value = xi_.to_string() + " + " + xj_.to_string();
+                }
+
+            } else {
+                value = xi_.to_string();
+            }
+        }
+    }
+
+    return value;
+}
+
+template <typename VarType>
+constexpr typename vexpr_base_<VarType>::identity_vexpr_type
+vexpr_base_<VarType>::to_identity() const noexcept {
+    return identity_vexpr_type(xi_.to_identity(), xj_.to_identity());
+}
+
+template <typename VarType>
+constexpr bool vexpr_base_<VarType>::operator!() const noexcept {
+    return !valid();
+}
+
+template <typename VarType>
+constexpr vexpr_base_<VarType>::operator bool() const noexcept {
+    return valid();
+}
+
+template <typename VarType>
+constexpr vexpr_base_<VarType>::operator std::string() const {
+    return to_string();
+}
+
+template <typename VarType>
+constexpr typename vexpr_base_<VarType>::subclass_&
+vexpr_base_<VarType>::as_subclass_() noexcept {
+    return static_cast<subclass_&>(*this);
+}
+
+template <typename VarType>
+constexpr typename vexpr_base_<VarType>::subclass_ const&
+vexpr_base_<VarType>::as_subclass_() const noexcept {
+    return static_cast<subclass_&>(*this);
+}
+
+} // namespace oct
 adl_END_ROOT_MODULE
 
 #endif // adl__oct__vexpr__vexpr_base___hpp__

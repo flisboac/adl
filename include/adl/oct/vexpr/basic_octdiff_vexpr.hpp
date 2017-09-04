@@ -16,6 +16,7 @@
 #include "adl/oct/traits.hpp"
 #include "adl/oct/var.hpp"
 
+#include "adl/oct/vexpr/vexpr_base_.hpp"
 
 //
 // [[ API ]]
@@ -31,30 +32,33 @@ private:
 public:
     using typename superclass_::var_type;
 
-    using superclass_::vexpr_base_;
     using superclass_::operator=;
     using superclass_::space;
     using superclass_::xi_;
     using superclass_::xj_;
     static_assert(space == domain_space::octdiff, "Wrong domain space.");
 
+    constexpr basic_octdiff_vexpr() noexcept = default;
+    constexpr basic_octdiff_vexpr(basic_octdiff_vexpr const&) noexcept = default;
+    constexpr basic_octdiff_vexpr(basic_octdiff_vexpr &&) noexcept = default;
+    constexpr basic_octdiff_vexpr& operator=(basic_octdiff_vexpr const&) noexcept = default;
+    constexpr basic_octdiff_vexpr& operator=(basic_octdiff_vexpr &&) noexcept = default;
+
+    constexpr basic_octdiff_vexpr(var_type xi, var_type xj) noexcept;
+
     constexpr basic_octdiff_vexpr& commute() noexcept;
     constexpr basic_octdiff_vexpr to_commuted() const noexcept;
 };
-
-template <typename VarTypeA, typename VarTypeB, typename = std::enable_if_t<common_var<VarTypeA, VarTypeB>::is_octdiff_space>>
-constexpr basic_octdiff_vexpr<common_var_t<VarTypeA, VarTypeB>> make_sub_vexpr(VarTypeA xi, VarTypeB xj) noexcept;
 
 } // namespace oct
 
 namespace dsl {
     inline namespace oct {
         inline namespace vexpr {
-            template <typename VarTypeA,
-                    typename VarTypeB,
-                    typename = std::enable_if_t<::adl::oct::common_var<VarTypeA, VarTypeB>::is_octdiff_space>>
-            constexpr ::adl::oct::basic_oct_vexpr<common_var_t<VarTypeA, VarTypeB>>
-                operator-(VarTypeA lhs, VarTypeB rhs);
+            template <typename VarTypeA, typename VarTypeB, typename = std::enable_if_t<::adl::oct::common_var<VarTypeA, VarTypeB>::is_octdiff_space>>
+            constexpr ::adl::oct::basic_octdiff_vexpr<::adl::oct::common_var_t<VarTypeA, VarTypeB>> operator-(VarTypeA lhs, VarTypeB rhs) {
+                return ::adl::oct::basic_octdiff_vexpr<::adl::oct::common_var_t<VarTypeA, VarTypeB>>::make_sub(lhs, rhs);
+            };
         }
     }
 }
@@ -64,17 +68,29 @@ namespace operators {
         inline namespace vexpr {
             inline namespace comparison {
                 template <typename VarType, typename = std::enable_if_t<::adl::oct::common_var<VarType>::is_octdiff_space>>
-                    constexpr bool operator<(adl::oct::basic_octdiff_vexpr<VarType> lhs, adl::oct::basic_octdiff_vexpr<VarType> rhs);
+                    constexpr bool operator<(adl::oct::basic_octdiff_vexpr<VarType> const& lhs, adl::oct::basic_octdiff_vexpr<VarType> rhs) { return lhs.compare(rhs) < 0; };
                 template <typename VarType, typename = std::enable_if_t<::adl::oct::common_var<VarType>::is_octdiff_space>>
-                    constexpr bool operator<=(adl::oct::basic_octdiff_vexpr<VarType> lhs, adl::oct::basic_octdiff_vexpr<VarType> rhs);
+                    constexpr bool operator<(adl::oct::basic_octdiff_vexpr<VarType> && lhs, adl::oct::basic_octdiff_vexpr<VarType> rhs) { return lhs.compare(rhs) < 0; };
                 template <typename VarType, typename = std::enable_if_t<::adl::oct::common_var<VarType>::is_octdiff_space>>
-                    constexpr bool operator==(adl::oct::basic_octdiff_vexpr<VarType> lhs, adl::oct::basic_octdiff_vexpr<VarType> rhs);
+                    constexpr bool operator<=(adl::oct::basic_octdiff_vexpr<VarType> const& lhs, adl::oct::basic_octdiff_vexpr<VarType> rhs) { return lhs.compare(rhs) <= 0; };
                 template <typename VarType, typename = std::enable_if_t<::adl::oct::common_var<VarType>::is_octdiff_space>>
-                    constexpr bool operator!=(adl::oct::basic_octdiff_vexpr<VarType> lhs, adl::oct::basic_octdiff_vexpr<VarType> rhs);
+                    constexpr bool operator<=(adl::oct::basic_octdiff_vexpr<VarType> && lhs, adl::oct::basic_octdiff_vexpr<VarType> rhs) { return lhs.compare(rhs) <= 0; };
                 template <typename VarType, typename = std::enable_if_t<::adl::oct::common_var<VarType>::is_octdiff_space>>
-                    constexpr bool operator>=(adl::oct::basic_octdiff_vexpr<VarType> lhs, adl::oct::basic_octdiff_vexpr<VarType> rhs);
+                    constexpr bool operator==(adl::oct::basic_octdiff_vexpr<VarType> const& lhs, adl::oct::basic_octdiff_vexpr<VarType> rhs) { return lhs.equals(rhs); };
                 template <typename VarType, typename = std::enable_if_t<::adl::oct::common_var<VarType>::is_octdiff_space>>
-                    constexpr bool operator>(adl::oct::basic_octdiff_vexpr<VarType> lhs, adl::oct::basic_octdiff_vexpr<VarType> rhs);
+                    constexpr bool operator==(adl::oct::basic_octdiff_vexpr<VarType> && lhs, adl::oct::basic_octdiff_vexpr<VarType> rhs) { return lhs.equals(rhs); };
+                template <typename VarType, typename = std::enable_if_t<::adl::oct::common_var<VarType>::is_octdiff_space>>
+                    constexpr bool operator!=(adl::oct::basic_octdiff_vexpr<VarType> const& lhs, adl::oct::basic_octdiff_vexpr<VarType> rhs) { return !lhs.equals(rhs); };
+                template <typename VarType, typename = std::enable_if_t<::adl::oct::common_var<VarType>::is_octdiff_space>>
+                    constexpr bool operator!=(adl::oct::basic_octdiff_vexpr<VarType> && lhs, adl::oct::basic_octdiff_vexpr<VarType> rhs) { return !lhs.equals(rhs); };
+                template <typename VarType, typename = std::enable_if_t<::adl::oct::common_var<VarType>::is_octdiff_space>>
+                    constexpr bool operator>=(adl::oct::basic_octdiff_vexpr<VarType> const& lhs, adl::oct::basic_octdiff_vexpr<VarType> rhs) { return lhs.compare(rhs) >= 0; };
+                template <typename VarType, typename = std::enable_if_t<::adl::oct::common_var<VarType>::is_octdiff_space>>
+                    constexpr bool operator>=(adl::oct::basic_octdiff_vexpr<VarType> && lhs, adl::oct::basic_octdiff_vexpr<VarType> rhs) { return lhs.compare(rhs) >= 0; };
+                template <typename VarType, typename = std::enable_if_t<::adl::oct::common_var<VarType>::is_octdiff_space>>
+                    constexpr bool operator>(adl::oct::basic_octdiff_vexpr<VarType> const& lhs, adl::oct::basic_octdiff_vexpr<VarType> rhs) { return lhs.compare(rhs) > 0; };
+                template <typename VarType, typename = std::enable_if_t<::adl::oct::common_var<VarType>::is_octdiff_space>>
+                    constexpr bool operator>(adl::oct::basic_octdiff_vexpr<VarType> && lhs, adl::oct::basic_octdiff_vexpr<VarType> rhs) { return lhs.compare(rhs) > 0; };
             }
         }
     }
@@ -83,11 +99,11 @@ namespace operators {
 adl_END_ROOT_MODULE
 
 namespace std {
-    template <typename VarType, typename = std::enable_if_t<::adl::oct::common_var<VarType>::is_octdiff_space>>
-    template<> struct hash<::adl::oct::basic_octdiff_vexpr<VarType>> : public ::adl::oct::basic_octdiff_vexpr<VarType>::hash {};
+    template <> struct hash<::adl::oct::octdiff_vexpr> : public ::adl::oct::octdiff_vexpr::less {};
+    template <> struct hash<::adl::oct::octdiff_lvexpr> : public ::adl::oct::octdiff_vexpr::less {};
 
-    template <typename VarType, typename = std::enable_if_t<::adl::oct::common_var<VarType>::is_octdiff_space>>
-    template<> struct less<::adl::oct::basic_octdiff_vexpr<VarType>> : public ::adl::oct::basic_octdiff_vexpr<VarType>::less {};
+    template <> struct less<::adl::oct::octdiff_vexpr> : public ::adl::oct::octdiff_vexpr::less {};
+    template <> struct less<::adl::oct::octdiff_lvexpr> : public ::adl::oct::octdiff_lvexpr::less {};
 }
 
 template <typename VarType,
@@ -96,5 +112,50 @@ template <typename VarType,
 std::basic_ostream<char, Traits>& operator<<(
         std::basic_ostream<char, Traits>& os,
         ::adl::oct::basic_octdiff_vexpr<VarType> const& vexpr);
+
+
+//
+// [[ TEMPLATE IMPLEMENTATION ]]
+//
+
+#include "adl/oct/vexpr/basic_oct_vexpr.hpp"
+
+adl_BEGIN_ROOT_MODULE
+namespace oct {
+
+//
+// basic_octdiff_vexpr
+//
+
+template <typename VarType>
+constexpr basic_octdiff_vexpr<VarType>::basic_octdiff_vexpr(var_type xi, var_type xj) noexcept : superclass_(xi, xj) {}
+
+template <typename VarType>
+constexpr basic_octdiff_vexpr<VarType>&
+basic_octdiff_vexpr<VarType>::commute() noexcept {
+    auto xi_commuted = xj_.to_negated();
+    auto xj_commuted = xi_.to_negated();
+    xi_ = xi_commuted;
+    xj_ = xj_commuted;
+    return *this;
+}
+
+template <typename VarType>
+constexpr basic_octdiff_vexpr<VarType>
+basic_octdiff_vexpr<VarType>::to_commuted() const noexcept {
+    return basic_octdiff_vexpr(*this).commute();
+}
+
+} // namespace oct
+adl_END_ROOT_MODULE
+
+template <typename VarType, typename Traits, typename>
+adl_IMPL std::basic_ostream<char, Traits>& operator<<(
+    std::basic_ostream<char, Traits>& os,
+    adl::oct::basic_octdiff_vexpr<VarType> const& vexpr
+) {
+    vexpr.print(os);
+    return os;
+};
 
 #endif // adl__oct__vexpr__basic_octdiff_vexpr__hpp__

@@ -87,9 +87,16 @@ target_sources(${api} INTERFACE
     "${api_dir_root}/adl/oct/var/oct_lvar.hpp"
     "${api_dir_root}/adl/oct/var/octdiff_lvar.hpp"
 
-    # adl/oct
+    # adl/oct/vexpr
     "${api_dir_root}/adl/oct/vexpr.hpp"
+    "${api_dir_root}/adl/oct/vexpr/vexpr_base_.hpp"
+    "${api_dir_root}/adl/oct/vexpr/basic_oct_vexpr.hpp"
+    "${api_dir_root}/adl/oct/vexpr/basic_octdiff_vexpr.hpp"
+
+    # adl/oct/cons
     "${api_dir_root}/adl/oct/cons.hpp"
+
+    # adl/oct/system
     "${api_dir_root}/adl/oct/system.hpp"
     "${api_dir_root}/adl/oct/system/var_set_.hpp"
     "${api_dir_root}/adl/oct/system/system_base_.hpp"
