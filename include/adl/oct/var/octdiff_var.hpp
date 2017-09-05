@@ -79,6 +79,12 @@ constexpr octdiff_var to_octdiff_identity(octdiff_var var);
 
 } // namespace oct
 
+namespace literals {
+    inline namespace oct {
+        constexpr adl::oct::octdiff_var operator "" _odv(unsigned long long int id);
+    } // oct
+} // literals
+
 adl_END_ROOT_MODULE
 
 namespace std {
@@ -138,6 +144,17 @@ constexpr octdiff_var to_octdiff_identity(octdiff_var var) {
 }
 
 } // namespace oct
+
+namespace literals {
+inline namespace oct {
+
+    constexpr adl::oct::octdiff_var operator "" _odv(unsigned long long int id) {
+        return adl::oct::octdiff_var(id);
+    }
+
+} // oct
+} // literals
+
 adl_END_ROOT_MODULE
 
 #endif //adl__oct__var__octdiff_var__hpp__

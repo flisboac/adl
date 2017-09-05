@@ -17,6 +17,7 @@
 
 #include "adl/oct.fwd.hpp"
 #include "adl/oct/limits.hpp"
+#include "adl/oct/traits.hpp"
 #include "adl/oct/var.hpp"
 #include "adl/oct/vexpr.hpp"
 
@@ -81,6 +82,14 @@ public:
     //!@defgroup Instance construction
     //!@{
     constexpr basic_octdiff_conjunction(cons_type di, cons_type dj) noexcept;
+    template <
+            typename ValueType_,
+            typename VarType_,
+            typename = std::enable_if_t<
+                common_var<VarType_>::is_oct_space
+                && !std::is_same<VarType_, var_type>::value
+                && std::is_convertible<ValueType_, value_type>::value>>
+    constexpr basic_octdiff_conjunction(basic_oct_cons<ValueType_, VarType_> cons) noexcept;
 
     // static construction functions
     constexpr static basic_octdiff_conjunction invalid() noexcept;
@@ -111,6 +120,7 @@ public:
 
     // Operations
     constexpr basic_octdiff_conjunction& invalidate() noexcept;
+    template <typename CharTraits = std::char_traits<char>> void print(std::basic_ostream<char, CharTraits>& os) const;
 
     //
     // CONVERSIONS
@@ -146,28 +156,28 @@ namespace operators {
             inline namespace comparison {
                 template <typename ValueType,
                         typename VarType,
-                        typename = std::enable_if_t<adl::oct::var_traits<VarType>::valid && VarType::space == adl::oct::domain_space::octdiff>>
-                constexpr bool operator<(adl::oct::basic_octdiff_conjunction<ValueType, VarType> const& lhs, adl::oct::basic_octdiff_conjunction<ValueType, VarType> const& rhs) noexcept;
+                        typename = std::enable_if_t<adl::oct::common_var<VarType>::is_octdiff_space>>
+                constexpr bool operator<(adl::oct::basic_octdiff_conjunction<ValueType, VarType> const& lhs, adl::oct::basic_octdiff_conjunction<ValueType, VarType> const& rhs) noexcept { return lhs.compare(rhs) < 0; }
                 template <typename ValueType,
                         typename VarType,
-                        typename = std::enable_if_t<adl::oct::var_traits<VarType>::valid && VarType::space == adl::oct::domain_space::octdiff>>
-                constexpr bool operator<=(adl::oct::basic_octdiff_conjunction<ValueType, VarType> const& lhs, adl::oct::basic_octdiff_conjunction<ValueType, VarType> const& rhs) noexcept;
+                        typename = std::enable_if_t<adl::oct::common_var<VarType>::is_octdiff_space>>
+                constexpr bool operator<=(adl::oct::basic_octdiff_conjunction<ValueType, VarType> const& lhs, adl::oct::basic_octdiff_conjunction<ValueType, VarType> const& rhs) noexcept { return lhs.compare(rhs) < 0; }
                 template <typename ValueType,
                         typename VarType,
-                        typename = std::enable_if_t<adl::oct::var_traits<VarType>::valid && VarType::space == adl::oct::domain_space::octdiff>>
-                constexpr bool operator==(adl::oct::basic_octdiff_conjunction<ValueType, VarType> const& lhs, adl::oct::basic_octdiff_conjunction<ValueType, VarType> const& rhs) noexcept;
+                        typename = std::enable_if_t<adl::oct::common_var<VarType>::is_octdiff_space>>
+                constexpr bool operator==(adl::oct::basic_octdiff_conjunction<ValueType, VarType> const& lhs, adl::oct::basic_octdiff_conjunction<ValueType, VarType> const& rhs) noexcept { return lhs.equals(rhs); }
                 template <typename ValueType,
                         typename VarType,
-                        typename = std::enable_if_t<adl::oct::var_traits<VarType>::valid && VarType::space == adl::oct::domain_space::octdiff>>
-                constexpr bool operator!=(adl::oct::basic_octdiff_conjunction<ValueType, VarType> const& lhs, adl::oct::basic_octdiff_conjunction<ValueType, VarType> const& rhs) noexcept;
+                        typename = std::enable_if_t<adl::oct::common_var<VarType>::is_octdiff_space>>
+                constexpr bool operator!=(adl::oct::basic_octdiff_conjunction<ValueType, VarType> const& lhs, adl::oct::basic_octdiff_conjunction<ValueType, VarType> const& rhs) noexcept { return !lhs.equals(rhs); }
                 template <typename ValueType,
                         typename VarType,
-                        typename = std::enable_if_t<adl::oct::var_traits<VarType>::valid && VarType::space == adl::oct::domain_space::octdiff>>
-                constexpr bool operator>=(adl::oct::basic_octdiff_conjunction<ValueType, VarType> const& lhs, adl::oct::basic_octdiff_conjunction<ValueType, VarType> const& rhs) noexcept;
+                        typename = std::enable_if_t<adl::oct::common_var<VarType>::is_octdiff_space>>
+                constexpr bool operator>=(adl::oct::basic_octdiff_conjunction<ValueType, VarType> const& lhs, adl::oct::basic_octdiff_conjunction<ValueType, VarType> const& rhs) noexcept { return lhs.compare(rhs) >= 0; }
                 template <typename ValueType,
                         typename VarType,
-                        typename = std::enable_if_t<adl::oct::var_traits<VarType>::valid && VarType::space == adl::oct::domain_space::octdiff>>
-                constexpr bool operator>(adl::oct::basic_octdiff_conjunction<ValueType, VarType> const& lhs, adl::oct::basic_octdiff_conjunction<ValueType, VarType> const& rhs) noexcept;
+                        typename = std::enable_if_t<adl::oct::common_var<VarType>::is_octdiff_space>>
+                constexpr bool operator>(adl::oct::basic_octdiff_conjunction<ValueType, VarType> const& lhs, adl::oct::basic_octdiff_conjunction<ValueType, VarType> const& rhs) noexcept { return lhs.compare(rhs) > 0; }
             }
         }
     }
@@ -175,23 +185,228 @@ namespace operators {
 
 adl_END_ROOT_MODULE
 
-namespace std {
-    template <> struct hash<::adl::oct::octdiff_conjunction> : public ::adl::oct::octdiff_conjunction::less {};
-    template <> struct hash<::adl::oct::octdiff_lconjunction> : public ::adl::oct::octdiff_lconjunction::less {};
-
-    template <> struct less<::adl::oct::octdiff_conjunction> : public ::adl::oct::octdiff_conjunction::less {};
-    template <> struct less<::adl::oct::octdiff_lconjunction> : public ::adl::oct::octdiff_lconjunction::less {};
-}
-
 template <typename ValueType,
         typename VarType,
         typename Traits,
         typename = std::enable_if_t<adl::oct::common_var<VarType>::is_octdiff_space>>
 std::basic_ostream<char, Traits>& operator<<(
-        std::basic_ostream<char, Traits>& os,
-        adl::oct::basic_octdiff_conjunction<ValueType, VarType> const& cons);
+    std::basic_ostream<char, Traits>& os,
+    adl::oct::basic_octdiff_conjunction<ValueType, VarType> const& cons
+) {
+    cons.print(os);
+    return os;
+};
 
+//
+// [[ TEMPLATE IMPLEMENTATION ]]
+//
 #include "adl/oct/cons/basic_oct_cons.hpp"
 #include "adl/oct/cons/basic_octdiff_cons.hpp"
+
+adl_BEGIN_ROOT_MODULE
+namespace oct {
+
+//
+// adl::oct::basic_octdiff_conjunction
+//
+
+template <typename ValueType, typename VarType>
+constexpr bool basic_octdiff_conjunction<ValueType, VarType>::less::operator()(
+        basic_octdiff_conjunction const& lhs,
+        basic_octdiff_conjunction const& rhs
+) const noexcept {
+    return lhs.compare(rhs) < 0;
+}
+
+template <typename ValueType, typename VarType>
+constexpr basic_octdiff_conjunction<ValueType, VarType>::basic_octdiff_conjunction(cons_type di, cons_type dj) noexcept :
+        di_(init_di_(di, dj)), dj_(init_dj_(di, dj)) {};
+
+template <typename ValueType, typename VarType>
+template <typename ValueType_, typename VarType_, typename>
+constexpr basic_octdiff_conjunction<ValueType, VarType>::basic_octdiff_conjunction(
+    basic_oct_cons<ValueType_, VarType_> cons
+) noexcept : basic_octdiff_conjunction(cons.split()) {};
+
+template <typename ValueType, typename VarType>
+constexpr basic_octdiff_conjunction<ValueType, VarType>
+basic_octdiff_conjunction<ValueType, VarType>::invalid() noexcept {
+    return basic_octdiff_conjunction();
+}
+
+template <typename ValueType, typename VarType>
+constexpr basic_octdiff_conjunction<ValueType, VarType>
+basic_octdiff_conjunction<ValueType, VarType>::from_cons(cons_type di) noexcept {
+    return basic_octdiff_conjunction(di, cons_type::invalid()).as_valid();
+}
+
+template <typename ValueType, typename VarType>
+constexpr basic_octdiff_conjunction<ValueType, VarType>
+basic_octdiff_conjunction<ValueType, VarType>::from_cons(cons_type di, cons_type dj) noexcept {
+    return basic_octdiff_conjunction(di, dj).as_valid();
+}
+
+template <typename ValueType, typename VarType>
+constexpr typename basic_octdiff_conjunction<ValueType, VarType>::cons_type
+basic_octdiff_conjunction<ValueType, VarType>::di() const noexcept {
+    return di_;
+}
+
+template <typename ValueType, typename VarType>
+constexpr typename basic_octdiff_conjunction<ValueType, VarType>::cons_type
+basic_octdiff_conjunction<ValueType, VarType>::first_cons() const noexcept {
+    return di_;
+}
+
+template <typename ValueType, typename VarType>
+constexpr typename basic_octdiff_conjunction<ValueType, VarType>::cons_type
+basic_octdiff_conjunction<ValueType, VarType>::dj() const noexcept {
+    return dj_;
+}
+
+template <typename ValueType, typename VarType>
+constexpr typename basic_octdiff_conjunction<ValueType, VarType>::cons_type
+basic_octdiff_conjunction<ValueType, VarType>::second_cons() const noexcept {
+    return dj_;
+}
+
+template <typename ValueType, typename VarType>
+constexpr typename basic_octdiff_conjunction<ValueType, VarType>::var_type
+basic_octdiff_conjunction<ValueType, VarType>::last_var() const noexcept {
+    auto di_last = di_.last_var();
+    auto dj_last = dj_.last_var();
+    return di_last >= dj_last ? di_last : dj_last;
+}
+
+template <typename ValueType, typename VarType>
+constexpr std::size_t basic_octdiff_conjunction<ValueType, VarType>::end_var_index() const noexcept {
+    auto var = last_var();
+    return var.valid() ? last_var().increment().to_index() : 0;
+}
+
+template <typename ValueType, typename VarType>
+constexpr bool basic_octdiff_conjunction<ValueType, VarType>::valid() const noexcept {
+    return di_.valid() && (
+            di_.unit()
+            ? dj_.equals(cons_type::invalid())
+            : di_.to_commuted().equals(dj_)
+    );
+}
+
+template <typename ValueType, typename VarType>
+constexpr bool basic_octdiff_conjunction<ValueType, VarType>::unit() const noexcept {
+    return di_.valid() && di_.unit();
+}
+
+template <typename ValueType, typename VarType>
+constexpr bool basic_octdiff_conjunction<ValueType, VarType>::equals(basic_octdiff_conjunction const& rhs) const noexcept {
+    return valid() && rhs.valid() && (
+            di_.equals(rhs.di_)
+            ? dj_.equals(rhs.dj_)
+            : di_.equals(rhs.dj_)
+              ? dj_.equals(rhs.di_)
+              : false
+    );
+}
+
+template <typename ValueType, typename VarType>
+constexpr int basic_octdiff_conjunction<ValueType, VarType>::compare(basic_octdiff_conjunction const& rhs) const noexcept {
+    if (!valid() || !rhs.valid()) return 0;
+    int di_cmp = di_.compare(rhs.di_);
+    return di_cmp != 0 ? di_cmp : dj_.compare(rhs.dj_);
+}
+
+template <typename ValueType, typename VarType>
+constexpr basic_octdiff_conjunction<ValueType, VarType>&
+basic_octdiff_conjunction<ValueType, VarType>::invalidate() noexcept {
+    di_.invalidate();
+    dj_.invalidate();
+    return *this;
+}
+
+template <typename ValueType, typename VarType>
+template <typename CharTraits>
+inline void basic_octdiff_conjunction<ValueType, VarType>::print(std::basic_ostream<char, CharTraits>& os) const {
+    os << this->to_string();
+};
+
+template <typename ValueType, typename VarType>
+constexpr basic_octdiff_conjunction<ValueType, VarType>&
+basic_octdiff_conjunction<ValueType, VarType>::ensure_valid() {
+    return valid() ? *this : throw std::logic_error("Invalid octdiff-constraint conjunction");
+}
+
+template <typename ValueType, typename VarType>
+constexpr basic_octdiff_conjunction<ValueType, VarType> const&
+basic_octdiff_conjunction<ValueType, VarType>::ensure_valid() const {
+    return valid() ? *this : throw std::logic_error("Invalid octdiff-constraint conjunction");
+}
+
+template <typename ValueType, typename VarType>
+constexpr basic_octdiff_conjunction<ValueType, VarType>&
+basic_octdiff_conjunction<ValueType, VarType>::as_valid() noexcept {
+    if (!valid()) invalidate();
+    return *this;
+}
+
+template <typename ValueType, typename VarType>
+constexpr basic_octdiff_conjunction<ValueType, VarType>
+basic_octdiff_conjunction<ValueType, VarType>::to_valid() const noexcept {
+    return basic_octdiff_conjunction<ValueType, VarType>(*this).as_valid();
+}
+
+template <typename ValueType, typename VarType>
+inline std::string basic_octdiff_conjunction<ValueType, VarType>::to_string() const {
+    return std::string("(") + (unit() ? di_.to_string() : di_.to_string() + " && " + dj_.to_string()) + ")";
+}
+
+template <typename ValueType, typename VarType>
+constexpr typename basic_octdiff_conjunction<ValueType, VarType>::counterpart_cons_type
+basic_octdiff_conjunction<ValueType, VarType>::to_oct() const noexcept {
+    return this->valid()
+           ? unit()
+             ? counterpart_cons_type(counterpart_vexpr_type::make_unit(di().xi().to_counterpart()), di().c() / 2)
+             : counterpart_cons_type(counterpart_vexpr_type(di().xi().to_counterpart(), di().xj().to_counterpart()), di().c())
+           : counterpart_cons_type::invalid();
+}
+
+template <typename ValueType, typename VarType>
+constexpr bool basic_octdiff_conjunction<ValueType, VarType>::operator!() const noexcept {
+    return !valid();
+}
+
+template <typename ValueType, typename VarType>
+constexpr basic_octdiff_conjunction<ValueType, VarType>::operator bool() const noexcept {
+    return valid();
+}
+
+template <typename ValueType, typename VarType>
+constexpr basic_octdiff_conjunction<ValueType, VarType>::operator std::string() const {
+    return to_string();
+}
+
+template <typename ValueType, typename VarType>
+constexpr typename basic_octdiff_conjunction<ValueType, VarType>::cons_type
+basic_octdiff_conjunction<ValueType, VarType>::init_di_(cons_type di, cons_type dj) noexcept {
+    if (!di.valid()
+        || !dj.valid()
+        || di.compare(dj) <= 0)
+        return di;
+    return dj;
+}
+
+template <typename ValueType, typename VarType>
+constexpr typename basic_octdiff_conjunction<ValueType, VarType>::cons_type
+basic_octdiff_conjunction<ValueType, VarType>::init_dj_(cons_type di, cons_type dj) noexcept {
+    if (di.equals(dj)) return cons_type::invalid(); // for unit oct-constraints of type xi <= c or xi >= c
+    if (!di.valid()
+        || !dj.valid()
+        || dj.compare(di) >= 0)
+        return dj;
+    return di;
+}
+
+} // namespace oct
+adl_END_ROOT_MODULE
 
 #endif // adl__oct__cons__basic_octdiff_conjunction__hpp__

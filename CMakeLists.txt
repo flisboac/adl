@@ -95,6 +95,10 @@ target_sources(${api} INTERFACE
 
     # adl/oct/cons
     "${api_dir_root}/adl/oct/cons.hpp"
+    "${api_dir_root}/adl/oct/cons/cons_base_.hpp"
+    "${api_dir_root}/adl/oct/cons/basic_oct_cons.hpp"
+    "${api_dir_root}/adl/oct/cons/basic_octdiff_cons.hpp"
+    "${api_dir_root}/adl/oct/cons/basic_octdiff_conjunction.hpp"
 
     # adl/oct/system
     "${api_dir_root}/adl/oct/system.hpp"
