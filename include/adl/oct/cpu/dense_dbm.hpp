@@ -70,7 +70,7 @@ public:
             typename = std::enable_if_t<
                 common_var<VarType_>::valid
                 && std::is_convertible<constant_type, ValueType_>::value>>
-        explicit dense_dbm(
+        dense_dbm(
             dbm_tags::create_from_last_var_tag tag,
             context_type& context,
             VarType_ last_var,
@@ -80,8 +80,7 @@ public:
     std::size_t size() const noexcept;
 
     void initialize(constant_type value);
-    template <typename VarType_, typename = common_var_t<VarType_>>
-        void resize(VarType_ new_last_var, constant_type value = value_limits::top());
+    void resize(octdiff_var new_last_var, constant_type value = value_limits::top());
 
 public:
     constant_type& constant_(std::size_t index);
@@ -163,8 +162,7 @@ inline void dense_dbm<ContextType, ValueType, ValueLimits>::initialize(constant_
 };
 
 template <typename ContextType, typename ValueType, typename ValueLimits>
-template <typename VarType_, typename>
-inline void dense_dbm<ContextType, ValueType, ValueLimits>::resize(VarType_ new_last_var, constant_type value) {
+inline void dense_dbm<ContextType, ValueType, ValueLimits>::resize(octdiff_var new_last_var, constant_type value) {
     auto new_size = to_end_index_(new_last_var);
     data_.resize(new_size * new_size, value);
 };

@@ -50,7 +50,7 @@ static void test_with_octdiff_system(cpu::seq_context & seq_ctx) {
         std::cout << *(&dbm.constant_(0) + i) << " ";
     }
     REQUIRE( (dbm.at(cons.xi(), cons.xj()) == 10.2f) );
-    //REQUIRE( (dbm[1_ov] == 10) );
+    REQUIRE( (dbm[1_ov] == 10) );
 }
 
 TEST_CASE("unit:adl/oct/cpu/dense_dbm.hpp", "[unit][adl][adl/oct][adl/oct/cpu]") {
