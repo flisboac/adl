@@ -18,6 +18,12 @@
 #include "adl/oct/dbm/dbm_base_.hpp"
 #include "adl/oct/dbm/traits.hpp"
 
+#if adl_CONFIG_COMPILER_IS_GCC && defined(major)
+    // Stupid GCC/G++/glibc/libstdc++/whatever (who is to blame, again?)
+    // FIXME Wait for this bug fix: https://sourceware.org/bugzilla/show_bug.cgi?id=19239
+    #undef major
+#endif
+
 adl_BEGIN_ROOT_MODULE
 namespace oct {
 
