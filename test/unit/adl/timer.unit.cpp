@@ -2,13 +2,20 @@
 #include "adl_catch.hpp"
 #include "adl/timer.hpp"
 
-#include <cstdlib>
+#include <random>
 #include <chrono>
+
+static int random_num() {
+    std::random_device rd;
+    std::mt19937 g{ rd() };
+    std::uniform_int_distribution<int> gen{ 0, 65575 };
+    return gen(g);
+}
 
 template <typename TimerHandleType>
 static void payload(std::size_t passes_count, TimerHandleType && timer_handle) {
     for (std::size_t idx = 0; idx < passes_count; ++idx) {
-        int i = std::rand() % 100;
+        int i = random_num() % 100;
         i = (i * 8) + 1337;
         i = (i / 2) - 3;
         i = (i * 8) + 32417;
