@@ -14,6 +14,9 @@ adl_BEGIN_ROOT_MODULE
 
 template <typename SubClass>
 class crtp_base {
+public:
+    friend SubClass;
+
 protected:
     using subclass_ = SubClass;
 
@@ -50,7 +53,7 @@ constexpr typename crtp_base<SubClass>::subclass_& crtp_base<SubClass>::as_const
 
 template <typename SubClass>
 constexpr typename crtp_base<SubClass>::subclass_ const& crtp_base<SubClass>::as_const_() noexcept {
-    return const_cast<subclass_&>(*this);
+    return const_cast<subclass_ const&>(*this);
 }
 
 template <typename SubClass>

@@ -83,6 +83,7 @@ private:
 template <typename VarType>
 struct var_traits {
     constexpr static const bool valid = false;
+    constexpr static domain_space space = domain_space::oct;
 #if 0
     // Types
     using var_id_traits = oct::var_id_traits<domain_space::oct>;

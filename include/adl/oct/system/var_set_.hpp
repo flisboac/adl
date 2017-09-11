@@ -109,7 +109,7 @@ public:
     std::size_t count(var_type var) const; // unnormalized occurences
     std::size_t count_all(var_type var) const; // considers all occurrences, positive + negative
     const_iterator find(var_type var) const;
-    value_type const& get(var_type var) const;
+    value_type const& at(var_type var) const;
     value_type const& operator[](var_type var) const; // returns invalid if the var is not included
 
 private:
@@ -391,7 +391,7 @@ adl_IMPL std::pair<typename var_set<Domain>::iterator, bool> var_set<Domain>::fi
 }
 
 template <domain_space Domain>
-adl_IMPL typename var_set<Domain>::value_type const& var_set<Domain>::get(var_type var) const {
+adl_IMPL typename var_set<Domain>::value_type const& var_set<Domain>::at(var_type var) const {
     auto iter = find(var);
     if (iter != end()) return *iter;
     return dummy_data_;

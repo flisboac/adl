@@ -75,12 +75,13 @@ protected:
 public:
     using var_set_type = var_set<space>;
     using value_type = container_value_type_;
+    using key_type = value_type;
     using const_iterator = container_const_iterator_;
     using iterator = container_iterator_;
     using reverse_iterator = container_reverse_iterator_;
     using const_reverse_iterator = container_const_reverse_iterator_;
 
-    system_base_() noexcept = default;
+    system_base_() = default;
     system_base_(system_base_ const&) = default;
     system_base_(system_base_ &&) noexcept = default;
     system_base_& operator=(system_base_ const&) = default;

@@ -46,13 +46,22 @@ public:
     using counterpart_vexpr_type = typename var_traits::counterpart_vexpr_type;
     using identity_vexpr_type = typename var_traits::identity_vexpr_type;
 
+    //
+    // Const-static Variable definitions
+    //
+
+    constexpr static const domain_space space = var_type::space;
+    constexpr static const domain_space counterpart_space = var_type::counterpart_space;
+    constexpr static const bool has_unit_cons = vexpr_type::has_unit_vexpr;
+    constexpr static const bool has_add_cons = vexpr_type::has_add_vexpr;
+
     // Cons types
-    typedef typename var_traits::template cons_type<ValueType> cons_type;
-    typedef typename var_traits::template counterpart_cons_type<ValueType> counterpart_cons_type;
-    typedef typename var_traits::template identity_cons_type<ValueType> identity_cons_type;
-    typedef typename var_traits::template octdiff_conjunction_type<ValueType> octdiff_conjunction_type;
-    using octdiff_conjunction_cons_type = typename octdiff_conjunction_type::cons_type;
-    using octdiff_conjunction_vexpr_type = typename octdiff_conjunction_type::vexpr_type;
+    using cons_type = typename var_traits::template cons_type<ValueType>;
+    using counterpart_cons_type = typename var_traits::template counterpart_cons_type<ValueType>;
+    using identity_cons_type = typename var_traits::template identity_cons_type<ValueType>;
+    using octdiff_conjunction_type = std::conditional_t<space == domain_space::oct, basic_octdiff_conjunction<value_type, counterpart_var_type>, basic_octdiff_conjunction<value_type, var_type>>;
+    using octdiff_conjunction_vexpr_type = std::conditional_t<space == domain_space::oct, counterpart_vexpr_type, vexpr_type>;
+    using octdiff_conjunction_cons_type = std::conditional_t<space == domain_space::oct, counterpart_cons_type, cons_type>;
 
     struct less {
         constexpr bool operator()(cons_type const& lhs, cons_type const& rhs) const noexcept;
@@ -62,14 +71,6 @@ public:
         constexpr std::size_t operator()(cons_type const& lhs) const noexcept;
     };
 
-    //
-    // Const-static Variable definitions
-    //
-
-    constexpr static const domain_space space = var_type::space;
-    constexpr static const domain_space counterpart_space = var_type::counterpart_space;
-    constexpr static const bool has_unit_cons = vexpr_type::has_unit_vexpr;
-    constexpr static const bool has_add_cons = vexpr_type::has_add_vexpr;
 
 private:
     using subclass_ = cons_type;

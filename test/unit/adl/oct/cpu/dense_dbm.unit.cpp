@@ -1,6 +1,6 @@
 // $flisboac 2017-08-28
 #include "adl_catch.hpp"
-#include <iostream>
+#include <sstream>
 #include "adl/oct/var.hpp"
 #include "adl/oct/vexpr.hpp"
 #include "adl/oct/cons.hpp"
@@ -16,45 +16,162 @@ using namespace adl::literals;
 using namespace adl::operators;
 using namespace adl::dsl;
 
-
 template <typename T>
-static void test_dbm(T dbm) {
-    INFO(dbm.size());
-    REQUIRE( (dbm.size() == 200) );
-    INFO(dbm.last_var().to_string());
-    REQUIRE( ( dbm.last_var() == "x100"_ov ) );
-}
-
-static void test_with_fixed_size(cpu::seq_context & seq_ctx) {
-    test_dbm(seq_ctx.make_dbm<cpu::dense_dbm, float>(100_ov));
-    auto dbm = seq_ctx.make_dbm<cpu::dense_dbm, float>(100_ov, 10);
-    test_dbm(dbm);
-    //REQUIRE( (dbm[1_ov] == 10) );
-}
-
-static void test_with_octdiff_system(cpu::seq_context & seq_ctx) {
-    oct_system<float> system;
-    constexpr auto cons = 1_ov - 2_ov <= 10.2f;
-    constexpr auto split = cons.split();
-    system.insert(cons);
-    auto diff_system = system.to_counterpart();
-    //test_dbm(seq_ctx.make_dbm<cpu::dense_dbm, float>(diff_system));
-    auto dbm = seq_ctx.make_dbm<cpu::dense_dbm, float>(diff_system, 10);
-    //test_dbm(dbm);
-    WARN(cons.to_vexpr().to_string() << ", " << split.to_string());
-    WARN(dbm.at(cons.xi(), cons.xj()));
-    WARN(dbm.at(split.di().to_identity_vexpr()));
-    WARN(dbm.at(split.dj().to_identity_vexpr()));
-    for (int i = 0; i < dbm.size() * dbm.size(); ++i) {
-        if (i > 0 && i % dbm.size() == 0) std::cout << std::endl;
-        std::cout << *(&dbm.constant_(0) + i) << " ";
+static std::string dbm_to_string_(T const& dbm) {
+    char const* sep = "\t";
+    std::stringstream ss;
+    ss << std::endl;
+    for (auto i = dbm.first_var(); i < dbm.end_var(); ++i) {
+        for (auto j = dbm.first_var(); j < dbm.end_var(); ++j) {
+            ss << sep << "[" << i.to_index() << "," << j.to_index() << "=" << dbm.at(i, j) << "]";
+            sep = " ";
+        }
+        sep = "\t";
+        ss << std::endl;
     }
-    REQUIRE( (dbm.at(cons.xi(), cons.xj()) == 10.2f) );
-    REQUIRE( (dbm[1_ov] == 10) );
+    return ss.str();
+}
+
+template <
+    template <typename, typename, typename> class DbmClass,
+    typename ContextType,
+    typename ValueType,
+    typename ValueLimits>
+static void require_dbm_size_(
+    DbmClass<ContextType, ValueType, ValueLimits> const& dbm,
+    octdiff_var last_var
+) {
+    const auto end_var = last_var + 1;
+    const auto var_size = end_var.to_index();
+    INFO_REQUIRE( (dbm.size() == var_size), dbm.size(), var_size );
+    INFO_REQUIRE( (dbm.last_var() == last_var), dbm.last_var().to_string(), last_var.to_string() );
+    INFO_REQUIRE( (dbm.end_var() == end_var), dbm.end_var().to_string(), end_var.to_string() );
+}
+
+template <
+    template <typename, typename, typename> class DbmClass,
+    typename ContextType,
+    typename ValueType,
+    typename ValueLimits,
+    typename CheckFunction,
+    typename = std::enable_if_t<!std::is_arithmetic<CheckFunction>::value>>
+static void require_dbm_values_(
+    DbmClass<ContextType, ValueType, ValueLimits> const& dbm,
+    CheckFunction check
+) {
+    for (auto i = dbm.first_var(); i < dbm.end_var(); ++i) {
+        for (auto j = dbm.first_var(); j < dbm.end_var(); ++j) {
+            octdiff_vexpr vexpr(i, j);
+            auto value_at = dbm.at(i, j);
+            auto value_oper = dbm[vexpr];
+            INFO_REQUIRE(( value_at == value_oper ), value_at, value_oper, i.to_string(), j.to_string(), vexpr.to_string());
+            INFO_REQUIRE(( check(value_at, i, j) ), value_at, i.to_string(), j.to_string());
+        }
+    }
+}
+
+template <
+    template <typename, typename, typename> class DbmClass,
+    typename ContextType,
+    typename ValueType,
+    typename ValueLimits,
+    typename = std::enable_if_t<std::is_arithmetic<ValueType>::value>>
+static void require_dbm_values_(
+    DbmClass<ContextType, ValueType, ValueLimits> const& dbm,
+    ValueType value = DbmClass<ContextType, ValueType, ValueLimits>::default_constant()
+) {
+    require_dbm_values_(dbm, [value](ValueType v, octdiff_var, octdiff_var) -> bool { return value == v; });
+}
+
+template <typename ValueType, typename VarType>
+static octdiff_system<ValueType> make_diff_system_(basic_oct_cons<ValueType, VarType> cons) {
+    oct_system<ValueType> system = { cons };
+    return system.to_counterpart();
+};
+
+static void test_dbm_creation_by_size_(cpu::seq_context & seq_ctx) {
+    constexpr auto size_var = 100_ov;
+    constexpr auto last_var = -size_var;
+    constexpr auto initial_value = 1.11;
+
+    using constant_type_ = std::remove_const<decltype(initial_value)>::type;
+
+    SECTION("Making DBM with fixed size and NO initial value") {
+        auto dbm = seq_ctx.make_dbm<cpu::dense_dbm, constant_type_>(size_var);
+        require_dbm_size_(dbm, last_var);
+        require_dbm_values_(dbm, dbm.default_constant());
+    }
+
+    SECTION("Making DBM with fixed size and initial value") {
+        // last_var here to showcase the fact that the DBM can be created with a negative variable. The last_var will
+        // be the next normalized variable (that is, `to_octdiff(var).normalize().increment(2)`)
+        auto dbm = seq_ctx.make_dbm<cpu::dense_dbm, constant_type_>(last_var, initial_value);
+        require_dbm_size_(dbm, last_var);
+        require_dbm_values_(dbm, initial_value);
+    }
+}
+
+template <typename ValueType>
+static void do_test_dbm_by_cons_(cpu::seq_context & seq_ctx, oct_cons<ValueType> cons) {
+    const auto xi = cons.xi();
+    const auto xj = cons.xj();
+    const auto c = cons.c();
+    const auto c2 = c * 2;
+    const auto split = cons.split();
+    const auto di = split.di(), dj = split.dj();
+    const auto last_var = -to_octdiff(xi.compare(xj) >= 0 ? xi : xj).normalize();
+    const auto initial_value = c2 + 13;
+    const auto diff_system = make_diff_system_(cons);
+    const auto dbm = seq_ctx.make_dbm<cpu::dense_dbm>(diff_system, initial_value);
+    const std::size_t index_di = di.xi().to_index() * dbm.size() + di.xj().to_index();
+    const std::size_t index_dj = dj.valid() ? dj.xi().to_index() * dbm.size() + dj.xj().to_index() : 0;
+
+    auto test_dbm_value = [&](ValueType value, octdiff_var xi_, octdiff_var xj_) {
+        octdiff_vexpr vexpr_(xi_, xj_);
+        bool valid_index = (vexpr_ == to_identity(split.di()).to_vexpr() || vexpr_ == to_identity(split.dj()).to_vexpr());
+        INFO("cons = " << cons.to_string()); // Not working, why?
+        return valid_index
+            ? (cons.unit() ? value == c2 : value == c)
+            : value == initial_value;
+    };
+
+    auto test_diff_cons = [&](octdiff_cons<ValueType> cons_) {
+        const std::size_t index = (dbm.major() == dbm_major::row)
+            ? cons_.xi().to_index() * dbm.size() + cons_.xj().to_index()
+            : cons_.xj().to_index() * dbm.size() + cons_.xi().to_index();
+        INFO_REQUIRE(( dbm.at(cons_) == dbm.at(cons_.xi(), cons_.xj()) ),
+            dbm.at(cons_), dbm.at(cons_.xi(), cons_.xj()), cons_.to_string(), cons_.xi().to_string(), cons_.xj().to_string());
+        INFO_REQUIRE(( dbm.at(cons_) == dbm[cons_] ),
+            dbm.at(cons_) , dbm[cons_], cons_.to_string());
+        INFO_REQUIRE(( dbm.at(cons_) == dbm[index] ),
+            dbm.at(cons_) , dbm[index], cons_.to_string(), index);
+        INFO_REQUIRE(( dbm[cons_] == cons_.c() ),
+            dbm[cons_], cons_.c(), cons_.to_string());
+    };
+
+    require_dbm_size_(dbm, last_var);
+    require_dbm_values_(dbm, test_dbm_value);
+    test_diff_cons(di);
+    if (dj.valid()) {
+        test_diff_cons(dj);
+        INFO_REQUIRE(( dbm[di] == dbm[dj] ), dbm[di], dbm[dj], di.to_string(), dj.to_string());
+    }
+}
+
+static void test_dbm_creation_by_conversion_(cpu::seq_context & seq_ctx) {
+    constexpr auto xi = 1_ov;
+    constexpr auto xj = 2_ov;
+    constexpr auto c = 10.4;
+
+    SECTION("Making system from constraint:  xi - xj <= c") { do_test_dbm_by_cons_(seq_ctx,  xi - xj <= c); }
+    SECTION("Making system from constraint:  xi + xj <= c") { do_test_dbm_by_cons_(seq_ctx,  xi + xj <= c); }
+    SECTION("Making system from constraint: -xi - xj <= c") { do_test_dbm_by_cons_(seq_ctx, -xi - xj <= c); }
+    SECTION("Making system from constraint:  xi <= c")      { do_test_dbm_by_cons_(seq_ctx,  xi <= c); }
+    SECTION("Making system from constraint: -xi <= c")      { do_test_dbm_by_cons_(seq_ctx, -xi <= c); }
 }
 
 TEST_CASE("unit:adl/oct/cpu/dense_dbm.hpp", "[unit][adl][adl/oct][adl/oct/cpu]") {
     auto seq_ctx = cpu::seq_context::make();
-    //test_with_fixed_size(seq_ctx);
-    test_with_octdiff_system(seq_ctx);
+    test_dbm_creation_by_size_(seq_ctx);
+    test_dbm_creation_by_conversion_(seq_ctx);
 }

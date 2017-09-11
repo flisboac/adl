@@ -21,6 +21,7 @@
 #include "adl/oct/var.hpp"
 #include "adl/oct/vexpr.hpp"
 
+
 //
 // [[ API ]]
 //
@@ -49,10 +50,9 @@ public:
     using identity_vexpr_type = typename var_traits::identity_vexpr_type;
 
     // Cons types
-    typedef typename var_traits::template cons_type<ValueType> cons_type;
-    typedef typename var_traits::template counterpart_cons_type<ValueType> counterpart_cons_type; // always basic_oct_cons
-    typedef typename var_traits::template identity_cons_type<ValueType> identity_cons_type;
-    typedef typename var_traits::template octdiff_conjunction_type<ValueType> octdiff_conjunction_type;
+    using cons_type = basic_octdiff_cons<value_type, var_type>;
+    using counterpart_cons_type = basic_oct_cons<value_type, counterpart_var_type>;
+    using identity_cons_type = basic_oct_cons<value_type, identity_var_type>;
 
     struct less {
         constexpr bool operator()(basic_octdiff_conjunction const& lhs, basic_octdiff_conjunction const& rhs) const noexcept;

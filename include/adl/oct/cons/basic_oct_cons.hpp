@@ -62,9 +62,16 @@ public:
             typename VarType_,
             typename = std::enable_if_t<
                     common_var<VarType_>::is_oct_space
-                    && !std::is_same<VarType_, var_type>::value
+                    && (!std::is_same<VarType_, var_type>::value || !std::is_same<ValueType_, value_type>::value)
                     && std::is_convertible<ValueType_, value_type>::value>>
-    constexpr basic_oct_cons(basic_oct_cons<ValueType_, VarType_> cons);
+        constexpr basic_oct_cons(basic_oct_cons<ValueType_, VarType_> const& cons);
+
+    template <
+            typename VarType_,
+            typename = std::enable_if_t<
+                    common_var<VarType_>::is_oct_space
+                    && !std::is_same<VarType_, var_type>::value>>
+        explicit constexpr basic_oct_cons(basic_oct_vexpr<VarType_> vexpr);
 
     constexpr basic_oct_cons(var_type xi, value_type c);
     constexpr static basic_oct_cons make_upper_limit(var_type xi, value_type c) noexcept; // xi <= c
@@ -95,6 +102,9 @@ public:
 
     constexpr octdiff_conjunction_type split() const noexcept;
 };
+
+template <typename ValueType> constexpr oct_cons<ValueType> to_identity(oct_cons<ValueType> cons) { return cons; }
+template <typename ValueType> constexpr oct_cons<ValueType> to_identity(oct_lcons<ValueType> cons) { return cons.to_identity(); }
 
 template <
         typename ValueType,
@@ -290,6 +300,7 @@ std::basic_ostream<char, Traits>& operator<<(
 // [[ TEMPLATE IMPLEMENTATION ]]
 //
 #include "adl/oct/cons/basic_octdiff_cons.hpp"
+#include "adl/oct/cons/basic_octdiff_conjunction.hpp"
 
 adl_BEGIN_ROOT_MODULE
 namespace oct {
@@ -300,8 +311,13 @@ namespace oct {
 
 template <typename ValueType, typename VarType>
 template <typename ValueType_, typename VarType_, typename>
-constexpr basic_oct_cons<ValueType, VarType>::basic_oct_cons(basic_oct_cons<ValueType_, VarType_> cons)
+constexpr basic_oct_cons<ValueType, VarType>::basic_oct_cons(basic_oct_cons<ValueType_, VarType_> const& cons)
         : basic_oct_cons(vexpr_type(var_type(cons.xi()), var_type(cons.xj())), value_type(cons.c())) {};
+
+template <typename ValueType, typename VarType>
+template <typename VarType_, typename>
+constexpr basic_oct_cons<ValueType, VarType>::basic_oct_cons(basic_oct_vexpr<VarType_> vexpr)
+        : basic_oct_cons(basic_oct_vexpr<var_type>(vexpr.xi(), vexpr.xj()), value_type()) {};
 
 template <typename ValueType, typename VarType>
 constexpr basic_oct_cons<ValueType, VarType>::basic_oct_cons(var_type xi, value_type c) :
@@ -398,8 +414,8 @@ basic_oct_cons<ValueType, VarType>::split() const noexcept {
         );
     }
     return octdiff_conjunction_type::from_cons(
-            octdiff_conjunction_cons_type(octdiff_conjunction_vexpr_type(vexpr.xi(), vexpr.xj()), c_),
-            octdiff_conjunction_cons_type(octdiff_conjunction_vexpr_type(vexpr.xJ(), vexpr.xI()), constant)
+            octdiff_conjunction_cons_type(octdiff_conjunction_vexpr_type(vexpr.xi(), vexpr.xJ()), constant),
+            octdiff_conjunction_cons_type(octdiff_conjunction_vexpr_type(vexpr.xj(), vexpr.xI()), constant)
     );
 }
 

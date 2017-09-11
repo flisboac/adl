@@ -51,25 +51,22 @@ public:
                 !std::is_same<VarType_, var_type>::value
                 && common_var<VarType_>::is_octdiff_space
                 && std::is_convertible<VarType_, var_type>::value>>
-    constexpr basic_octdiff_vexpr(basic_octdiff_vexpr<VarType> const& vexpr) noexcept
+    constexpr basic_octdiff_vexpr(basic_octdiff_vexpr<VarType_> const& vexpr) noexcept
             : basic_octdiff_vexpr(vexpr.xi(), vexpr.xj()) {};
 
     constexpr basic_octdiff_vexpr& commute() noexcept;
     constexpr basic_octdiff_vexpr to_commuted() const noexcept;
 };
 
-} // namespace oct
+constexpr octdiff_vexpr to_identity(octdiff_vexpr vexpr) { return vexpr; }
+constexpr octdiff_vexpr to_identity(octdiff_lvexpr vexpr) { return vexpr.to_identity(); }
 
-namespace dsl {
-    inline namespace oct {
-        inline namespace vexpr {
-            template <typename VarTypeA, typename VarTypeB, typename = std::enable_if_t<::adl::oct::common_var<VarTypeA, VarTypeB>::is_octdiff_space>>
-            constexpr ::adl::oct::basic_octdiff_vexpr<::adl::oct::common_var_t<VarTypeA, VarTypeB>> operator-(VarTypeA lhs, VarTypeB rhs) {
-                return ::adl::oct::basic_octdiff_vexpr<::adl::oct::common_var_t<VarTypeA, VarTypeB>>::make_sub(lhs, rhs);
-            };
-        }
-    }
-}
+template <typename VarTypeA, typename VarTypeB, typename = std::enable_if_t<common_var<VarTypeA>::is_octdiff_space && ::adl::oct::common_var<VarTypeB>::valid>>
+constexpr basic_octdiff_vexpr<VarTypeA> make_sub_vexpr(VarTypeA xi, VarTypeB xj) noexcept {
+    return basic_octdiff_vexpr<VarTypeA>::make_sub(xi, xj);
+};
+
+} // namespace oct
 
 namespace operators {
     inline namespace oct {

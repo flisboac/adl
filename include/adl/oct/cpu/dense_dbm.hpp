@@ -10,7 +10,7 @@
 #include "adl.cfg.hpp"
 
 #include "adl/oct/dbm/traits.hpp"
-#include "adl/oct/dbm/dense_dbm.hpp"
+#include "adl/oct/dbm/dense_dbm_base_.hpp"
 
 adl_BEGIN_ROOT_MODULE
 namespace oct {

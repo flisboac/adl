@@ -33,6 +33,7 @@ private:
 
 public:
     using typename superclass_::var_type;
+    using typename superclass_::counterpart_var_type;
 
     using superclass_::vexpr_base_;
     using superclass_::operator=;
@@ -55,20 +56,30 @@ public:
                 && std::is_convertible<VarType_, var_type>::value>>
     constexpr basic_oct_vexpr(basic_oct_vexpr<VarType_>  const& vexpr) noexcept
             : basic_oct_vexpr(vexpr.xi(), vexpr.xj()) {};
-    constexpr basic_oct_vexpr(var_type xi) noexcept;
+    explicit constexpr basic_oct_vexpr(var_type xi) noexcept;
     constexpr basic_oct_vexpr(var_type xi, var_type xj) noexcept;
     constexpr static basic_oct_vexpr make_unit(var_type xi) noexcept;
     constexpr static basic_oct_vexpr make_add(var_type xi, var_type xj) noexcept;
+
+    constexpr basic_octdiff_vexpr<counterpart_var_type> to_counterpart_() const noexcept;
 };
+
+constexpr oct_vexpr to_identity(oct_vexpr vexpr) { return vexpr; }
+constexpr oct_vexpr to_identity(oct_lvexpr vexpr) { return vexpr.to_identity(); }
 
 template <typename VarType, typename = std::enable_if_t<common_var<VarType>::is_oct_space>>
 constexpr basic_oct_vexpr<VarType> make_unit_vexpr(VarType xi) noexcept {
-    return basic_oct_vexpr<>::make_unit(xi);
+    return basic_oct_vexpr<VarType>::make_unit(xi);
 };
 
-template <typename VarTypeA, typename VarTypeB, typename = std::enable_if_t<common_var<VarTypeA, VarTypeB>::is_oct_space>>
-constexpr basic_oct_vexpr<common_var_t<VarTypeA, VarTypeB>> make_add_vexpr(VarTypeA xi, VarTypeB xj) noexcept {
-    return common_vexpr_t<VarTypeA, VarTypeB>::make_add(xi, xj);
+template <typename VarTypeA, typename VarTypeB, typename = std::enable_if_t<common_var<VarTypeA>::is_oct_space && ::adl::oct::common_var<VarTypeB>::valid>>
+constexpr basic_oct_vexpr<VarTypeA> make_add_vexpr(VarTypeA xi, VarTypeB xj) noexcept {
+    return basic_oct_vexpr<VarTypeA>::make_add(xi, xj);
+};
+
+template <typename VarTypeA, typename VarTypeB, typename = std::enable_if_t<common_var<VarTypeA>::is_oct_space && ::adl::oct::common_var<VarTypeB>::valid>>
+constexpr basic_oct_vexpr<VarTypeA> make_sub_vexpr(VarTypeA xi, VarTypeB xj) noexcept {
+    return basic_oct_vexpr<VarTypeA>::make_sub(xi, xj);
 };
 
 } // namespace oct
@@ -76,14 +87,14 @@ constexpr basic_oct_vexpr<common_var_t<VarTypeA, VarTypeB>> make_add_vexpr(VarTy
 namespace dsl {
     inline namespace oct {
         inline namespace vexpr {
-            template <typename VarTypeA, typename VarTypeB, typename = std::enable_if_t<::adl::oct::common_var<VarTypeA, VarTypeB>::is_oct_space>>
-            constexpr ::adl::oct::basic_oct_vexpr<::adl::oct::common_var_t<VarTypeA, VarTypeB>> operator+(VarTypeA lhs, VarTypeB rhs) {
-                return ::adl::oct::basic_oct_vexpr<::adl::oct::common_var_t<VarTypeA, VarTypeB>>::make_add(lhs, rhs);
+            template <typename VarTypeA, typename VarTypeB, typename = std::enable_if_t<::adl::oct::common_var<VarTypeA>::is_oct_space && ::adl::oct::common_var<VarTypeB>::valid>>
+            constexpr ::adl::oct::basic_oct_vexpr<VarTypeA> operator+(VarTypeA lhs, VarTypeB rhs) {
+                return ::adl::oct::basic_oct_vexpr<VarTypeA>::make_add(lhs, rhs);
             };
 
-            template <typename VarTypeA, typename VarTypeB, typename = std::enable_if_t<::adl::oct::common_var<VarTypeA, VarTypeB>::is_oct_space>>
-            constexpr ::adl::oct::basic_oct_vexpr<::adl::oct::common_var_t<VarTypeA, VarTypeB>> operator-(VarTypeA lhs, VarTypeB rhs) {
-                return ::adl::oct::basic_oct_vexpr<::adl::oct::common_var_t<VarTypeA, VarTypeB>>::make_sub(lhs, rhs);
+            template <typename VarTypeA, typename VarTypeB, typename = std::enable_if_t<::adl::oct::common_var<VarTypeA>::is_oct_space && ::adl::oct::common_var<VarTypeB>::valid>>
+            constexpr ::adl::oct::basic_oct_vexpr<VarTypeA> operator-(VarTypeA lhs, VarTypeB rhs) {
+                return ::adl::oct::basic_oct_vexpr<VarTypeA>::make_sub(lhs, rhs);
             };
         }
     }
@@ -170,6 +181,12 @@ template <typename VarType>
 constexpr basic_oct_vexpr<VarType>
 basic_oct_vexpr<VarType>::make_unit(var_type xi) noexcept {
     return basic_oct_vexpr(xi);
+}
+
+template <typename VarType>
+constexpr basic_octdiff_vexpr<typename basic_oct_vexpr<VarType>::counterpart_var_type>
+basic_oct_vexpr<VarType>::to_counterpart_() const noexcept {
+    return basic_octdiff_vexpr<counterpart_var_type>(xi_.to_counterpart(), xj_.to_negated().to_counterpart());
 }
 
 } // namespace oct

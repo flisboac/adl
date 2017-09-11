@@ -52,7 +52,6 @@ public:
     constexpr basic_octdiff_cons& operator=(basic_octdiff_cons &&) noexcept = default;
 
     constexpr basic_octdiff_cons(vexpr_type vexpr, value_type c);
-    constexpr static basic_octdiff_cons make_upper_limit(var_type xi, value_type c) noexcept; // xi <= c
     constexpr static basic_octdiff_cons make_upper_limit(vexpr_type vexpr, value_type c) noexcept; // +-xi [+- xj] <= c
 
     template <
@@ -60,9 +59,16 @@ public:
             typename VarType_,
             typename = std::enable_if_t<
                     common_var<VarType_>::is_octdiff_space
-                    && !std::is_same<VarType_, var_type>::value
+                    && (!std::is_same<VarType_, var_type>::value || !std::is_same<ValueType_, value_type>::value)
                     && std::is_convertible<ValueType_, value_type>::value>>
-    constexpr basic_octdiff_cons(basic_octdiff_cons<ValueType_, VarType_> cons);
+    constexpr basic_octdiff_cons(basic_octdiff_cons<ValueType_, VarType_> cons) noexcept;
+
+    template <
+            typename VarType_,
+            typename = std::enable_if_t<
+                    common_var<VarType_>::is_octdiff_space
+                    && !std::is_same<VarType_, var_type>::value>>
+        explicit constexpr basic_octdiff_cons(basic_octdiff_vexpr<VarType_> vexpr) noexcept;
 
     template <
             typename VarType_ = var_type,
@@ -79,6 +85,9 @@ private:
     constexpr basic_octdiff_cons& commute() noexcept;
     constexpr basic_octdiff_cons to_commuted() const noexcept;
 };
+
+template <typename ValueType> constexpr octdiff_cons<ValueType> to_identity(octdiff_cons<ValueType> cons) { return cons; }
+template <typename ValueType> constexpr octdiff_cons<ValueType> to_identity(octdiff_lcons<ValueType> cons) { return cons.to_identity(); }
 
 template <
         typename ValueType,
@@ -169,6 +178,7 @@ std::basic_ostream<char, Traits>& operator<<(
 // [[ TEMPLATE IMPLEMENTATION ]]
 //
 #include "adl/oct/cons/basic_oct_cons.hpp"
+#include "adl/oct/cons/basic_octdiff_conjunction.hpp"
 
 adl_BEGIN_ROOT_MODULE
 namespace oct {
@@ -181,9 +191,22 @@ template <typename ValueType, typename VarType>
 constexpr basic_octdiff_cons<ValueType, VarType>::basic_octdiff_cons(vexpr_type vexpr, value_type c) : superclass_(vexpr, c) {};
 
 template <typename ValueType, typename VarType>
+constexpr basic_octdiff_cons<ValueType, VarType>
+basic_octdiff_cons<ValueType, VarType>::make_upper_limit(vexpr_type vexpr, value_type c) noexcept {
+    return basic_octdiff_cons<ValueType, VarType>(vexpr, c);
+};
+
+template <typename ValueType, typename VarType>
 template <typename ValueType_, typename VarType_, typename>
-constexpr basic_octdiff_cons<ValueType, VarType>::basic_octdiff_cons(basic_octdiff_cons<ValueType_, VarType_> cons)
-        : basic_octdiff_cons(vexpr_type(cons.xi(), cons.xj()), cons.c()) {};
+constexpr basic_octdiff_cons<ValueType, VarType>::basic_octdiff_cons(
+    basic_octdiff_cons<ValueType_, VarType_> cons
+) noexcept : basic_octdiff_cons(vexpr_type(cons.xi(), cons.xj()), cons.c()) {};
+
+template <typename ValueType, typename VarType>
+template <typename VarType_, typename>
+constexpr basic_octdiff_cons<ValueType, VarType>::basic_octdiff_cons(
+    basic_octdiff_vexpr<VarType_> vexpr
+) noexcept : basic_octdiff_cons(vexpr, value_type()) {};
 
 template <typename ValueType, typename VarType>
 template <typename VarType_, typename>

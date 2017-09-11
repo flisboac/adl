@@ -152,7 +152,8 @@ protected:
 
 template <typename FirstVarType, typename SecondVarType, bool specialized =
         var_traits<FirstVarType>::valid
-        && var_traits<SecondVarType>::valid>
+        && var_traits<SecondVarType>::valid
+        && var_traits<FirstVarType>::space == var_traits<SecondVarType>::space>
 struct common_var_ {
     constexpr static const bool valid = specialized;
     constexpr static const bool is_oct_space = false;
@@ -228,29 +229,29 @@ namespace operators {
                     constexpr VarType& operator-=(VarType& var, std::size_t off) noexcept { return var.decrement(off); };
             }
             inline namespace comparison {
-                template <typename VarTypeA, typename VarTypeB, typename = ::adl::oct::common_var_t<VarTypeA, VarTypeB>>
+                template <typename VarTypeA, typename VarTypeB, typename = std::enable_if_t<::adl::oct::common_var<VarTypeA>::valid && ::adl::oct::common_var<VarTypeB>::valid>>
                     constexpr bool operator==(VarTypeA const& var, VarTypeB var2) noexcept { return var.equals(var2); };
-                template <typename VarTypeA, typename VarTypeB, typename = ::adl::oct::common_var_t<VarTypeA, VarTypeB>>
+                template <typename VarTypeA, typename VarTypeB, typename = std::enable_if_t<::adl::oct::common_var<VarTypeA>::valid && ::adl::oct::common_var<VarTypeB>::valid>>
                     constexpr bool operator==(VarTypeA && var, VarTypeB var2) noexcept { return var.equals(var2); };
-                template <typename VarTypeA, typename VarTypeB, typename = ::adl::oct::common_var_t<VarTypeA, VarTypeB>>
+                template <typename VarTypeA, typename VarTypeB, typename = std::enable_if_t<::adl::oct::common_var<VarTypeA>::valid && ::adl::oct::common_var<VarTypeB>::valid>>
                     constexpr bool operator!=(VarTypeA const& var, VarTypeB var2) noexcept { return !var.equals(var2); };
-                template <typename VarTypeA, typename VarTypeB, typename = ::adl::oct::common_var_t<VarTypeA, VarTypeB>>
+                template <typename VarTypeA, typename VarTypeB, typename = std::enable_if_t<::adl::oct::common_var<VarTypeA>::valid && ::adl::oct::common_var<VarTypeB>::valid>>
                     constexpr bool operator!=(VarTypeA && var, VarTypeB var2) noexcept { return !var.equals(var2); };
-                template <typename VarTypeA, typename VarTypeB, typename = ::adl::oct::common_var_t<VarTypeA, VarTypeB>>
+                template <typename VarTypeA, typename VarTypeB, typename = std::enable_if_t<::adl::oct::common_var<VarTypeA>::valid && ::adl::oct::common_var<VarTypeB>::valid>>
                     constexpr int operator<(VarTypeA const& var, VarTypeB var2) noexcept { return var.compare(var2) < 0; };
-                template <typename VarTypeA, typename VarTypeB, typename = ::adl::oct::common_var_t<VarTypeA, VarTypeB>>
+                template <typename VarTypeA, typename VarTypeB, typename = std::enable_if_t<::adl::oct::common_var<VarTypeA>::valid && ::adl::oct::common_var<VarTypeB>::valid>>
                     constexpr int operator<(VarTypeA && var, VarTypeB var2) noexcept { return var.compare(var2) < 0; };
-                template <typename VarTypeA, typename VarTypeB, typename = ::adl::oct::common_var_t<VarTypeA, VarTypeB>>
+                template <typename VarTypeA, typename VarTypeB, typename = std::enable_if_t<::adl::oct::common_var<VarTypeA>::valid && ::adl::oct::common_var<VarTypeB>::valid>>
                     constexpr int operator<=(VarTypeA const& var, VarTypeB var2) noexcept { return var.compare(var2) <= 0; };
-                template <typename VarTypeA, typename VarTypeB, typename = ::adl::oct::common_var_t<VarTypeA, VarTypeB>>
+                template <typename VarTypeA, typename VarTypeB, typename = std::enable_if_t<::adl::oct::common_var<VarTypeA>::valid && ::adl::oct::common_var<VarTypeB>::valid>>
                     constexpr int operator<=(VarTypeA && var, VarTypeB var2) noexcept { return var.compare(var2) <= 0; };
-                template <typename VarTypeA, typename VarTypeB, typename = ::adl::oct::common_var_t<VarTypeA, VarTypeB>>
+                template <typename VarTypeA, typename VarTypeB, typename = std::enable_if_t<::adl::oct::common_var<VarTypeA>::valid && ::adl::oct::common_var<VarTypeB>::valid>>
                     constexpr int operator>(VarTypeA const& var, VarTypeB var2) noexcept { return var.compare(var2) > 0; };
-                template <typename VarTypeA, typename VarTypeB, typename = ::adl::oct::common_var_t<VarTypeA, VarTypeB>>
+                template <typename VarTypeA, typename VarTypeB, typename = std::enable_if_t<::adl::oct::common_var<VarTypeA>::valid && ::adl::oct::common_var<VarTypeB>::valid>>
                     constexpr int operator>(VarTypeA && var, VarTypeB var2) noexcept { return var.compare(var2) > 0; };
-                template <typename VarTypeA, typename VarTypeB, typename = ::adl::oct::common_var_t<VarTypeA, VarTypeB>>
+                template <typename VarTypeA, typename VarTypeB, typename = std::enable_if_t<::adl::oct::common_var<VarTypeA>::valid && ::adl::oct::common_var<VarTypeB>::valid>>
                     constexpr int operator>=(VarTypeA const& var, VarTypeB var2) noexcept { return var.compare(var2) >= 0; };
-                template <typename VarTypeA, typename VarTypeB, typename = ::adl::oct::common_var_t<VarTypeA, VarTypeB>>
+                template <typename VarTypeA, typename VarTypeB, typename = std::enable_if_t<::adl::oct::common_var<VarTypeA>::valid && ::adl::oct::common_var<VarTypeB>::valid>>
                     constexpr int operator>=(VarTypeA && var, VarTypeB var2) noexcept { return var.compare(var2) >= 0; };
             }
         }
@@ -449,7 +450,8 @@ var_base_<VarType, VarTraits>::ensure_valid() const {
 template <typename VarType, typename VarTraits>
 constexpr typename var_base_<VarType, VarTraits>::var_type&
 var_base_<VarType, VarTraits>::as_valid() noexcept {
-    return (id_ = valid() ? id_ : var_id_limits::invalid_var_id, this->as_subclass_());
+    id_ = valid() ? id_ : var_id_limits::invalid_var_id;
+    return this->as_subclass_();
 }
 
 template <typename VarType, typename VarTraits>
@@ -502,7 +504,7 @@ var_base_<VarType, VarTraits>::from_range(N id) noexcept {
 template <typename VarType, typename VarTraits>
 constexpr typename var_base_<VarType, VarTraits>::var_type
 var_base_<VarType, VarTraits>::from_index(std::size_t id) noexcept {
-    return var_type(var_id_traits::arithmetic_to_valid(id));
+    return var_type(var_id_traits::index_to_id(id));
 };
 
 template <typename VarType, typename VarTraits>

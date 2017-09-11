@@ -169,11 +169,6 @@ public:
 template <typename FirstVarType, typename SecondVarType>
 struct common_vexpr : public common_vexpr_<FirstVarType, SecondVarType> {};
 
-template <typename VarTypeA, typename VarTypeB, typename = std::enable_if_t<common_var<VarTypeA, VarTypeB>::is_oct_space>>
-constexpr common_vexpr_t<VarTypeA, VarTypeB> make_sub_vexpr(VarTypeA xi, VarTypeB xj) noexcept {
-    return common_vexpr_t<VarTypeA, VarTypeB>::make_sub(xi, xj);
-};
-
 } // namespace oct
 
 adl_END_ROOT_MODULE

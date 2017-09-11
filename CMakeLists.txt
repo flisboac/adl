@@ -114,7 +114,7 @@ target_sources(${api} INTERFACE
     "${api_dir_root}/adl/oct/dbm.hpp"
     "${api_dir_root}/adl/oct/dbm/traits.hpp"
     "${api_dir_root}/adl/oct/dbm/dbm_base_.hpp"
-    "${api_dir_root}/adl/oct/dbm/dense_dbm.hpp"
+    "${api_dir_root}/adl/oct/dbm/dense_dbm_base_.hpp"
 
     #adl/oct/cpu
     "${api_dir_root}/adl/oct/cpu.hpp"

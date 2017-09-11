@@ -23,7 +23,7 @@ private:
 
 protected:
     template <typename VarType_, typename = common_var_t<VarType_>>
-        constexpr static std::size_t to_end_index_(VarType_ var) noexcept;
+        constexpr static std::size_t to_end_index_(VarType_ last_var) noexcept;
 
 public:
     using typename superclass_::identity_var_type;
@@ -52,11 +52,8 @@ namespace oct {
 
 template <typename SubClass, typename ValueType, typename ValueLimits>
 template <typename VarType_, typename>
-constexpr std::size_t dbm_base_<SubClass, ValueType, ValueLimits>::to_end_index_(VarType_ var) noexcept {
-    auto diff_var = to_octdiff(var);
-    return diff_var.positive() // Goes to the next positive (that is the end variable if negative-coerced var is the last)
-           ? diff_var.to_incremented(2).to_index() // Var is positive, needs 2 increments in octdiff space instead of one
-           : diff_var.to_incremented().to_index();
+constexpr std::size_t dbm_base_<SubClass, ValueType, ValueLimits>::to_end_index_(VarType_ last_var) noexcept {
+    return to_octdiff(last_var).normalize().increment(2).to_index();
 };
 
 template <typename SubClass, typename ValueType, typename ValueLimits>
