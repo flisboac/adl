@@ -59,6 +59,10 @@ adl_BEGIN_ROOT_MODULE
 namespace oct {
 namespace cpu {
 
+inline std::shared_ptr<async_context> async_context::make() {
+    return std::make_shared<async_context>();
+}
+
 } // namespace cpu
 } // namespace oct
 adl_END_ROOT_MODULE
