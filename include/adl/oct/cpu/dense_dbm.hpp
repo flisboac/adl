@@ -78,6 +78,8 @@ public:
             dbm_major major = default_major);
 
     std::size_t size() const noexcept;
+    context_type const& context() const;
+    context_type & context();
 
     void initialize(constant_type value);
     void resize(octdiff_var new_last_var, constant_type value = value_limits::top());
@@ -88,6 +90,7 @@ public:
 
 private:
     container_type_ data_;
+    context_type * context_;
 };
 
 template <typename ValueType, typename ValueLimits>
@@ -121,7 +124,7 @@ dense_dbm<ContextType, ValueType, ValueLimits>::default_constant() noexcept {
 
 template <typename ContextType, typename ValueType, typename ValueLimits>
 inline dense_dbm<ContextType, ValueType, ValueLimits>::dense_dbm()
-    : superclass_(default_major) {};
+    : superclass_(default_major), context_(nullptr) {};
 
 template <typename ContextType, typename ValueType, typename ValueLimits>
 template <typename ValueType_, typename ValueLimits_, typename>
@@ -131,7 +134,7 @@ inline dense_dbm<ContextType, ValueType, ValueLimits>::dense_dbm(
     octdiff_system<ValueType_, ValueLimits_> const& rhs,
     ValueType_ default_value,
     dbm_major major
-) : superclass_(major) {
+) : superclass_(major), context_(&context) {
     resize(rhs.vars().last_var(), default_value);
     for (auto& cons : rhs) {
         auto vexpr = cons.to_identity_vexpr();
@@ -147,7 +150,7 @@ inline dense_dbm<ContextType, ValueType, ValueLimits>::dense_dbm(
     VarType_ last_var,
     ValueType_ value,
     dbm_major major
-) : superclass_(major) {
+) : superclass_(major), context_(&context) {
     resize(last_var, value);
 };
 

@@ -10,6 +10,10 @@
 #include "adl/oct.fwd.hpp"
 #include "adl/oct/oper.hpp"
 #include "adl/oct/limits.hpp"
+
+#include "adl/oct/context/traits.hpp"
+#include "adl/oct/context/context_base_.hpp"
+
 #include "adl/oct/dbm/traits.hpp"
 
 //
@@ -17,77 +21,29 @@
 //
 adl_BEGIN_ROOT_MODULE
 namespace oct {
+
+template <>
+struct context_traits<cpu::async_context> {
+
+    template <template <typename, typename, typename> class DbmClass,
+            typename ValueType,
+            typename ValueLimits = value_limits<ValueType>>
+        using dbm_type = std::shared_ptr<DbmClass<cpu::async_context, ValueType, ValueLimits>>;
+};
+
 namespace cpu {
 
-class async_context {
+class async_context : public context_base_<async_context>, public std::enable_shared_from_this<async_context> {
 private:
     async_context() = default;
 
 public:
-    static async_context make();
+    static std::shared_ptr<async_context> make();
 
     async_context(async_context const&) = delete;
     async_context(async_context&&) noexcept = default;
     async_context& operator=(async_context const&) = delete;
     async_context& operator=(async_context&&) noexcept = default;
-
-    template <template <typename, typename, typename> class DbmClass,
-            typename ValueType,
-            typename ValueLimits = value_limits<ValueType>,
-            typename VarType = oct_var,
-            typename = common_var_t<VarType>>
-        std::shared_ptr<DbmClass<async_context, ValueType, ValueLimits>> make_dbm(
-            VarType last_var,
-            dbm_major major = DbmClass<async_context, ValueType, ValueLimits>::default_major);
-
-    template <template <typename, typename, typename> class DbmClass,
-            typename ValueType,
-            typename ValueLimits = value_limits<ValueType>,
-            typename VarType = oct_var,
-            typename = common_var_t<VarType>>
-        std::shared_ptr<DbmClass<async_context, ValueType, ValueLimits>> make_dbm(
-            VarType last_var,
-            ValueType default_value,
-            dbm_major major = DbmClass<async_context, ValueType, ValueLimits>::default_major);
-
-    template <template <typename, typename, typename> class DbmClass,
-            typename ValueType,
-            typename ValueLimits = value_limits<ValueType>,
-            typename VarType = oct_var,
-            typename = common_var_t<VarType>>
-        std::shared_ptr<DbmClass<async_context, ValueType, ValueLimits>> make_dbm(
-            octdiff_system<ValueType, VarType> system,
-            dbm_major major = DbmClass<async_context, ValueType, ValueLimits>::default_major);
-
-    template <template <typename, typename, typename> class DbmClass,
-            typename ValueType,
-            typename ValueLimits = value_limits<ValueType>,
-            typename VarType = oct_var,
-            typename = common_var_t<VarType>>
-        std::shared_ptr<DbmClass<async_context, ValueType, ValueLimits>> make_dbm(
-            octdiff_system<ValueType, VarType> system,
-            ValueType default_value,
-            dbm_major major = DbmClass<async_context, ValueType, ValueLimits>::default_major);
-
-    template <template <typename, typename> class OperClass,
-            typename DbmType = void,
-            typename... Args>
-        std::enable_if_t<
-            std::is_constructible<
-                OperClass<DbmType, async_context>,
-                std::shared_ptr<async_context>, std::shared_ptr<DbmType>, Args...>::value,
-            OperClass<DbmType, async_context>>
-        make_oper(std::shared_ptr<DbmType> dbm, Args... args);
-
-    template <template <typename, typename> class OperClass,
-            typename DbmType = void,
-            typename... Args>
-        std::enable_if_t<
-            std::is_constructible<
-                OperClass<DbmType, async_context>,
-                std::shared_ptr<async_context>, std::shared_ptr<DbmType const>, Args...>::value,
-            OperClass<DbmType, async_context>>
-        make_oper(std::shared_ptr<DbmType const> dbm, Args... args);
 };
 
 } // namespace cpu

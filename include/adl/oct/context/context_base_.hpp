@@ -26,47 +26,67 @@ class context_base_ {
 private:
     using subclass_ = SubClass;
 
+public:
+    using context_traits = oct::context_traits<subclass_>;
+    template <
+            template <typename, typename, typename> class DbmClass,
+            typename ValueType,
+            typename ValueLimits = value_limits<ValueType>>
+        using dbm_type = typename context_traits::template dbm_type<DbmClass, ValueType, ValueLimits>;
+
+    template <template <typename, typename, typename> class DbmClass,
+            typename ValueType,
+            typename ValueLimits = value_limits<ValueType>,
+            typename = std::enable_if_t<
+                std::is_constructible<DbmClass<subclass_, ValueType, ValueLimits>,
+                    dbm_tags::create_from_last_var_tag, subclass_&, octdiff_var, ValueType, dbm_major>::value>>
+        using dense_dbm_return_type = dbm_type<DbmClass, ValueType, ValueLimits>;
+
+    template <template <typename, typename, typename> class DbmClass,
+            typename ValueType,
+            typename ValueLimits = value_limits<ValueType>,
+            typename = std::enable_if_t<
+                std::is_constructible<DbmClass<subclass_, ValueType, ValueLimits>,
+                    dbm_tags::create_from_last_var_tag, subclass_&, octdiff_var, ValueType>::value>>
+        using default_dbm_return_type = dbm_type<DbmClass, ValueType, ValueLimits>;
+
     context_base_() = default;
     context_base_(context_base_ const&) = delete;
     context_base_(context_base_ &&) noexcept = default;
     context_base_& operator=(context_base_ const&) = delete;
     context_base_& operator=(context_base_ &&) noexcept = default;
 
+    //
+    // DENSE-LIKE DBM FACTORY FUNCTIONS
+    //
+
     template <template <typename, typename, typename> class DbmClass,
             typename ValueType,
-            typename ValueLimits = value_limits<ValueType>,
-            typename VarType = oct_var,
-            typename = std::enable_if_t<
-                common_var<VarType>::valid
-                && std::is_constructible<DbmClass<subclass_, ValueType, ValueLimits>,
-                    dbm_tags::create_from_last_var_tag, subclass_&, VarType, ValueType, dbm_major>::value>>
-    DbmClass<subclass_, ValueType, ValueLimits> make_dbm(
-        VarType last_var,
-        dbm_major major = DbmClass<subclass_, ValueType, ValueLimits>::default_major
+            typename ValueLimits = value_limits<ValueType>>
+    dense_dbm_return_type<DbmClass, ValueType, ValueLimits> make_dbm(
+        octdiff_var last_var,
+        dbm_major major
     ) {
-        return DbmClass<subclass_, ValueType, ValueLimits>(
+        using return_type_ = dense_dbm_return_type<DbmClass, ValueType, ValueLimits>;
+        return return_type_(
             dbm_tags::create_from_last_var_tag(),
             this->as_subclass_(),
             last_var,
-            DbmClass<subclass_, ValueType, ValueLimits>::default_constant(),
+            return_type_::default_constant(),
             major
         );
     }
 
     template <template <typename, typename, typename> class DbmClass,
             typename ValueType,
-            typename ValueLimits = value_limits<ValueType>,
-            typename VarType = oct_var,
-            typename = std::enable_if_t<
-                common_var<VarType>::valid
-                && std::is_constructible<DbmClass<subclass_, ValueType, ValueLimits>,
-                    dbm_tags::create_from_last_var_tag, subclass_&, VarType, ValueType, dbm_major>::value>>
-    DbmClass<subclass_, ValueType, ValueLimits> make_dbm(
-            VarType last_var,
-            ValueType default_value,
-            dbm_major major = DbmClass<subclass_, ValueType, ValueLimits>::default_major
+            typename ValueLimits = value_limits<ValueType>>
+    dense_dbm_return_type<DbmClass, ValueType, ValueLimits> make_dbm(
+        octdiff_var last_var,
+        ValueType default_value,
+        dbm_major major
     ) {
-        return DbmClass<subclass_, ValueType, ValueLimits>(
+        using return_type_ = dense_dbm_return_type<DbmClass, ValueType, ValueLimits>;
+        return return_type_(
             dbm_tags::create_from_last_var_tag(),
             this->as_subclass_(),
             last_var,
@@ -77,36 +97,31 @@ private:
 
     template <template <typename, typename, typename> class DbmClass,
             typename ValueType,
-            typename ValueLimits = value_limits<ValueType>,
-            typename = std::enable_if_t<
-                std::is_constructible<DbmClass<subclass_, ValueType, ValueLimits>,
-                    dbm_tags::create_from_octdiff_system_tag, subclass_&, octdiff_system<ValueType, ValueLimits> const&, ValueType, dbm_major>::value>>
-    DbmClass<subclass_, ValueType, ValueLimits> make_dbm(
-            octdiff_system<ValueType, ValueLimits> system,
-            dbm_major major = DbmClass<subclass_, ValueType, ValueLimits>::default_major
+            typename ValueLimits = value_limits<ValueType>>
+    dense_dbm_return_type<DbmClass, ValueType, ValueLimits> make_dbm(
+        octdiff_system<ValueType, ValueLimits> system,
+        dbm_major major
     ) {
-        return DbmClass<subclass_, ValueType, ValueLimits>(
+        using return_type_ = dense_dbm_return_type<DbmClass, ValueType, ValueLimits>;
+        return return_type_(
             dbm_tags::create_from_octdiff_system_tag(),
             this->as_subclass_(),
             system,
-            DbmClass<subclass_, ValueType, ValueLimits>::default_constant(),
+            return_type_::default_constant(),
             major
         );
     }
 
     template <template <typename, typename, typename> class DbmClass,
             typename ValueType,
-            typename ValueLimits = value_limits<ValueType>,
-            typename VarType = oct_var,
-            typename = std::enable_if_t<
-                std::is_constructible<DbmClass<subclass_, ValueType, ValueLimits>,
-                    dbm_tags::create_from_octdiff_system_tag, subclass_&, octdiff_system<ValueType, ValueLimits> const&, ValueType, dbm_major>::value>>
-    DbmClass<subclass_, ValueType, ValueLimits> make_dbm(
-            octdiff_system<ValueType, VarType> system,
-            ValueType default_value,
-            dbm_major major = DbmClass<subclass_, ValueType, ValueLimits>::default_major
+            typename ValueLimits = value_limits<ValueType>>
+    dense_dbm_return_type<DbmClass, ValueType, ValueLimits> make_dbm(
+        octdiff_system<ValueType, ValueLimits> system,
+        ValueType default_value,
+        dbm_major major
     ) {
-        return DbmClass<subclass_, ValueType, ValueLimits>(
+        using return_type_ = dense_dbm_return_type<DbmClass, ValueType, ValueLimits>;
+        return return_type_(
             dbm_tags::create_from_octdiff_system_tag(),
             this->as_subclass_(),
             system,
@@ -114,6 +129,77 @@ private:
             major
         );
     }
+
+    //
+    // GENERIC (NON-DENSE-LIKE) DBM FACTORY FUNCTIONS
+    //
+
+
+    template <template <typename, typename, typename> class DbmClass,
+            typename ValueType,
+            typename ValueLimits = value_limits<ValueType>>
+    default_dbm_return_type<DbmClass, ValueType, ValueLimits> make_dbm(
+        octdiff_var last_var
+    ) {
+        using return_type_ = default_dbm_return_type<DbmClass, ValueType, ValueLimits>;
+        return return_type_(
+            dbm_tags::create_from_last_var_tag(),
+            this->as_subclass_(),
+            last_var,
+            return_type_::default_constant()
+        );
+    }
+
+    template <template <typename, typename, typename> class DbmClass,
+            typename ValueType,
+            typename ValueLimits = value_limits<ValueType>>
+    default_dbm_return_type<DbmClass, ValueType, ValueLimits> make_dbm(
+        octdiff_var last_var,
+        ValueType default_value
+    ) {
+        using return_type_ = default_dbm_return_type<DbmClass, ValueType, ValueLimits>;
+        return return_type_(
+            dbm_tags::create_from_last_var_tag(),
+            this->as_subclass_(),
+            last_var,
+            default_value
+        );
+    }
+
+    template <template <typename, typename, typename> class DbmClass,
+            typename ValueType,
+            typename ValueLimits = value_limits<ValueType>>
+    default_dbm_return_type<DbmClass, ValueType, ValueLimits> make_dbm(
+        octdiff_system<ValueType, ValueLimits> system
+    ) {
+        using return_type_ = default_dbm_return_type<DbmClass, ValueType, ValueLimits>;
+        return return_type_(
+            dbm_tags::create_from_octdiff_system_tag(),
+            this->as_subclass_(),
+            system,
+            return_type_::default_constant()
+        );
+    }
+
+    template <template <typename, typename, typename> class DbmClass,
+            typename ValueType,
+            typename ValueLimits = value_limits<ValueType>>
+    default_dbm_return_type<DbmClass, ValueType, ValueLimits> make_dbm(
+        octdiff_system<ValueType, ValueLimits> system,
+        ValueType default_value
+    ) {
+        using return_type_ = default_dbm_return_type<DbmClass, ValueType, ValueLimits>;
+        return return_type_(
+            dbm_tags::create_from_octdiff_system_tag(),
+            this->as_subclass_(),
+            system,
+            default_value
+        );
+    }
+
+    //
+    // OPERATOR FACTORY FUNCTIONS
+    //
 
     template <template <typename, typename> class OperClass,
             typename DbmType = void,
@@ -145,6 +231,26 @@ private:
 };
 
 }
+adl_END_ROOT_MODULE
+
+
+//
+// [[ TEMPLATE IMPLEMENTATION ]]
+//
+adl_BEGIN_ROOT_MODULE
+namespace oct {
+
+template <typename SubClass>
+inline typename context_base_<SubClass>::subclass_ const& context_base_<SubClass>::as_subclass_() const noexcept {
+    return static_cast<subclass_&>(*this);
+}
+
+template <typename SubClass>
+inline typename context_base_<SubClass>::subclass_& context_base_<SubClass>::as_subclass_() noexcept {
+    return static_cast<subclass_&>(*this);
+}
+
+} // namespace oct
 adl_END_ROOT_MODULE
 
 #endif // adl__oct__context__context_base___hpp__

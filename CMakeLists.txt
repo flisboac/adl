@@ -119,6 +119,12 @@ target_sources(${api} INTERFACE
     "${api_dir_root}/adl/oct/dbm/dbm_base_.hpp"
     "${api_dir_root}/adl/oct/dbm/dense_dbm_base_.hpp"
 
+    # adl/oct/context
+
+    "${api_dir_root}/adl/oct/context.hpp"
+    "${api_dir_root}/adl/oct/context/traits.hpp"
+    "${api_dir_root}/adl/oct/context/context_base_.hpp"
+
     #adl/oct/cpu
     "${api_dir_root}/adl/oct/cpu.hpp"
     "${api_dir_root}/adl/oct/cpu/oper_base_.hpp"

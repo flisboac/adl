@@ -151,6 +151,16 @@ template <typename Subclass, typename ValueType, typename ValueLimits = value_li
 template <typename ValueType, typename ValueLimits = value_limits<ValueType>, typename Allocator = std::allocator<ValueType>> class dense_dbm;
 
 //
+// context.hpp
+//
+
+// context/traits.hpp
+template <typename ContextType> struct context_traits;
+
+// context/context_base_.hpp
+template <typename SubClass> class context_base_;
+
+//
 // cpu.hpp
 //
 namespace cpu {

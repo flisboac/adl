@@ -83,12 +83,6 @@ static void require_dbm_values_(
     require_dbm_values_(dbm, [value](ValueType v, octdiff_var, octdiff_var) -> bool { return value == v; });
 }
 
-template <typename ValueType, typename VarType>
-static octdiff_system<ValueType> make_diff_system_(basic_oct_cons<ValueType, VarType> cons) {
-    oct_system<ValueType> system = { cons };
-    return system.to_counterpart();
-};
-
 static void test_dbm_creation_by_size_(cpu::seq_context & seq_ctx) {
     constexpr auto size_var = 100_ov;
     constexpr auto last_var = -size_var;
@@ -112,7 +106,7 @@ static void test_dbm_creation_by_size_(cpu::seq_context & seq_ctx) {
 }
 
 template <typename ValueType>
-static void do_test_dbm_by_cons_(cpu::seq_context & seq_ctx, oct_cons<ValueType> cons) {
+static void do_test_dbm_by_cons_(cpu::seq_context & seq_ctx, oct_cons<ValueType> cons, dbm_major major) {
     const auto xi = cons.xi();
     const auto xj = cons.xj();
     const auto c = cons.c();
@@ -121,8 +115,9 @@ static void do_test_dbm_by_cons_(cpu::seq_context & seq_ctx, oct_cons<ValueType>
     const auto di = split.di(), dj = split.dj();
     const auto last_var = -to_octdiff(xi.compare(xj) >= 0 ? xi : xj).normalize();
     const auto initial_value = c2 + 13;
-    const auto diff_system = make_diff_system_(cons);
-    const auto dbm = seq_ctx.make_dbm<cpu::dense_dbm>(diff_system, initial_value);
+    const oct_system<ValueType> system = { cons };
+    const auto diff_system = system.to_counterpart();
+    const auto dbm = seq_ctx.make_dbm<cpu::dense_dbm>(diff_system, initial_value, major);
     const std::size_t index_di = di.xi().to_index() * dbm.size() + di.xj().to_index();
     const std::size_t index_dj = dj.valid() ? dj.xi().to_index() * dbm.size() + dj.xj().to_index() : 0;
 
@@ -163,11 +158,19 @@ static void test_dbm_creation_by_conversion_(cpu::seq_context & seq_ctx) {
     constexpr auto xj = 2_ov;
     constexpr auto c = 10.4;
 
-    SECTION("Making system from constraint:  xi - xj <= c") { do_test_dbm_by_cons_(seq_ctx,  xi - xj <= c); }
-    SECTION("Making system from constraint:  xi + xj <= c") { do_test_dbm_by_cons_(seq_ctx,  xi + xj <= c); }
-    SECTION("Making system from constraint: -xi - xj <= c") { do_test_dbm_by_cons_(seq_ctx, -xi - xj <= c); }
-    SECTION("Making system from constraint:  xi <= c")      { do_test_dbm_by_cons_(seq_ctx,  xi <= c); }
-    SECTION("Making system from constraint: -xi <= c")      { do_test_dbm_by_cons_(seq_ctx, -xi <= c); }
+    dbm_major majors[] = { dbm_major::row, dbm_major::col };
+
+    for (auto major : majors) {
+        std::string base_msg =
+            std::string("With ")
+            + (major == dbm_major::row ? "row" : "column")
+            + "-major DBM, ";
+        SECTION(base_msg + "testing constraint:  xi - xj <= c")      { do_test_dbm_by_cons_(seq_ctx,  xi - xj <= c, major); }
+        SECTION(base_msg + "testing constraint:  xi + xj <= c")      { do_test_dbm_by_cons_(seq_ctx,  xi + xj <= c, major); }
+        SECTION(base_msg + "testing from constraint: -xi - xj <= c") { do_test_dbm_by_cons_(seq_ctx, -xi - xj <= c, major); }
+        SECTION(base_msg + "testing constraint:  xi <= c")           { do_test_dbm_by_cons_(seq_ctx,  xi <= c, major); }
+        SECTION(base_msg + "testing constraint: -xi <= c")           { do_test_dbm_by_cons_(seq_ctx, -xi <= c, major); }
+    }
 }
 
 TEST_CASE("unit:adl/oct/cpu/dense_dbm.hpp", "[unit][adl][adl/oct][adl/oct/cpu]") {
