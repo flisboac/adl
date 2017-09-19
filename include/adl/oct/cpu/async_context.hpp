@@ -36,6 +36,7 @@ namespace cpu {
 class async_context : public context_base_<async_context>, public std::enable_shared_from_this<async_context> {
 private:
     async_context() = default;
+    struct pimpl;
 
 public:
     static std::shared_ptr<async_context> make();
@@ -45,6 +46,8 @@ public:
     async_context& operator=(async_context const&) = delete;
     async_context& operator=(async_context&&) noexcept = default;
 };
+
+struct async_context::pimpl : public async_context {};
 
 } // namespace cpu
 } // namespace oct
@@ -60,7 +63,7 @@ namespace oct {
 namespace cpu {
 
 inline std::shared_ptr<async_context> async_context::make() {
-    return std::make_shared<async_context>();
+    return std::make_shared<pimpl>();
 }
 
 } // namespace cpu

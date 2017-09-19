@@ -108,9 +108,6 @@ target_sources(${api} INTERFACE
     "${api_dir_root}/adl/oct/system/octdiff_system_.hpp"
 
     # adl/oct/oper
-    "${api_dir_root}/adl/oct/context/context_base_.hpp"
-
-    # adl/oct/oper
     "${api_dir_root}/adl/oct/oper.hpp"
 
     # adl/oct/dbm
@@ -120,7 +117,6 @@ target_sources(${api} INTERFACE
     "${api_dir_root}/adl/oct/dbm/dense_dbm_base_.hpp"
 
     # adl/oct/context
-
     "${api_dir_root}/adl/oct/context.hpp"
     "${api_dir_root}/adl/oct/context/traits.hpp"
     "${api_dir_root}/adl/oct/context/context_base_.hpp"

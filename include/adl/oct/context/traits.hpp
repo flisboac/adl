@@ -2,7 +2,6 @@
 /**
  * @file traits.hpp.hpp
  */
-#pragma once
 #ifndef adl__oct__context__traits__hpp__
 #define adl__oct__context__traits__hpp__
 
