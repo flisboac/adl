@@ -12,12 +12,243 @@
 #include <system_error>
 #include <memory>
 #include "adl/std/optional.hpp"
+#include "adl/std/any.hpp"
 
 #include "adl/error.fwd.hpp"
 
 #include "adl/config.hpp"
 #include "adl/intl.hpp"
 
+//
+// [[ API ]]
+//
+adl_BEGIN_ROOT_MODULE
+
+//
+// Enumerations
+//
+
+enum class errk : error_id_type {
+    warning = -2,
+    ok = 0,
+    error,
+    exception
+};
+
+enum class error_stack_mode : error_id_type {
+    dynamic,       // Grows stack as needed
+    ignore_excess, // fixed size, ignores any calls to push when the stack is full
+    overwrite_top, // fixed size, same as ignore_excess, but overwrites top when pushing
+    reject         // rejects a new stack entry when the stack size reaches its predefined limit
+};
+
+//
+// Classes
+//
+
+
+class adl_CLASS library_error_kind_category : public error_category {
+private:
+    using superclass_ = error_category;
+public:
+    virtual ~library_error_kind_category() {}
+    virtual char const* name() const noexcept;
+    virtual std::string message(int value) const;
+};
+
+class adl_CLASS exception_root : public std::exception {
+private:
+    using superclass_ = std::exception;
+
+public:
+    exception_root(exception_root const& rhs) noexcept = default;
+    exception_root& operator=(exception_root const&) noexcept = default;
+    virtual ~exception_root() {}
+
+    exception_root(error_code code) noexcept;
+
+    error_code code() const noexcept;
+    virtual std::string message() const noexcept;
+
+private:
+    error_code code_;
+};
+
+class adl_CLASS exception : public exception_root {
+private:
+    using superclass_ = exception_root;
+public:
+    using exception_root::exception_root;
+};
+
+class adl_CLASS error : public exception_root {
+private:
+    using superclass_ = exception_root;
+public:
+    using exception_root::exception_root;
+};
+
+template <typename SubClass, typename EnumType, typename BaseExceptionType>
+struct error_traits_base : public std::true_type {
+	using enum_type = EnumType;
+	using base_exception_type = BaseExceptionType;
+
+protected:
+	template <enum_type ErrorCode, typename ExceptionType = base_exception_type>
+	struct code_traits_base {
+		constexpr static const enum_type code = ErrorCode;
+		using exception_type = ExceptionType;
+	};
+
+public:
+	template <enum_type ErrorCode>
+	struct code_traits : public code_traits_base<ErrorCode> {};
+};
+
+template <typename EnumType>
+struct error_traits : public std::false_type {};
+
+class error_entry {
+public:
+    std::error_code code() const noexcept;
+    std::size_t call_level() const noexcept;
+    any info() const noexcept;
+    template <typename ValueType> ValueType info_to() const;
+
+private:
+    std::error_code code_;
+    std::size_t call_level_;
+    any info_;
+};
+
+class error_context {
+public:
+    error_context(error_context const&) = default;
+    error_context& operator=(error_context const&) = default;
+    error_context(error_stack& stack) noexcept;
+
+    std::size_t call_level() const noexcept;
+    error_stack const& stack() const;
+    error_stack const* stack_ptr() const noexcept;
+
+    template <
+        typename ErrorEnum,
+        ErrorEnum ErrorCode,
+        typename = std::enable_if_t<is_error_code_enum<ErrorEnum>::value>,
+        typename... Args>
+    error_context& push(Args... args);
+
+    template <typename ReturnType>
+    ReturnType& result(ReturnType& value);
+
+    template <typename ReturnType>
+    ReturnType const& result(ReturnType const& value);
+
+    template <typename ReturnType>
+    ReturnType result(ReturnType&& value);
+
+    template <typename ReturnType, typename... Args>
+    ReturnType make_result(Args... args);
+
+    template <
+        typename ErrorEnum,
+        ErrorEnum ErrorCode,
+        typename = std::enable_if_t<is_error_code_enum<ErrorEnum>::value>,
+        typename... Args>
+    [[noreturn]] void raise(Args... args) noexcept(false);
+
+private:
+    std::size_t call_level_ = 0;
+    error_stack* stack_ = nullptr;
+};
+
+class error_stack {
+public:
+    virtual ~error_stack() {}
+
+    bool empty() const noexcept { return this->size() == 0; }
+    virtual std::size_t size() const noexcept = 0;
+    virtual error_entry const& top() const noexcept = 0;
+    virtual error_entry const& root() const noexcept = 0;
+    virtual bool can_push() const noexcept = 0;
+
+    virtual void push(error_entry entry) = 0;
+};
+
+template <typename Allocator>
+class basic_dynamic_error_stack : public error_stack {
+public:
+    basic_dynamic_error_stack() = default;
+    basic_dynamic_error_stack(basic_dynamic_error_stack const&) = default;
+    basic_dynamic_error_stack(basic_dynamic_error_stack &&) noexcept = default;
+    basic_dynamic_error_stack& operator=(basic_dynamic_error_stack const&) = default;
+    basic_dynamic_error_stack& operator=(basic_dynamic_error_stack &&) noexcept = default;
+
+    explicit basic_dynamic_error_stack(std::size_t initial_capacity, error_stack_mode mode = error_stack_mode::dynamic);
+
+    std::size_t size() const noexcept;
+    error_entry const& top() const noexcept;
+    error_entry const& root() const noexcept;
+    bool can_push() const noexcept;
+
+    void push(error_entry entry);
+
+private:
+    error_stack_mode mode_;
+    std::size_t capacity_;
+    std::vector<error_entry, Allocator> data_;
+};
+
+class single_error_stack : public error_stack {
+public:
+    std::size_t size() const noexcept;
+    error_entry const& top() const noexcept;
+    error_entry const& root() const noexcept;
+    bool can_push() const noexcept;
+
+protected:
+    void push(error_entry entry);
+
+private:
+    bool assigned_;
+    error_entry entry_;
+};
+
+class throwing_error_stack : public error_stack {
+public:
+    std::size_t size() const noexcept;
+    error_entry const& top() const noexcept;
+    error_entry const& root() const noexcept;
+    bool can_push() const noexcept;
+
+    void push(error_entry entry);
+};
+
+//
+// FUNCTIONS
+//
+
+
+template <typename EnumType, EnumType ErrorCode, typename... Args>
+std::enable_if_t<
+	std::is_constructible<exception_t<EnumType, ErrorCode>, EnumType, Args...>::value,
+	exception_t<EnumType, ErrorCode>>
+exception_for(Args... args) {
+	return exception_t<EnumType, ErrorCode>(ErrorCode, args...);
+}
+
+template <typename EnumType, EnumType ErrorCode, typename... Args>
+std::enable_if_t<
+	std::is_constructible<exception_t<EnumType, ErrorCode>, std::error_code, Args...>::value,
+	exception_t<EnumType, ErrorCode>>
+exception_for(Args... args) {
+	return exception_t<EnumType, ErrorCode>(make_error_code(ErrorCode), args...);
+}
+
+
+adl_END_ROOT_MODULE
+
+#if 0
 
 //
 // [[ API ]]
@@ -352,5 +583,7 @@ namespace std {
 adl_BEGIN_ROOT_MODULE
 
 adl_END_ROOT_MODULE
+
+#endif
 
 #endif // adl__error_info__hpp__

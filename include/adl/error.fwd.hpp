@@ -7,37 +7,51 @@
 
 
 #include <type_traits>
+#include <tuple>
 #include <system_error>
 
 #include "adl.cfg.hpp"
-
+#include "adl/std/any.hpp"
 
 adl_BEGIN_ROOT_MODULE
 
+using std::error_code;
+using std::error_condition;
+using std::make_error_code;
+using std::make_error_condition;
+using std::is_error_condition_enum;
+using std::is_error_code_enum;
+
+enum class error_stack_mode;
+
 using error_id_type = int;
 
-enum class errk;       // error_condition, used to throw exceptions when needed
-enum class err; // error_code (usage of std::errc is temporary! I hope...)
+enum class errk; // conceptually, this is an error_condition, but called error_kind instead to indicate a common ground
 
-using error_kind = std::error_condition; // Probably won't change
-using error_id = std::error_code; // Probably won't change
-using error_info = error_id; // Complements error_id, cannot be made for error_kind, to be extended in the future
+// No more adl::err. Or at least not a "universal" one.
+// Each module will have its own error_code enum, or something similar.
 
 using error_category = std::error_category;
-    class library_error_code_category;
-    class external_error_code_category;     // external_code_category()
     class library_error_kind_category; // kind_category()
 
-class exception;
-    class client_exception;
-    class internal_exception;
+class exception_root;
+    class exception;  // conceptually similar to std::logic_exception, or java.lang.Exception
+    class error;      // Conceptually similar to std::runtime_exception, or java.lang.Error
 
-// Utility typedefs
+template <typename SubClass, typename EnumType, typename BaseExceptionType = std::system_error> struct error_traits_base;
+template <typename EnumType> struct error_traits;
 
-template <typename T> using is_error_id_enum = std::is_error_code_enum<T>;
-template <typename T> using is_error_id_enum_t = std::enable_if_t<is_error_id_enum<T>::value, T>;
-template <typename T> using is_error_enum_t = std::enable_if_t<
-    std::is_error_condition_enum<T>::value || std::is_error_code_enum<T>::value || is_error_id_enum<T>::value, T>;
+template <typename EnumType> using base_exception_t = typename error_traits<EnumType>::base_exception_type;
+template <typename EnumType, EnumType ErrorCode> using exception_t = typename error_traits<EnumType>::template code_traits<ErrorCode>::exception_type;
+
+class error_context;
+
+class error_entry;
+class error_stack;
+    template <typename Allocator = std::allocator<error_entry>> class basic_dynamic_error_stack;
+    using dynamic_error_stack = basic_dynamic_error_stack<>;
+    class single_error_stack;
+    class throwing_error_stack;
 
 adl_END_ROOT_MODULE
 
