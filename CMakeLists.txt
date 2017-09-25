@@ -69,6 +69,8 @@ target_sources(${api} INTERFACE
     # adl/std
     "${api_dir_root}/adl/std/optional.hpp"
     "${api_dir_root}/adl/std/impl/optional.hpp"
+    "${api_dir_root}/adl/std/any.hpp"
+    "${api_dir_root}/adl/std/impl/any.hpp"
     "${api_dir_root}/adl/std/string_view.hpp"
 
     # adl/oct
