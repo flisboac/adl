@@ -4,10 +4,13 @@
 % ---
 
 \novosimbolo
-    {mypi} %label
-    {\ensuremath{\pi}} %symbol
-    {Pi} %name
-    {Razão entre a circunferência de um círculo e o seu diâmetro.} %brief
+    {rel} %label
+    {\ensuremath{\bowtie}} %symbol
+    {rel} %name
+    {
+        Um comparador ou operador de relação entre dois elementos quaisquer de 
+        um conjunto.
+    } %brief
 
 
 % ---
@@ -107,12 +110,9 @@
     {{Tecnologia da Informação}}
     {
         Em uma forma mais ampla, pode-se definir a Tecnologia da 
-        Informação 
-        como o conjunto de técnicas, atividades e soluções voltadas à 
-        gerência, 
-        geração, uso, acesso, segurança e transmissão de dados e 
-        informação por 
-        meios computacionais.
+        Informação como o conjunto de técnicas, atividades e soluções voltadas 
+        à gerência, geração, uso, acesso, segurança e transmissão de dados e 
+        informação por meios computacionais.
     }
 
 \novoacronimo
@@ -136,6 +136,16 @@
     {
         Vide seção \emph{\ref{introducao_sobre_criticidade}} (página 
         \pageref{introducao_sobre_criticidade}).
+    }
+
+\novadefinicaopl
+    {dominioAbstrato}
+    {domínio abstrato}
+    {domínios abstratos}
+    {
+        Domínio abstrato.
+        
+        \TODO{Melhor descrição para domínios abstratos.}
     }
 
 \novadefinicao
@@ -179,4 +189,51 @@
         com este significado específico. O uso desta expressão fica, portanto, 
         exclusiva à esta monografia, apenas para explicitar a diferença em 
         relação às terminologias que envolvem segurança da informação.
+    }
+
+\novadefinicaopl
+    {conjunto}
+    {conjunto}
+    {conjuntos}
+    {
+        Um conjunto é, em sua definição mais simples, uma coleção bem definida 
+        de elementos.
+    }
+
+\novadefinicaopl
+    {conjuntoOrdenado}
+    {conjunto ordenado}
+    {conjuntos ordenados}
+    {
+        Um \gls{conjunto}, definido por $(E, \rel)$, onde $E$ são os elementos 
+        e $\rel$ é um operador de relação entre os elementos, é dito 
+        \emph{ordenado} quando, para três elementos $a, b, c \in E$ ele atende 
+        a três propriedades: \textbf{reflexividade} ($a \rel a$), 
+        \textbf{antissimetria} (se $a \rel b$ e $b \rel a$, então $a = b$) e 
+        \textbf{transitividade} (se $a \rel b$ e $b \rel c$, então $a \rel c$).
+        
+        A questão da ordenação parcial ou total é em relação à aplicabilidade
+        do operador de relação a todos ou apenas alguns dos elementos do 
+        conjunto. Quando um conjunto é parcialmente ordenado, chamamos-o de 
+        \gls{poset}.
+    }
+
+\novadefinicaopl
+    {poset}
+    {poset}
+    {posets}
+    {
+        Do inglês \emph{partially-ordered sets}, ou conjuntos parcialmente 
+        ordenados. Veja \gls{conjuntoOrdenado}.
+    }
+
+\novadefinicaopl
+    {reticulado}
+    {reticulado}
+    {reticulados}
+    {
+        Um \gls{poset} $(L, \rel)$ é chamado de reticulado se todo par
+        de elementos ${a, b}$ de $L$ possui tanto uma menor cota superior de 
+        elementos, (LUB, \emph{lowest upper bound}, supremo) como uma maior 
+        cota inferior (GLB, \emph{greatest lower bound}, ínfimo).
     }

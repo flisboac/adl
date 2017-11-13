@@ -18,6 +18,7 @@
 \usepackage{microtype}          % para melhorias de justificação
 \usepackage{textcase}
 \usepackage[portuguese,colorinlistoftodos,shadow]{todonotes}
+\usepackage{graphicx}
 \usepackage[
     section=chapter,
     %numberedsection,
@@ -47,6 +48,7 @@
 % CONFIGURAÇÕES DE PACOTES
 % --- 
 
+\graphicspath{ {img/} }
 
 % Retira espaço extra obsoleto entre as frases.
 \frenchspacing 
@@ -89,7 +91,10 @@
 % Espaçamento entre linhas
 \renewcommand{\baselinestretch}{1.25}
 
-\setlist[itemize]{noitemsep,topsep=0pt}
+\setlist[itemize]{%
+    topsep=0pt,%
+    leftmargin=\dimexpr \parindent-1.0cm,%
+}
 \setlist[description]{topsep=0pt}
 
 % Glossários maldito
@@ -97,8 +102,16 @@
 \newcommand{\symboltype}{symbols}
 \newcommand{\glossarytype}{main}
 
-\defglsentryfmt[\acronymtype]{\dotuline{\mdseries{\emph{\glsgenentryfmt}}}}
-\defglsentryfmt[\glossarytype]{\dotuline{\emph{\glsgenentryfmt}}}
+\defglsentryfmt[\acronymtype]{%
+    %\dotuline{%
+        \mdseries{\emph{\glsgenentryfmt}}%
+    %}%
+}
+\defglsentryfmt[\glossarytype]{%
+    %\dotuline{%
+        \emph{\glsgenentryfmt}%
+    %}%
+}
 
 % Not working.
 %\renewcommand{\glossarymark}[1]{}

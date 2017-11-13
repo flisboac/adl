@@ -1,4 +1,19 @@
 
+@inproceedings{banterle_fast_2007,
+  title = {A Fast Implementation of the Octagon Abstract Domain on Graphics Hardware},
+  abstract = {We propose an efficient implementation of the Octagon Abstract Domain (OAD) on Graphics Processing Unit (GPU) by exploiting stream processing to speed-up OAD computations. OAD is a relational numerical abstract domain which approximates invariants as conjunctions of constraints of the form $\pm$x $\pm$ y $<$= c, where x and y are program variables and c is a constant which can be an integer, rational or real. Since OAD computations are based on matrices, and basic matrix operators, they can be mapped easily on Graphics Hardware using texture and pixel shader in the form of a kernel that implements matrix operators. The main advantage of our implementation is that we can achieve sensible speed up by using a single GPU, for each OAD operation. This can be the basis for an efficient abstract program analyzer based on a mixed CPU-GPU architecture.},
+  timestamp = {2016-09-08T01:26:06Z},
+  urldate = {2016-09-04},
+  url = {http://link.springer.com/chapter/10.1007/978-3-540-74061-2_20},
+  booktitle = {International {{Static Analysis Symposium}}},
+  publisher = {{Springer}},
+  author = {Banterle, Francesco and Giacobazzi, Roberto},
+  year = {2007},
+  keywords = {_application,abstract interpretation,General Processing on GPU,Octagon Abstract Domain,Parallel Computing,Static Program Analysis},
+  pages = {315--332},
+  file = {banterle, giacobazzi - a fast implementation of the octagon abstract domain on graphics hardware (2007, springer).conference paper_3.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Academic/Concurrent Computing/banterle, giacobazzi - a fast implementation of the octagon abstract domain on graphics hardware (2007, springer).conference paper_3.pdf:application/pdf;banterle, giacobazzi - a fast implementation of the octagon abstract domain on graphics hardware (2007, springer).conference paper.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Academic/Concurrent Computing/banterle, giacobazzi - a fast implementation of the octagon abstract domain on graphics hardware (2007, springer).conference paper.pdf:application/pdf}
+}
+
 @inproceedings{chawdhary_simple_2014,
   title = {Simple and Efficient Algorithms for Octagons},
   abstract = {The numerical domain of Octagons can be viewed as an exercise in simplicity: it trades expressiveness for efficiency and ease of implementation. The domain can represent unary and dyadic constraints where the coefficients are +1 or -1, so called octagonal constraints, and comes with operations that have cubic complexity. The central operation is closure which computes a canonical form by deriving all implied octagonal constraints from a given octagonal system. This paper investigates the role of incrementality, namely closing a system where only one constraint has been changed, which is a dominating use-case. We present two new incremental algorithms for closure both of which are conceptually simple and computationally efficient, and argue their correctness.},
@@ -12,7 +27,8 @@
   year = {2014},
   keywords = {_model,abstract domains,Octagon domain,Satisfiability},
   pages = {296--313},
-  file = {chawdhary et al - simple and efficient algorithms for octagons (2014, springer).conference paper.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Academic/Formal Systems/chawdhary et al - simple and efficient algorithms for octagons (2014, springer).conference paper.pdf:application/pdf}
+  file = {chawdhary et al - simple and efficient algorithms for octagons (2014, springer).conference paper.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Academic/Formal Systems/chawdhary et al - simple and efficient algorithms for octagons (2014, springer).conference paper.pdf:application/pdf},
+  groups = {Abstract Interpretation}
 }
 
 @article{mine_octagon_2006,
@@ -28,7 +44,8 @@
   year = {2006},
   keywords = {_model,abstract interpretation,numerical abstract domains,relational numerical invariants,static analysis},
   pages = {31--100},
-  file = {mine - the octagon abstract domain (2006).journal article.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Academic/Formal Systems/Abstract Interpretation/mine - the octagon abstract domain (2006).journal article.pdf:application/pdf}
+  file = {mine - the octagon abstract domain (2006).journal article.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Academic/Formal Systems/Abstract Interpretation/mine - the octagon abstract domain (2006).journal article.pdf:application/pdf},
+  groups = {Abstract Interpretation}
 }
 
 @phdthesis{mine_weakly_2004,
@@ -42,87 +59,99 @@
   month = dec,
   year = {2004},
   keywords = {_model,abstract domains,abstract interpretation,Octagon domain},
-  file = {mine - weakly relational numerical abstract domains (2004, ecole normale superieure de paris, departement dinformatique).thesis.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Academic/Formal Systems/Abstract Interpretation/mine - weakly relational numerical abstract domains (2004, ecole normale superieure de paris, departement dinformatique).thesis.pdf:application/pdf}
+  file = {mine - weakly relational numerical abstract domains (2004, ecole normale superieure de paris, departement dinformatique).thesis.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Academic/Formal Systems/Abstract Interpretation/mine - weakly relational numerical abstract domains (2004, ecole normale superieure de paris, departement dinformatique).thesis.pdf:application/pdf},
+  groups = {Abstract Interpretation}
 }
 
-@article{wong_role_2009,
-  title = {The Role of Software in Recent Catastrophic Accidents},
-  abstract = {Software is increasingly used to monitor and control safety-critical devices and processes, in areas such as medicine, transportation, nuclear power generation, aeronautics, etc. Consequently however, an error in the software, or an error in its use, can have devastating effects that are not just financial, but can often also lead to the loss of life. In this article we review 15 recent catastrophic accidents and identify the roles that were played by software in causing them, as well as the useful lessons that can be learned from them.},
-  timestamp = {2016-11-29T03:33:36Z},
-  urldate = {2016-11-17},
-  url = {http://paris.utdallas.edu/IEEE-RS-ATR/document/2009/2009-17.pdf},
-  journal = {IEEE Reliability Society 2009 Annual Technology Report},
-  author = {Wong, W. Eric and Debroy, Vidroha and Restrepo, Andrew},
-  year = {2009},
-  keywords = {_survey,catastrophic accidents,safety-critical software systems,Software safety},
-  file = {wong et al - the role of software in recent catastrophic accidents (2009).journal article.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/wong et al - the role of software in recent catastrophic accidents (2009).journal article.pdf:application/pdf}
-}
-
-@inproceedings{wong_recent_2010,
-  title = {Recent {{Catastrophic Accidents}}: {{Investigating How Software}} Was {{Responsible}}},
-  isbn = {978-1-4244-7435-6},
-  shorttitle = {Recent {{Catastrophic Accidents}}},
-  doi = {10.1109/SSIRI.2010.38},
-  abstract = {Areas crucial to life such as medicine, transportation, nuclear-energy research and industry, aeronautics, and others, all make use of software in one way or another. However, the application of software to such domains means that the software may now become safety-critical such that an error in the software or an error in its use could have devastating consequences. This paper reviews 14 recent accidents, several of which resulted in the loss of life in addition to time and money, and identifies the role(s) that software played as an important causative factor. The useful lessons which can be learned from the accidents are also presented, which can then act as principles and guidelines to avoid the recurrence of similar accidents in the future.},
-  timestamp = {2016-11-29T03:33:36Z},
-  urldate = {2016-11-17},
-  url = {http://ieeexplore.ieee.org/document/5502861/},
-  publisher = {{IEEE}},
-  author = {Wong, W. Eric and Debroy, Vidroha and Surampudi, Adithya and Kim, HyeonJeong and Siok, Michael F.},
-  year = {2010},
-  keywords = {_survey,catastrophic accidents,mishaps,safety-critical software systems,Software safety},
-  pages = {14--22},
-  file = {wong et al - recent catastrophic accidents (2010, ieee).conference paper.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/wong et al - recent catastrophic accidents (2010, ieee).conference paper.pdf:application/pdf}
-}
-
-@article{pontes_contributions_2014,
-  title = {Contributions of Model Checking and {{CoFI}} Methodology to the Development of Space Embedded Software},
-  volume = {19},
-  issn = {1382-3256, 1573-7616},
-  doi = {10.1007/s10664-012-9215-y},
-  abstract = {The role of embedded software in the last space accidents highlights the importance of verification and validation techniques for the development of space embedded software. In this context, this work analyses the contribution of two verification techniques applied to the onboard data handling software of space products. The first technique is model checking. The system is modeled by a set of timed automata and the verification of safety and liveness properties is performed using UPPAAL model checker. The verified model is then used to generate the embedded software. The second technique analyzed in this work is model based approach for the generation of test cases. The Conformance and Fault Injection (CoFI) testing methodology is used to guide the development of a set of Finite State Machine (FSM) models from the software specification. The test suite is automatically generated from the FSM models. The contributions of the two methodologies are analyzed based on the results provided by an experiment. Two software products are used as case study, each one implementing two services of the Packet Utilization Standard (PUS). These services represent the functionalities offered by a satellite onboard data handling computer. One of the products is developed with the aid of model checking, while the other is developed according to the practices currently used at the Instituto Nacional de Pesquisas Espaciais (INPE). Both software products are tested by the CoFI methodology. The experiment highlights the advantages and vulnerable points of model checking. It also demonstrates that the main contribution of CoFI testing methodology is to highlight problems related to situations that have not been considered in the software specification, such as the occurrence of inopportune events. This analysis helps to understand how different techniques can be integrated in the design of critical embedded software.},
-  language = {en},
-  timestamp = {2016-11-29T03:33:36Z},
-  number = {1},
-  urldate = {2016-11-17},
-  url = {http://link.springer.com/10.1007/s10664-012-9215-y},
-  journal = {Empirical Software Engineering},
-  author = {Pontes, Rodrigo Pastl and V{\'e}ras, Paulo Claudino and Ambrosio, Ana Maria and Villani, Em{\'\i}lia},
-  month = feb,
-  year = {2014},
-  keywords = {_survey,Embedded software,Model based testing,Model checking,Packet Utilization Standard (PUS),Software verification,Space application,Verification},
-  pages = {39--68}
-}
-
-@article{zaminkar_customization_2016,
-  title = {Customization of {{Rational Unified Process}} ({{RUP}}) {{Methodology}} for {{Safety}}-{{Critical Systems}}},
+@article{bygde_abstract_2006,
+  title = {Abstract {{Interpretation}} and {{Abstract Domains}}: With Special Attention to the Congruence Domain},
   volume = {11},
-  issn = {1828-6011, 1828-6003},
-  doi = {10.15866/irecos.v11i6.9184},
-  abstract = {A model is presented here for the customization of RUP methodology in the critical safety systems. The RUP methodology is studied and applied as a reference for the customization. A  comprehensive study  for the  research and the identification  of the  critical safety systems is conducted. The expansion of critical  safety systems and their necessary  involvement in different phases and stages regarding product development is essential. There exists much methodology to expand safe software for safety-critical systems based on objective orientation, which can be used in  customization of  RUP. The  Eclipse Process  framework is  introduced for  the customization studied in the presented paper.},
-  timestamp = {2016-11-29T03:33:36Z},
-  number = {6},
-  urldate = {2016-11-17},
-  url = {http://www.praiseworthyprize.org/jsm/index.php?journal=irecos\&page=article\&op=view\&path[]=18950},
-  journal = {International Review on Computers and Software (IRECOS)},
-  author = {Zaminkar, Mina and Reshadinezhad, Mohammad Reza},
-  month = jun,
-  year = {2016},
-  keywords = {_model,Critical Safety Systems,Customization,IEC 61508 Standard,Safety Software,Sensitive-Safety},
-  pages = {566},
-  file = {zaminkar, reshadinezhad - customization of rational unified process (rup) methodology for safety-critical (2016).journal article.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/zaminkar, reshadinezhad - customization of rational unified process (rup) methodology for safety-critical (2016).journal article.pdf:application/pdf}
+  shorttitle = {Abstract {{Interpretation}} and {{Abstract Domains}}},
+  timestamp = {2016-11-29T16:14:26Z},
+  number = {5},
+  urldate = {2016-10-17},
+  url = {http://www.dsi.unive.it/~avp/domains.pdf},
+  journal = {Physical review letters},
+  author = {Bygde, Stefan},
+  year = {2006},
+  pages = {237},
+  file = {bygde - abstract interpretation and abstract domains (2006).journal article.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Unsorted/bygde - abstract interpretation and abstract domains (2006).journal article.pdf:application/pdf},
+  groups = {Abstract Interpretation}
 }
 
-@article{wears_safeware:_2008,
-  title = {``{{Safeware}}'': Safety-Critical Computing and Health Care Information Technology},
-  shorttitle = {``{{Safeware}}''},
-  abstract = {Information technology (IT) is highly promoted as a mechanism for advancing safety in health care. Ironically, little attention has been paid to the issues of safety in health care IT. Computer scientists have extensively studied the problem of assured performance in safety-critical computing systems. They have developed a conceptual approach and set of techniques for use in settings where incorrect or aberrant operation (or results from correct operation that are aberrant in context) might endanger users, the public, or the environment. However, these methods are not commonly used in health care IT, which generally has been developed without specific consideration of the special factors and unique requirements for safe operations. This article provides a brief introduction for health care professionals and informaticians to what has been called ``safeware,'' a comprehensive approach to hazard analysis, design, operation, and maintenance of both hardware and software systems. This approach considers the entire joint sociotechnical system (including its operators) over its entire lifecycle, from conception through operation and on to decommissioning. Adoption of safeware methods should enhance the trustworthiness of future health IT.},
-  timestamp = {2016-11-29T03:33:36Z},
-  urldate = {2016-11-18},
-  url = {http://www.ncbi.nlm.nih.gov/books/NBK43774/?report=reader},
-  author = {Wears, Robert L. and Leveson, Nancy G.},
+@inproceedings{cousot_abstract_1977,
+  title = {Abstract Interpretation: A Unified Lattice Model for Static Analysis of Programs by Construction or Approximation of Fixpoints},
+  shorttitle = {Abstract Interpretation},
+  timestamp = {2016-11-29T12:22:16Z},
+  urldate = {2016-11-29},
+  url = {http://dl.acm.org/citation.cfm?id=512973},
+  booktitle = {Proceedings of the 4th {{ACM SIGACT}}-{{SIGPLAN}} Symposium on {{Principles}} of Programming Languages},
+  publisher = {{ACM}},
+  author = {Cousot, Patrick and Cousot, Radhia},
+  year = {1977},
+  pages = {238--252},
+  file = {cousot, cousot - abstract interpretation (1977, acm).conference paper.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/Abstract Interpretation/cousot, cousot - abstract interpretation (1977, acm).conference paper.pdf:application/pdf},
+  groups = {Abstract Interpretation}
+}
+
+@book{boulanger_static_2012,
+  address = {London},
+  title = {{Static analysis of software: the abstract interpretation}},
+  isbn = {978-1-84821-320-3},
+  shorttitle = {{Static analysis of software}},
+  language = {und},
+  timestamp = {2016-11-29T12:29:57Z},
+  publisher = {{ISTE}},
+  editor = {Boulanger, Jean-Louis},
+  year = {2012},
+  note = {OCLC: 802530401},
+  keywords = {Computer software,Debugging in computer science,Quality control,Softwareentwicklung,Statische Analyse,Testing},
+  file = {Jean-Louis Boulanger-Static Analysis of Software_ The Abstract Interpretation-Wiley (2011).pdf:/home/flisboac/Downloads/Jean-Louis Boulanger-Static Analysis of Software_ The Abstract Interpretation-Wiley (2011).pdf:application/pdf},
+  groups = {Abstract Interpretation}
+}
+
+@misc{cousot_abstract_2008,
+  type = {Book},
+  title = {Abstract {{Interpretation}}},
+  timestamp = {2016-11-29T12:40:25Z},
+  urldate = {2016-11-29},
+  url = {http://www.di.ens.fr/~cousot/AI/},
+  journal = {Abstract Interpretation},
+  author = {Cousot, P.},
+  month = aug,
   year = {2008},
-  file = {wears, leveson - safeware (2008).journal article.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/wears, leveson - safeware (2008).journal article.pdf:application/pdf}
+  file = {Abstract Interpretation:/home/flisboac/Dropbox/Libraries/Zotero/Data/storage/J6I5HBIK/AI.html:text/html},
+  groups = {Abstract Interpretation}
+}
+
+@inproceedings{cousot_abstract_2000,
+  title = {Abstract Interpretation: {{Achievements}} and Perspectives},
+  shorttitle = {Abstract Interpretation},
+  timestamp = {2016-12-08T18:56:31Z},
+  urldate = {2016-12-08},
+  url = {https://pdfs.semanticscholar.org/99bb/7cd3415f173d837663f63fdb93c474228118.pdf},
+  booktitle = {Proceedings of the {{SSGRR}} 2000 {{Computer}} \& {{eBusiness International Conference}}},
+  author = {Cousot, Patrick},
+  year = {2000},
+  file = {cousot - abstract interpretation (2000).conference paper.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/Abstract Interpretation/cousot - abstract interpretation (2000).conference paper.pdf:application/pdf},
+  groups = {Abstract Interpretation}
+}
+
+@inproceedings{cousot_abstract_2014,
+  title = {Abstract Interpretation: Past, Present and Future},
+  isbn = {978-1-4503-2886-9},
+  shorttitle = {Abstract Interpretation},
+  doi = {10.1145/2603088.2603165},
+  language = {en},
+  timestamp = {2016-12-08T18:57:52Z},
+  urldate = {2016-12-08},
+  url = {http://dl.acm.org/citation.cfm?doid=2603088.2603165},
+  publisher = {{ACM Press}},
+  author = {Cousot, Patrick and Cousot, Radhia},
+  year = {2014},
+  pages = {1--10},
+  file = {cousot, cousot - abstract interpretation (2014, acm press).conference paper.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/Abstract Interpretation/cousot, cousot - abstract interpretation (2014, acm press).conference paper.pdf:application/pdf},
+  groups = {Abstract Interpretation}
 }
 
 @article{rushby_critical_1994,
@@ -143,7 +172,8 @@
   year = {1994},
   keywords = {_survey,_text,Critical Safety Systems,Software safety,Software taxonomy,Software verification},
   pages = {189--219},
-  file = {rushby - critical system properties (1994).journal article.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/rushby - critical system properties (1994).journal article.pdf:application/pdf}
+  file = {rushby - critical system properties (1994).journal article.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/rushby - critical system properties (1994).journal article.pdf:application/pdf},
+  groups = {Critical Systems}
 }
 
 @misc{sommerville_critical_2008,
@@ -154,7 +184,56 @@
   journal = {Systems, software and technology: Ian Sommerville's professional blog and website},
   author = {Sommerville, Ian},
   year = {2008},
-  file = {Critical systems:/home/flisboac/Dropbox/Libraries/Zotero/Data/storage/AAH4I2QS/CritSys.html:text/html}
+  file = {Critical systems:/home/flisboac/Dropbox/Libraries/Zotero/Data/storage/AAH4I2QS/CritSys.html:text/html},
+  groups = {Critical Systems}
+}
+
+@inproceedings{laprie_dependable_1985,
+  address = {Ann Arbor, MI},
+  title = {Dependable Computing and Fault Tolerance: {{Concepts}} and Terminology},
+  volume = {15},
+  shorttitle = {Dependable Computing and Fault Tolerance},
+  timestamp = {2016-11-29T03:33:36Z},
+  publisher = {{IEEE Computer Society}},
+  author = {Laprie, J. C.},
+  month = jun,
+  year = {1985},
+  keywords = {_model,Computing,Fault tolerance,Software engineering,Terminology},
+  pages = {2--11},
+  file = {laprie - dependable computing and fault tolerance (1985, ieee computer society).conference paper.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/laprie - dependable computing and fault tolerance (1985, ieee computer society).conference paper.pdf:application/pdf},
+  groups = {Critical Systems}
+}
+
+@article{wong_role_2009,
+  title = {The Role of Software in Recent Catastrophic Accidents},
+  abstract = {Software is increasingly used to monitor and control safety-critical devices and processes, in areas such as medicine, transportation, nuclear power generation, aeronautics, etc. Consequently however, an error in the software, or an error in its use, can have devastating effects that are not just financial, but can often also lead to the loss of life. In this article we review 15 recent catastrophic accidents and identify the roles that were played by software in causing them, as well as the useful lessons that can be learned from them.},
+  timestamp = {2016-11-29T03:33:36Z},
+  urldate = {2016-11-17},
+  url = {http://paris.utdallas.edu/IEEE-RS-ATR/document/2009/2009-17.pdf},
+  journal = {IEEE Reliability Society 2009 Annual Technology Report},
+  author = {Wong, W. Eric and Debroy, Vidroha and Restrepo, Andrew},
+  year = {2009},
+  keywords = {_survey,catastrophic accidents,safety-critical software systems,Software safety},
+  file = {wong et al - the role of software in recent catastrophic accidents (2009).journal article.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/wong et al - the role of software in recent catastrophic accidents (2009).journal article.pdf:application/pdf},
+  groups = {Incidents,Incidents}
+}
+
+@inproceedings{wong_recent_2010,
+  title = {Recent {{Catastrophic Accidents}}: {{Investigating How Software}} Was {{Responsible}}},
+  isbn = {978-1-4244-7435-6},
+  shorttitle = {Recent {{Catastrophic Accidents}}},
+  doi = {10.1109/SSIRI.2010.38},
+  abstract = {Areas crucial to life such as medicine, transportation, nuclear-energy research and industry, aeronautics, and others, all make use of software in one way or another. However, the application of software to such domains means that the software may now become safety-critical such that an error in the software or an error in its use could have devastating consequences. This paper reviews 14 recent accidents, several of which resulted in the loss of life in addition to time and money, and identifies the role(s) that software played as an important causative factor. The useful lessons which can be learned from the accidents are also presented, which can then act as principles and guidelines to avoid the recurrence of similar accidents in the future.},
+  timestamp = {2016-11-29T03:33:36Z},
+  urldate = {2016-11-17},
+  url = {http://ieeexplore.ieee.org/document/5502861/},
+  publisher = {{IEEE}},
+  author = {Wong, W. Eric and Debroy, Vidroha and Surampudi, Adithya and Kim, HyeonJeong and Siok, Michael F.},
+  year = {2010},
+  keywords = {_survey,catastrophic accidents,mishaps,safety-critical software systems,Software safety},
+  pages = {14--22},
+  file = {wong et al - recent catastrophic accidents (2010, ieee).conference paper.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/wong et al - recent catastrophic accidents (2010, ieee).conference paper.pdf:application/pdf},
+  groups = {Incidents,Incidents}
 }
 
 @book{sommerville_software_2011,
@@ -173,78 +252,8 @@ The ninth edition of Software Engineering presents a broad perspective of softwa
   year = {2011},
   note = {OCLC: ocn462909026},
   keywords = {Software engineering},
-  file = {1429431793.203Software Engineering by Somerville.pdf:/home/flisboac/Downloads/1429431793.203Software Engineering by Somerville.pdf:application/pdf}
-}
-
-@inproceedings{laprie_dependable_1985,
-  address = {Ann Arbor, MI},
-  title = {Dependable Computing and Fault Tolerance: {{Concepts}} and Terminology},
-  volume = {15},
-  shorttitle = {Dependable Computing and Fault Tolerance},
-  timestamp = {2016-11-29T03:33:36Z},
-  publisher = {{IEEE Computer Society}},
-  author = {Laprie, J. C.},
-  month = jun,
-  year = {1985},
-  keywords = {_model,Computing,Fault tolerance,Software engineering,Terminology},
-  pages = {2--11},
-  file = {laprie - dependable computing and fault tolerance (1985, ieee computer society).conference paper.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/laprie - dependable computing and fault tolerance (1985, ieee computer society).conference paper.pdf:application/pdf}
-}
-
-@inproceedings{kuhn_cost_2002,
-  title = {Cost {{Effective Use}} of {{Formal Methods}} in {{Verification}} and {{Validation}}},
-  abstract = {Formal methods offer the promise of significant improvements in verification and validation, and may be the only approach capable of demonstrating the absence of undesirable system behavior. But it is widely recognized that these methods are expensive, and their use has been limited largely to high-risk areas such as security and safety. This paper focuses on cost-effective applications of formal techniques in V\&V, particularly recent developments such as automatic test generation and use of formal methods for analyzing requirements and conceptual models without a full-blown formal verification. We also discuss experience with requiring the use of formal techniques in standards for commercial software.},
-  timestamp = {2016-11-29T03:33:36Z},
-  urldate = {2016-11-18},
-  url = {http://csrc.nist.gov/staff/Kuhn/kuhn-chandramouli-butler-02.pdf},
-  booktitle = {Foundations' 02 {{Workshop}}},
-  author = {Kuhn, D. Richard and Chandramouli, Ramaswamy and Butler, Ricky W.},
-  year = {2002},
-  pages = {22--23},
-  file = {kuhn-chandramouli-butler-02.pdf:/home/flisboac/Downloads/kuhn-chandramouli-butler-02.pdf:application/pdf}
-}
-
-@inproceedings{matichuk_empirical_2015,
-  address = {Florence, Italy},
-  series = {ICSE '15},
-  title = {Empirical {{Study Towards}} a {{Leading Indicator}} for {{Cost}} of {{Formal Software Verification}}},
-  isbn = {978-1-4799-1934-5},
-  abstract = {Formal verification can provide the highest degree of software assurance. Demand for it is growing, but there are still few projects that have successfully applied it to sizeable, real-world systems. This lack of experience makes it hard to predict the size, effort and duration of verification projects. In this paper, we aim to better understand possible leading indicators of proof size. We present an empirical analysis of proofs from the landmark formal verification of the seL4 microkernel and the two largest software verification proof developments in the Archive of Formal Proofs. Together, these comprise 15,018 individual lemmas and approximately 215,000 lines of proof script. We find a consistent quadratic relationship between the size of the formal statement of a property, and the final size of its formal proof in the interactive theorem prover Isabelle. Combined with our prior work, which has indicated that there is a strong linear relationship between proof effort and proof size, these results pave the way for effort estimation models to support the management of large-scale formal verification projects.},
-  timestamp = {2016-11-29T03:33:36Z},
-  url = {http://dl.acm.org/citation.cfm?id=2818754.2818842},
-  booktitle = {Proceedings of the 37th {{International Conference}} on {{Software Engineering}} - {{Volume}} 1},
-  publisher = {{IEEE Press}},
-  author = {Matichuk, Daniel and Murray, Toby and Andronick, June and Jeffery, Ross and Klein, Gerwin and Staples, Mark},
-  year = {2015},
-  pages = {722--732},
-  numpages = {11},
-  acmid = {2818842}
-}
-
-@inproceedings{bersani_cost_2016,
-  title = {The {{Cost}} of {{Formal Verification}} in {{Adaptive CPS}}: {{An Example}} of a {{Virtualized Server Node}}},
-  doi = {10.1109/HASE.2016.46},
-  abstract = {Cyber-physical systems (CPS) are large scale systems highly integrated with the physical environment. Given the changing nature of physical environments, CPS must be able to adapt on-line to new situations while preserving their correct operation. Correctness by construction relies on using formal tools, which suffer from a considerable computational overhead especially if executed on-line. As the current system model of a CPS may change to adapt to the environment, the new system model has to be verified at run-time prior to its execution to ensure that the system properties are preserved. CPS development has mainly concentrated on the design-time aspects, existing only few contributions that support on-line adaptation. We undertake a practical exercise to research on the pros and cons of formal tools to support dynamic changes at run-time. We formalize the semantics of the adaptation logic of an autonomic manager (OLIVE) that performs on-line verification for a specific application, i.e., a dynamic virtualized server system. We explore the realization of the autonomic manager using formal tools based on CLTLoc to express functional and non-functional properties of the managed system. The on-line verification manager services requests from mobile clients that might require a change in both the running software components and server services. To establish if the adaptation preserves the temporal constraints provided in the specification, i.e., to decide whether a new client request can be serviced in the modified system, the on-line verification manager employs CLTLoc satisfiability checking. In this scenario, we then provide empirical results showing the temporal costs of our approach.},
-  timestamp = {2016-11-29T03:33:36Z},
-  booktitle = {2016 {{IEEE}} 17th {{International Symposium}} on {{High Assurance Systems Engineering}} ({{HASE}})},
-  author = {Bersani, M. M. and Garc{\'\i}a-Valls, M.},
-  month = jan,
-  year = {2016},
-  keywords = {adaptation logic of an autonomic manager,Adaptation models,adaptive CPS,CLTLoc,Computational modeling,Computer architecture,Cyber-physical systems,cyberphysical systems,dynamic virtualized server system,formal tools,large scale systems,linear temporal logic,mobile clients,mobile computing,Monitoring,OLIVE,online formal verification,Program verification,real-time,real-time systems,resource management,Servers,server services,Software,software components,temporal constraints,Verification,virtualisation,virtualization,virtualized server node},
-  pages = {39--46}
-}
-
-@inproceedings{aspinall_towards_2016,
-  title = {Towards {{Formal Proof Metrics}}},
-  timestamp = {2016-11-29T03:33:36Z},
-  urldate = {2016-11-18},
-  url = {http://link.springer.com/chapter/10.1007/978-3-662-49665-7_19},
-  booktitle = {International {{Conference}} on {{Fundamental Approaches}} to {{Software Engineering}}},
-  publisher = {{Springer}},
-  author = {Aspinall, David and Kaliszyk, Cezary},
-  year = {2016},
-  pages = {325--341},
-  file = {proofmetrics.pdf:/home/flisboac/Downloads/proofmetrics.pdf:application/pdf}
+  file = {1429431793.203Software Engineering by Somerville.pdf:/home/flisboac/Downloads/1429431793.203Software Engineering by Somerville.pdf:application/pdf},
+  groups = {Handbooks,Handbooks}
 }
 
 @book{johnson_failure_2003,
@@ -260,7 +269,8 @@ The ninth edition of Software Engineering presents a broad perspective of softwa
   author = {Johnson, C. W.},
   month = oct,
   year = {2003},
-  file = {johnson - failure in safety-critical systems (2003, glasgow university press).book.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/johnson - failure in safety-critical systems (2003, glasgow university press).book.pdf:application/pdf}
+  file = {johnson - failure in safety-critical systems (2003, glasgow university press).book.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/johnson - failure in safety-critical systems (2003, glasgow university press).book.pdf:application/pdf},
+  groups = {Handbooks,Handbooks}
 }
 
 @book{peled_software_2001,
@@ -276,7 +286,413 @@ The ninth edition of Software Engineering presents a broad perspective of softwa
   author = {Peled, Doron A.},
   year = {2001},
   keywords = {Computer software,Reliability},
-  file = {peled - software reliability methods (2001, springer).book.djvu:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/peled - software reliability methods (2001, springer).book.djvu:image/vnd.djvu}
+  file = {peled - software reliability methods (2001, springer).book.djvu:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/peled - software reliability methods (2001, springer).book.djvu:image/vnd.djvu},
+  groups = {Handbooks,Handbooks}
 }
 
+@article{zaminkar_customization_2016,
+  title = {Customization of {{Rational Unified Process}} ({{RUP}}) {{Methodology}} for {{Safety}}-{{Critical Systems}}},
+  volume = {11},
+  issn = {1828-6011, 1828-6003},
+  doi = {10.15866/irecos.v11i6.9184},
+  abstract = {A model is presented here for the customization of RUP methodology in the critical safety systems. The RUP methodology is studied and applied as a reference for the customization. A  comprehensive study  for the  research and the identification  of the  critical safety systems is conducted. The expansion of critical  safety systems and their necessary  involvement in different phases and stages regarding product development is essential. There exists much methodology to expand safe software for safety-critical systems based on objective orientation, which can be used in  customization of  RUP. The  Eclipse Process  framework is  introduced for  the customization studied in the presented paper.},
+  timestamp = {2016-11-29T03:33:36Z},
+  number = {6},
+  urldate = {2016-11-17},
+  url = {http://www.praiseworthyprize.org/jsm/index.php?journal=irecos\&page=article\&op=view\&path[]=18950},
+  journal = {International Review on Computers and Software (IRECOS)},
+  author = {Zaminkar, Mina and Reshadinezhad, Mohammad Reza},
+  month = jun,
+  year = {2016},
+  keywords = {_model,Critical Safety Systems,Customization,IEC 61508 Standard,Safety Software,Sensitive-Safety},
+  pages = {566},
+  file = {zaminkar, reshadinezhad - customization of rational unified process (rup) methodology for safety-critical (2016).journal article.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/zaminkar, reshadinezhad - customization of rational unified process (rup) methodology for safety-critical (2016).journal article.pdf:application/pdf},
+  groups = {Models and Standards,Models and Standards}
+}
+
+@article{wears_safeware:_2008,
+  title = {``{{Safeware}}'': Safety-Critical Computing and Health Care Information Technology},
+  shorttitle = {``{{Safeware}}''},
+  abstract = {Information technology (IT) is highly promoted as a mechanism for advancing safety in health care. Ironically, little attention has been paid to the issues of safety in health care IT. Computer scientists have extensively studied the problem of assured performance in safety-critical computing systems. They have developed a conceptual approach and set of techniques for use in settings where incorrect or aberrant operation (or results from correct operation that are aberrant in context) might endanger users, the public, or the environment. However, these methods are not commonly used in health care IT, which generally has been developed without specific consideration of the special factors and unique requirements for safe operations. This article provides a brief introduction for health care professionals and informaticians to what has been called ``safeware,'' a comprehensive approach to hazard analysis, design, operation, and maintenance of both hardware and software systems. This approach considers the entire joint sociotechnical system (including its operators) over its entire lifecycle, from conception through operation and on to decommissioning. Adoption of safeware methods should enhance the trustworthiness of future health IT.},
+  timestamp = {2016-11-29T03:33:36Z},
+  urldate = {2016-11-18},
+  url = {http://www.ncbi.nlm.nih.gov/books/NBK43774/?report=reader},
+  author = {Wears, Robert L. and Leveson, Nancy G.},
+  year = {2008},
+  file = {wears, leveson - safeware (2008).journal article.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/wears, leveson - safeware (2008).journal article.pdf:application/pdf},
+  groups = {Models and Standards,Models and Standards}
+}
+
+@book{lipschutz_schaums_2007,
+  address = {New York, NY},
+  edition = {3. ed},
+  series = {Schaum's outline series},
+  title = {{Schaum's outline of discrete mathematics}},
+  isbn = {978-0-07-161586-0},
+  language = {und},
+  timestamp = {2016-11-29T17:01:21Z},
+  publisher = {{McGraw-Hill}},
+  author = {Lipschutz, Seymour and Lipson, Marc Lars},
+  year = {2007},
+  note = {OCLC: 502316124},
+  keywords = {Computer science Mathematics,Diskrete Mathematik},
+  file = {lipschutz, lipson - schaum's outline of discrete mathematics (2007, mcgraw-hill).book_2.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/Math Foundations/lipschutz, lipson - schaum's outline of discrete mathematics (2007, mcgraw-hill).book_2.pdf:application/pdf},
+  groups = {Math Foundations}
+}
+
+@article{demidov_programming_2013,
+  title = {Programming {{CUDA}} and {{OpenCL}}: {{A}} Case Study Using Modern {{C}}++ Libraries},
+  volume = {35},
+  shorttitle = {Programming {{CUDA}} and {{OpenCL}}},
+  abstract = {We present a comparison of several modern C ++ libraries providing high-level interfaces for programming multiand many-core architectures on top of CUDA or OpenCL. The comparison focuses on the solution of ordinary differential equations and is based on odeint, a framework for the solution of systems of ordinary differential equations. Odeint is designed in a very flexible way and may be easily adapted for effective use of libraries such as MTL4, VexCL, or ViennaCL, using CUDA or OpenCL technologies. We found that CUDA and OpenCL work equally well for problems of large sizes, while OpenCL has higher overhead for smaller problems. Furthermore, we show that modern high-level libraries allow to effectively use the computational resources of many-core GPUs or multi-core CPUs without much knowledge of the underlying technologies.},
+  timestamp = {2016-09-07T18:10:15Z},
+  number = {5},
+  urldate = {2016-09-07},
+  url = {http://epubs.siam.org/doi/abs/10.1137/120903683},
+  journal = {SIAM Journal on Scientific Computing},
+  author = {Demidov, Denis and Ahnert, Karsten and Rupp, Karl and Gottschling, Peter},
+  year = {2013},
+  keywords = {_survey,Boost.odeint,C ++,Concurrent programming,CUDA,GPGPU,MTL4,OpenCL,Parallel programming,VexCL,ViennaCL},
+  pages = {C453--C472},
+  file = {demidov et al - programming cuda and opencl (2013).journal article.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Academic/Concurrent Computing/demidov et al - programming cuda and opencl (2013).journal article.pdf:application/pdf},
+  groups = {Programming}
+}
+
+@book{scarpino_opencl_2012,
+  address = {Shelter Island, NY},
+  title = {{{OpenCL}} in Action: How to Accelerate Graphics and Computation},
+  isbn = {978-1-61729-017-6},
+  lccn = {QA76.642 .S23 2012},
+  shorttitle = {{{OpenCL}} in Action},
+  timestamp = {2016-10-13T12:07:29Z},
+  publisher = {{Manning}},
+  author = {Scarpino, Matthew},
+  year = {2012},
+  note = {OCLC: ocn745978767},
+  keywords = {_manual,OpenCL (Computer program language),Parallel programming (Computer science)},
+  file = {scarpino - opencl in action (2012, manning).book.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Unsorted/Books/scarpino - opencl in action (2012, manning).book.pdf:application/pdf},
+  groups = {Programming}
+}
+
+@book{wilt_cuda_2013,
+  address = {Upper Saddle River, NJ},
+  title = {The {{CUDA}} Handbook: A Comprehensive Guide to {{GPU}} Programming},
+  isbn = {978-0-321-80946-9},
+  lccn = {QA76.642 .W555 2013},
+  shorttitle = {The {{CUDA}} Handbook},
+  timestamp = {2017-02-05T07:20:49Z},
+  publisher = {{Addison-Wesley}},
+  author = {Wilt, Nicholas},
+  year = {2013},
+  keywords = {Computer graphics,CUDA (Computer architecture),Graphics processing units,Parallel programming (Computer science),Programming},
+  file = {wilt - the cuda handbook (2013, addison-wesley).book.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/Programming/wilt - the cuda handbook (2013, addison-wesley).book.pdf:application/pdf},
+  groups = {Programming}
+}
+
+@book{sanders_cuda_2011,
+  address = {Upper Saddle River, NJ},
+  title = {{{CUDA}} by Example: An Introduction to General-Purpose {{GPU}} Programming},
+  isbn = {978-0-13-138768-3},
+  lccn = {QA76.76.A65 S255 2011},
+  shorttitle = {{{CUDA}} by Example},
+  timestamp = {2017-02-05T07:21:01Z},
+  publisher = {{Addison-Wesley}},
+  author = {Sanders, Jason and Kandrot, Edward},
+  year = {2011},
+  keywords = {Application software,Computer architecture,Development,Graphics processing units,Parallel programming (Computer science),Programming},
+  file = {sanders, kandrot - cuda by example (2011, addison-wesley).book.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/Programming/sanders, kandrot - cuda by example (2011, addison-wesley).book.pdf:application/pdf},
+  groups = {Programming}
+}
+
+@book{gaster_heterogeneous_2013,
+  address = {Waltham, MA},
+  edition = {2nd ed},
+  title = {Heterogeneous Computing with {{OpenCL}}},
+  isbn = {978-0-12-405894-1},
+  lccn = {QA76.642 .H48 2012},
+  timestamp = {2017-02-06T14:50:37Z},
+  publisher = {{Morgan Kaufmann}},
+  editor = {Gaster, Benedict},
+  year = {2013},
+  keywords = {OpenCL (Computer program language),Parallel programming (Computer science)},
+  file = {gaster - heterogeneous computing with opencl (2013, morgan kaufmann).book.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/Programming/gaster - heterogeneous computing with opencl (2013, morgan kaufmann).book.pdf:application/pdf},
+  groups = {Programming}
+}
+
+@book{meyers_effective_2014,
+  address = {Beijing ; Sebastopol, CA},
+  edition = {First edition},
+  title = {Effective Modern {{C}}++: 42 Specific Ways to Improve Your Use of {{C}}++11 and {{C}}++14},
+  isbn = {978-1-4919-0399-5},
+  lccn = {QA76.73.C153 M494 2015},
+  shorttitle = {Effective Modern {{C}}++},
+  abstract = {"Coming to grips with C++11 and C++14 is more than a matter of familiarizing yourself with the features they introduce (e.g., auto type declarations, move semantics, lambda expressions, and concurrency support). The challenge is learning to use those features effectively -- so that your software is correct, efficient, maintainable, and portable. That's where this practical book comes in. It describes how to write truly great software using C++11 and C++14 -- i.e. using modern C++ ...Effective Modern C++ follows the proven guideline-based, example-driven format of Scott Meyers' earlier books, but covers entirely new material"--Publisher's website},
+  timestamp = {2017-02-06T14:51:55Z},
+  publisher = {{O'Reilly Media}},
+  author = {Meyers, Scott},
+  year = {2014},
+  note = {OCLC: ocn884480640},
+  keywords = {C++ (Computer program language),Langages de programmation,Programmation informatique},
+  file = {meyers - effective modern c++ (2014, o'reilly media).book.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/Programming/meyers - effective modern c++ (2014, o'reilly media).book.pdf:application/pdf},
+  groups = {Programming}
+}
+
+@book{sellers_vulkan_2016,
+  address = {Boston, MA},
+  title = {Vulkan Programming Guide: The Official Guide to Learning Vulkan},
+  isbn = {978-0-13-446454-1},
+  shorttitle = {Vulkan Programming Guide},
+  timestamp = {2017-02-06T14:56:15Z},
+  publisher = {{Addison-Wesley}},
+  author = {Sellers, Graham},
+  year = {2016},
+  file = {sellers - vulkan programming guide (2016, addison-wesley).book.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/Programming/sellers - vulkan programming guide (2016, addison-wesley).book.pdf:application/pdf},
+  groups = {Programming}
+}
+
+@article{pontes_contributions_2014,
+  title = {Contributions of Model Checking and {{CoFI}} Methodology to the Development of Space Embedded Software},
+  volume = {19},
+  issn = {1382-3256, 1573-7616},
+  doi = {10.1007/s10664-012-9215-y},
+  abstract = {The role of embedded software in the last space accidents highlights the importance of verification and validation techniques for the development of space embedded software. In this context, this work analyses the contribution of two verification techniques applied to the onboard data handling software of space products. The first technique is model checking. The system is modeled by a set of timed automata and the verification of safety and liveness properties is performed using UPPAAL model checker. The verified model is then used to generate the embedded software. The second technique analyzed in this work is model based approach for the generation of test cases. The Conformance and Fault Injection (CoFI) testing methodology is used to guide the development of a set of Finite State Machine (FSM) models from the software specification. The test suite is automatically generated from the FSM models. The contributions of the two methodologies are analyzed based on the results provided by an experiment. Two software products are used as case study, each one implementing two services of the Packet Utilization Standard (PUS). These services represent the functionalities offered by a satellite onboard data handling computer. One of the products is developed with the aid of model checking, while the other is developed according to the practices currently used at the Instituto Nacional de Pesquisas Espaciais (INPE). Both software products are tested by the CoFI methodology. The experiment highlights the advantages and vulnerable points of model checking. It also demonstrates that the main contribution of CoFI testing methodology is to highlight problems related to situations that have not been considered in the software specification, such as the occurrence of inopportune events. This analysis helps to understand how different techniques can be integrated in the design of critical embedded software.},
+  language = {en},
+  timestamp = {2016-11-29T03:33:36Z},
+  number = {1},
+  urldate = {2016-11-17},
+  url = {http://link.springer.com/10.1007/s10664-012-9215-y},
+  journal = {Empirical Software Engineering},
+  author = {Pontes, Rodrigo Pastl and V{\'e}ras, Paulo Claudino and Ambrosio, Ana Maria and Villani, Em{\'\i}lia},
+  month = feb,
+  year = {2014},
+  keywords = {_survey,Embedded software,Model based testing,Model checking,Packet Utilization Standard (PUS),Software verification,Space application,Verification},
+  pages = {39--68},
+  groups = {Reports,Reports}
+}
+
+@article{villani_academia_2015,
+  title = {From {{Academia}} to {{Industry}}: {{Challenges}} and {{Lessons Learned}} from a {{Model}}-{{Based}}-{{Testing Experience}}},
+  shorttitle = {From {{Academia}} to {{Industry}}},
+  abstract = {This paper discusses the transfer process of a model-based-testing methodology from a scientific institute of the space sector to a vehicle production line from the automotive sector. It addresses the main challenges that were faced for the incorporation of the methodology in an industrial environment and summarizes the lessons learned from this practical experience},
+  timestamp = {2016-11-29T04:24:00Z},
+  urldate = {2016-11-29},
+  url = {http://www.lbd.dcc.ufmg.br/bdbcomp/servlet/Trabalho?id=23652},
+  author = {Villani, Em{\'\i}lia and Dutra, Thiago and Ara{\'u}jo, Marcus VO and Ambrosio, Ana Maria and Martins, Eliane},
+  year = {2015},
+  file = {015.pdf:/home/flisboac/Downloads/015.pdf:application/pdf},
+  groups = {Reports,Reports}
+}
+
+@inproceedings{pontes_embedded_2010,
+  title = {Embedded Critical Software Testing for Aerospace Applications Based on {{PUS}}},
+  abstract = {This paper discusses the practical experience of verifying an OnBoard Data Handling (OBDH) software to be used in a future satellite application at INPE using the CoFI testing methodology. This technique is proper for aerospace applications and is based on modeling the system under test as finite state machines. The test cases are automatically generated from the developed models. The OBDH software considered in this paper follows the PUS standard from European Cooperation for Space Standardization, which is being adopted in Brazil. Among the important issues analyzed by this practical experience are the errors found, the time required for the modeling activity, the time required for testing, the reusability of the test cases, among others.},
+  timestamp = {2016-11-29T04:21:53Z},
+  urldate = {2016-11-29},
+  url = {https://www.researchgate.net/profile/Ana_Ambrosio2/publication/228890657_Embedded_Critical_Software_Testing_for_Aerospace_Applications_based_on_PUS/links/0deec5388caf2abe98000000.pdf},
+  booktitle = {Proceedings of {{XXVIII Simp{\'o}sio Brasileiro}} de {{Redes}} de {{Computadores}} e {{Sistemas Distribu{\'\i}dos}} ({{SBRC}})/{{XI Workshop}} de {{Testes}} e {{Toler{\^a}ncia}} a {{Falhas}} ({{WTF}}), {{Gramado}}\textemdash{}{{RS}}, {{Brazil}}},
+  author = {Pontes, Rodrigo P. and Martins, Eliane and Ambr{\'o}sio, Ana M. and Villani, Em{\'\i}lia},
+  year = {2010},
+  file = {pontes.pdf:/home/flisboac/Downloads/pontes.pdf:application/pdf},
+  groups = {Reports,Reports}
+}
+
+@inproceedings{kuhn_cost_2002,
+  title = {Cost {{Effective Use}} of {{Formal Methods}} in {{Verification}} and {{Validation}}},
+  abstract = {Formal methods offer the promise of significant improvements in verification and validation, and may be the only approach capable of demonstrating the absence of undesirable system behavior. But it is widely recognized that these methods are expensive, and their use has been limited largely to high-risk areas such as security and safety. This paper focuses on cost-effective applications of formal techniques in V\&V, particularly recent developments such as automatic test generation and use of formal methods for analyzing requirements and conceptual models without a full-blown formal verification. We also discuss experience with requiring the use of formal techniques in standards for commercial software.},
+  timestamp = {2016-11-29T03:33:36Z},
+  urldate = {2016-11-18},
+  url = {http://csrc.nist.gov/staff/Kuhn/kuhn-chandramouli-butler-02.pdf},
+  booktitle = {Foundations' 02 {{Workshop}}},
+  author = {Kuhn, D. Richard and Chandramouli, Ramaswamy and Butler, Ricky W.},
+  year = {2002},
+  pages = {22--23},
+  file = {kuhn-chandramouli-butler-02.pdf:/home/flisboac/Downloads/kuhn-chandramouli-butler-02.pdf:application/pdf},
+  groups = {Models and Standards,Models and Standards}
+}
+
+@inproceedings{matichuk_empirical_2015,
+  address = {Florence, Italy},
+  series = {ICSE '15},
+  title = {Empirical {{Study Towards}} a {{Leading Indicator}} for {{Cost}} of {{Formal Software Verification}}},
+  isbn = {978-1-4799-1934-5},
+  abstract = {Formal verification can provide the highest degree of software assurance. Demand for it is growing, but there are still few projects that have successfully applied it to sizeable, real-world systems. This lack of experience makes it hard to predict the size, effort and duration of verification projects. In this paper, we aim to better understand possible leading indicators of proof size. We present an empirical analysis of proofs from the landmark formal verification of the seL4 microkernel and the two largest software verification proof developments in the Archive of Formal Proofs. Together, these comprise 15,018 individual lemmas and approximately 215,000 lines of proof script. We find a consistent quadratic relationship between the size of the formal statement of a property, and the final size of its formal proof in the interactive theorem prover Isabelle. Combined with our prior work, which has indicated that there is a strong linear relationship between proof effort and proof size, these results pave the way for effort estimation models to support the management of large-scale formal verification projects.},
+  timestamp = {2016-11-29T03:33:36Z},
+  url = {http://dl.acm.org/citation.cfm?id=2818754.2818842},
+  booktitle = {Proceedings of the 37th {{International Conference}} on {{Software Engineering}} - {{Volume}} 1},
+  publisher = {{IEEE Press}},
+  author = {Matichuk, Daniel and Murray, Toby and Andronick, June and Jeffery, Ross and Klein, Gerwin and Staples, Mark},
+  year = {2015},
+  pages = {722--732},
+  file = {matichuk et al - empirical study towards a leading indicator for cost of formal software (2015, ieee press).conference paper.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/Program Verification/matichuk et al - empirical study towards a leading indicator for cost of formal software (2015, ieee press).conference paper.pdf:application/pdf},
+  groups = {Models and Standards,Models and Standards},
+  numpages = {11},
+  acmid = {2818842}
+}
+
+@inproceedings{bersani_cost_2016,
+  title = {The {{Cost}} of {{Formal Verification}} in {{Adaptive CPS}}: {{An Example}} of a {{Virtualized Server Node}}},
+  doi = {10.1109/HASE.2016.46},
+  abstract = {Cyber-physical systems (CPS) are large scale systems highly integrated with the physical environment. Given the changing nature of physical environments, CPS must be able to adapt on-line to new situations while preserving their correct operation. Correctness by construction relies on using formal tools, which suffer from a considerable computational overhead especially if executed on-line. As the current system model of a CPS may change to adapt to the environment, the new system model has to be verified at run-time prior to its execution to ensure that the system properties are preserved. CPS development has mainly concentrated on the design-time aspects, existing only few contributions that support on-line adaptation. We undertake a practical exercise to research on the pros and cons of formal tools to support dynamic changes at run-time. We formalize the semantics of the adaptation logic of an autonomic manager (OLIVE) that performs on-line verification for a specific application, i.e., a dynamic virtualized server system. We explore the realization of the autonomic manager using formal tools based on CLTLoc to express functional and non-functional properties of the managed system. The on-line verification manager services requests from mobile clients that might require a change in both the running software components and server services. To establish if the adaptation preserves the temporal constraints provided in the specification, i.e., to decide whether a new client request can be serviced in the modified system, the on-line verification manager employs CLTLoc satisfiability checking. In this scenario, we then provide empirical results showing the temporal costs of our approach.},
+  timestamp = {2016-11-29T03:33:36Z},
+  booktitle = {2016 {{IEEE}} 17th {{International Symposium}} on {{High Assurance Systems Engineering}} ({{HASE}})},
+  author = {Bersani, M. M. and Garc{\'\i}a-Valls, M.},
+  month = jan,
+  year = {2016},
+  keywords = {adaptation logic of an autonomic manager,Adaptation models,adaptive CPS,CLTLoc,Computational modeling,Computer architecture,Cyber-physical systems,cyberphysical systems,dynamic virtualized server system,formal tools,large scale systems,linear temporal logic,mobile clients,mobile computing,Monitoring,OLIVE,online formal verification,Program verification,real-time,real-time systems,resource management,Servers,server services,Software,software components,temporal constraints,Verification,virtualisation,virtualization,virtualized server node},
+  pages = {39--46},
+  file = {bersani, garcia-valls - the cost of formal verification in adaptive cps (2016).conference paper.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/Program Verification/bersani, garcia-valls - the cost of formal verification in adaptive cps (2016).conference paper.pdf:application/pdf},
+  groups = {Models and Standards,Models and Standards}
+}
+
+@inproceedings{aspinall_towards_2016,
+  title = {Towards {{Formal Proof Metrics}}},
+  timestamp = {2016-11-29T03:33:36Z},
+  urldate = {2016-11-18},
+  url = {http://link.springer.com/chapter/10.1007/978-3-662-49665-7_19},
+  booktitle = {International {{Conference}} on {{Fundamental Approaches}} to {{Software Engineering}}},
+  publisher = {{Springer}},
+  author = {Aspinall, David and Kaliszyk, Cezary},
+  year = {2016},
+  pages = {325--341},
+  file = {proofmetrics.pdf:/home/flisboac/Downloads/proofmetrics.pdf:application/pdf},
+  groups = {Models and Standards,Models and Standards}
+}
+
+@inproceedings{cofer_software_2008,
+  title = {Software Model Checking for Avionics Systems},
+  isbn = {978-1-4244-2207-4},
+  doi = {10.1109/DASC.2008.4702862},
+  timestamp = {2016-11-29T04:02:55Z},
+  urldate = {2016-11-29},
+  url = {http://ieeexplore.ieee.org/document/4702862/},
+  publisher = {{IEEE}},
+  author = {Cofer, Darren and Whalen, Michael and Miller, Steven},
+  month = oct,
+  year = {2008},
+  pages = {5.D.5--1--5.D.5--8},
+  file = {Software-Model-Checking.pdf:/home/flisboac/Downloads/Software-Model-Checking.pdf:application/pdf},
+  groups = {Models and Standards,Models and Standards}
+}
+
+@book{munshi_opencl_2012,
+  edition = {1.2 Revision 19},
+  title = {The {{OpenCL Specification}}},
+  language = {en},
+  timestamp = {2017-02-06T15:49:00Z},
+  urldate = {2017-06-02},
+  publisher = {{Khronos OpenCL Working Group}},
+  editor = {Munshi, Aaftab},
+  month = nov,
+  year = {2012},
+  file = {munshi - the opencl specification (2012, khronos opencl working group).book.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/Todo/Specifications/munshi - the opencl specification (2012, khronos opencl working group).book.pdf:application/pdf},
+  groups = {Todo}
+}
+
+@misc{khronos_group_vulkan_2016,
+  title = {Vulkan 1.0 {{Quick Reference}} ({{Rev}}. 0216)},
+  language = {en},
+  timestamp = {2017-02-06T15:11:25Z},
+  publisher = {{Miller \& Mattson}},
+  author = {Khronos Group},
+  year = {2016},
+  file = {khronos group - vulkan 1 (2016, miller & mattson).document.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/Todo/Specifications/khronos group - vulkan 1 (2016, miller & mattson).document.pdf:application/pdf},
+  groups = {Todo}
+}
+
+@book{howes_opencl_2015,
+  edition = {2.0 Revision 29},
+  title = {The {{OpenCL Specification}}},
+  timestamp = {2017-02-06T15:17:46Z},
+  urldate = {2017-02-06},
+  publisher = {{Khronos OpenCL Working Group}},
+  editor = {Howes, Lee and Munshi, Aaftab},
+  month = jul,
+  year = {2015},
+  file = {howes, munshi - the opencl specification (2015, khronos opencl working group).book.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/Todo/Specifications/howes, munshi - the opencl specification (2015, khronos opencl working group).book.pdf:application/pdf},
+  groups = {Todo}
+}
+
+@book{howes_opencl_2016,
+  edition = {2.0 Revision 32},
+  title = {The {{OpenCL Extension Specification}}},
+  timestamp = {2017-02-06T15:48:33Z},
+  urldate = {2017-02-06},
+  publisher = {{Khronos OpenCL Working Group}},
+  editor = {Howes, Lee and Munshi, Aaftab},
+  month = mar,
+  year = {2016},
+  file = {howes, munshi - the opencl extension specification (2016, khronos opencl working group).book.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/Todo/Specifications/howes, munshi - the opencl extension specification (2016, khronos opencl working group).book.pdf:application/pdf},
+  groups = {Todo}
+}
+
+@book{munshi_opencl_2016,
+  edition = {2.0 Revision 33},
+  title = {The {{OpenCL C Specification}}},
+  timestamp = {2017-02-06T15:51:29Z},
+  urldate = {2017-02-06},
+  publisher = {{Khronos OpenCL Working Group}},
+  editor = {Munshi, Aaftab and Howes, Lee and Sochacki, Bartosz},
+  month = apr,
+  year = {2016},
+  file = {munshi et al - the opencl c specification (2016, khronos opencl working group).book.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/Todo/Specifications/munshi et al - the opencl c specification (2016, khronos opencl working group).book.pdf:application/pdf},
+  groups = {Todo}
+}
+
+@book{munshi_opencl_2015,
+  edition = {1.2 Revision 22},
+  title = {The {{OpenCL Extension Specification}}},
+  language = {en},
+  timestamp = {2017-02-06T15:53:03Z},
+  urldate = {2017-02-06},
+  publisher = {{Khronos OpenCL Working Group}},
+  editor = {Munshi, Aaftab},
+  month = sep,
+  year = {2015},
+  file = {munshi - the opencl extension specification (2015, khronos opencl working group).book.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/Todo/Specifications/munshi - the opencl extension specification (2015, khronos opencl working group).book.pdf:application/pdf},
+  groups = {Todo}
+}
+
+@misc{khronos_group_opencl_2011,
+  title = {{{OpenCL API}} 1.2 {{Reference Card}} ({{Rev}}. 1111)},
+  language = {en},
+  timestamp = {2017-02-06T15:55:11Z},
+  publisher = {{Miller \& Mattson}},
+  author = {Khronos Group},
+  year = {2011},
+  file = {khronos group - opencl api 1 (2011, miller & mattson).document.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/Todo/Specifications/khronos group - opencl api 1 (2011, miller & mattson).document.pdf:application/pdf},
+  groups = {Todo}
+}
+
+@misc{nvidia_nvidia_2009,
+  title = {{{NVIDIA OpenCL Best Practices Guide}}},
+  language = {en},
+  timestamp = {2017-02-06T15:58:04Z},
+  publisher = {{NVIDIA Corporation}},
+  author = {NVIDIA},
+  month = aug,
+  year = {2009},
+  file = {nvidia - nvidia opencl best practices guide (2009, nvidia corporation).document.pdf:/home/flisboac/Dropbox/Libraries/Zotero/Files/Projects/UVA/ADL/Todo/nvidia - nvidia opencl best practices guide (2009, nvidia corporation).document.pdf:application/pdf},
+  groups = {Todo}
+}
+
+@comment{jabref-meta: databaseType:bibtex;}
+@comment{jabref-meta: groupstree:
+0 AllEntriesGroup:;
+1 ExplicitGroup:Abstract Interpretation\;0\;;
+1 ExplicitGroup:Critical Systems\;0\;;
+2 ExplicitGroup:Incidents\;0\;;
+2 ExplicitGroup:Handbooks\;0\;;
+2 ExplicitGroup:Models and Standards\;0\;;
+1 ExplicitGroup:Incidents\;0\;;
+1 ExplicitGroup:Handbooks\;0\;;
+1 ExplicitGroup:Models and Standards\;0\;;
+1 ExplicitGroup:Math Foundations\;0\;;
+1 ExplicitGroup:Programming\;0\;;
+1 ExplicitGroup:Program Verification\;0\;;
+2 ExplicitGroup:Reports\;0\;;
+2 ExplicitGroup:Models and Standards\;0\;;
+1 ExplicitGroup:Reports\;0\;;
+1 ExplicitGroup:Models and Standards\;0\;;
+1 ExplicitGroup:Todo\;0\;;
+}
 
