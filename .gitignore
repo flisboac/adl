@@ -47,3 +47,4 @@ cmake-build-*
 
 # Local stuff
 local
+/.ycm_extra_conf.py

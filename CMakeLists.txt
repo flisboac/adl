@@ -11,6 +11,9 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Clang-check support
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # Various safety checks
 if (CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
     message( FATAL_ERROR "In-source builds not allowed. To build, create a folder and run CMake from there." )

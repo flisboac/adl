@@ -14,17 +14,19 @@ adl_BEGIN_ROOT_MODULE
 namespace oct {
 
 enum class oper_state {
-    waiting,   // e.g. CL_QUEUED, std::launch::lazy's lazy evaluation
-    launching, // Preparing for execution
-    started,   // Executing
-    finished   // Finished execution
+    created,   // Waiting to be queued or executed. Does not count to total timing because this represents a form of delayed execution, like std::launch::lazy or some delayed call to CL's enqueue
+    queued,    // Command was called and queued. Waiting for definite execution (e.g. on a queue waiting for a thread to pick it up, CL_PROFILING_COMMAND_QUEUED)
+    prepared,  // Prepared for execution (e.g. CL_PROFILING_COMMAND_SUBMIT)
+    started,   // Operation has already started (and is currently in) execution.
+    finished   // Operation has finished its execution.
 };
 
 enum class oper_timing {
-    total, // Total time, from start to finish.
-    queue, // The total time the operation waited to be launched, if any.
-    launch, // Time it took for the operation to be launched (e.g. sending to device, creating helper objects)
-    execution // Time it took for the operation to be executed. May include destruction/deallocation time.
+    total,    // Total execution time. Sum of queue, launch and execution.
+    wait,     // Time elapsed in between oper_state::created and some starting state (oper_state::queued, oper_state::prepared or oper_state::started), if any. Must be zero if not applicable.
+    queue,    // Time elapsed in between oper_state::queued and the first (actual) operational state (oper_state::prepared or oper_state::started), if any. Must be zero if not applicable.
+    launch,   // Time elapsed in between oper_state::prepared and oper_state::started, if any. Must be zero if not applicable.
+    execution // Time elapsed in between oper_state::started and oper_state::finished (including "teardown" time, if any).
 };
 
 enum class oper_kind {
