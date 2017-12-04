@@ -20,22 +20,25 @@
 #include "adl/oct.fwd.hpp"
 #include "adl/oct/oper.hpp"
 #include "adl/oct/var.hpp"
+#include "oper_base_.hpp"
 
 adl_BEGIN_MAIN_MODULE(oct)
 namespace cpu {
 
 template <typename DbmType, typename ContextType>
-class shortest_path_oper : public oper_base_<shortest_path_oper, DbmType, ContextType, void> {
+class shortest_path_oper : public oper_base_<shortest_path_oper<DbmType, ContextType>, DbmType, ContextType, void> {
     using superclass_ = oper_base_<shortest_path_oper, DbmType, ContextType, void>;
 
 public:
+    using typename superclass_::dbm_type;
+
     shortest_path_oper() = delete;
     shortest_path_oper(shortest_path_oper const&) = delete;
     shortest_path_oper(shortest_path_oper &&) noexcept = default;
     shortest_path_oper& operator=(shortest_path_oper const&) = delete;
     shortest_path_oper& operator=(shortest_path_oper &&) noexcept = default;
 
-    shortest_path_oper(dbm_type& dbm) : dbm_(&dbm) {}
+    explicit shortest_path_oper(dbm_type& dbm) : superclass_(dbm.context()), dbm_(&dbm) {}
 
     void on_execute_() {
         using namespace adl::operators;

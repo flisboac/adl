@@ -43,8 +43,8 @@ namespace cpu {
     template <typename T> using has_ ## FunctionName ## _function_t = std::enable_if_t< \
         has_ ## FunctionName ## _function <T>::value, has_ ## FunctionName ## _function <T>::type> \
     template <typename U, typename = has_ ## FunctionName ## _function_t<U>, typename... Args> \
-        static ReturnType do_ ## FunctionName (U& oper, Args... args) const { return (ReturnType)(oper.FunctionName(args)); } \
-    template <typename U> static ReturnType do_ ## FunctionName(...) const { return (ReturnType) 0; }
+        static ReturnType do_ ## FunctionName (U& oper, Args... args) { return (ReturnType)(oper.FunctionName(args)); } \
+    template <typename U> static ReturnType do_ ## FunctionName(...) { return (ReturnType) 0; }
 
 
 namespace oper_detail_ {
@@ -103,6 +103,9 @@ public:
             || std::is_copy_assignable<ResultType>::value,
         "Return type is not valid");
 
+    using typename superclass_::context_type;
+    using typename superclass_::duration_type;
+    using typename superclass_::subtype_;
     using result_type = ResultType;
 
     // CONSTRUCTORS AND ASSIGNS
@@ -134,12 +137,14 @@ protected:
 template <typename SubType, typename DbmType>
 class oper_base_<SubType, seq_context, DbmType, void> : public oper_detail_::oper_base_seq_<SubType, DbmType, seq_context, void> {
 private:
-    using subtype_ = SubType;
+    using superclass_ = oper_detail_::oper_base_seq_<SubType, DbmType, seq_context, void>;
     using timer_type_ = static_mark_timer<5>;
 
 public:
-    using context_type = seq_context;
-    using dbm_type = DbmType;
+    using typename superclass_::context_type;
+    using typename superclass_::dbm_type;
+    using typename superclass_::duration_type;
+    using typename superclass_::subtype_;
     using result_type = void;
     using duration_type = typename timer_type_::duration_type;
 
@@ -240,16 +245,16 @@ void oper_base_<SubType, seq_context, DbmType, void>::get() {
         this->state_ = oper_state::queued;
         this->timer_.mark(); // 1
     case oper_state::queued:
-        do_on_prepare_(*this);
+        do_on_prepare_<subtype_>(*this);
         this->state_ = oper_state::prepared;
         this->timer_.mark(); // 2
         // non-stop
     case oper_state::prepared:
         this->state_ = oper_state::started;
         this->timer_.mark(); // 3
-        do_on_execute_(*this);
+        do_on_execute_<subtype_>(*this);
         this->state_ = oper_state::finished;
-        do_on_finished_(*this);
+        do_on_finished_<subtype_>(*this);
         this->timer_.mark(); // 4
     default:
         throw std::logic_error("Illegal operator state");
@@ -264,16 +269,16 @@ oper_base_<SubType, seq_context, DbmType, ResultType>::get() {
         this->state_ = oper_state::queued;
         this->timer_.mark(); // 1
     case oper_state::queued:
-        do_on_prepare_(*this);
+        do_on_prepare_<subtype_>(*this);
         this->state_ = oper_state::prepared;
         this->timer_.mark(); // 2
         // non-stop
     case oper_state::prepared:
         this->state_ = oper_state::started;
         this->timer_.mark(); // 3
-        auto ret = do_on_execute_(*this);
+        auto ret = do_on_execute_<subtype_>(*this);
         this->state_ = oper_state::finished;
-        do_on_finished_(*this);
+        do_on_finished_<subtype_>(*this);
         this->timer_.mark(); // 4
         return ret;
     default:
