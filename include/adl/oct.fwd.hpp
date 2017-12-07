@@ -167,7 +167,9 @@ namespace cpu {
     class seq_context;
     class async_context;
 
-    template <typename SubType, typename DbmType, typename ContextType, typename ResultType> class oper_base_;
+    namespace detail_ {
+        template <typename SubType, typename DbmType, typename ContextType, typename ResultType> class oper_base_;
+    }
 
     template <typename ContextType, typename ValueType, typename ValueLimits = value_limits<ValueType>> class dense_dbm;
 

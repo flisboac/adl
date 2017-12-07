@@ -15,19 +15,16 @@
 #include "adl/oct/limits.hpp"
 #include "adl/oct/traits.hpp"
 #include "adl/oct/oper.hpp"
-#include "adl/oct/dbm/traits.hpp"
-
-#include "adl/oct.fwd.hpp"
-#include "adl/oct/oper.hpp"
 #include "adl/oct/var.hpp"
-#include "oper_base_.hpp"
+#include "adl/oct/dbm/traits.hpp"
+#include "adl/oct/cpu/oper_base_.hpp"
 
 adl_BEGIN_MAIN_MODULE(oct)
 namespace cpu {
 
 template <typename DbmType, typename ContextType>
-class shortest_path_oper : public oper_base_<shortest_path_oper<DbmType, ContextType>, DbmType, ContextType, void> {
-    using superclass_ = oper_base_<shortest_path_oper, DbmType, ContextType, void>;
+class shortest_path_oper : public detail_::oper_base_<cpu::shortest_path_oper<DbmType, ContextType>, DbmType, ContextType, void> {
+    using superclass_ = detail_::oper_base_<shortest_path_oper, DbmType, ContextType, void>;
 
 public:
     using typename superclass_::dbm_type;
@@ -42,7 +39,6 @@ public:
 
     void on_execute_() {
         using namespace adl::operators;
-        using namespace adl::dsl;
         auto dbm = *dbm_;
         for (auto k = dbm.first_var(); k < dbm.end_var(); k++) {
             for (auto i = dbm.first_var(); i < dbm.end_var(); i++) {

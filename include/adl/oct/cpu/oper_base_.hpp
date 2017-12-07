@@ -41,18 +41,35 @@ namespace cpu {
     }; \
     template <typename T> constexpr static const bool has_ ## FunctionName ## _function_v = has_ ## FunctionName ## _function <T>::value; \
     template <typename T> using has_ ## FunctionName ## _function_t = std::enable_if_t< \
-        has_ ## FunctionName ## _function <T>::value, has_ ## FunctionName ## _function <T>::type> \
+        has_ ## FunctionName ## _function <T>::value, T>; \
     template <typename U, typename = has_ ## FunctionName ## _function_t<U>, typename... Args> \
-        static ReturnType do_ ## FunctionName (U& oper, Args... args) { return (ReturnType)(oper.FunctionName(args)); } \
+        static ReturnType do_ ## FunctionName (U& oper, Args... args) { return (ReturnType)(oper.FunctionName(args...)); } \
     template <typename U> static ReturnType do_ ## FunctionName(...) { return (ReturnType) 0; }
 
 
-namespace oper_detail_ {
+namespace detail_ {
+
+template <typename DbmType, typename ContextType, typename ResultType>
+class oper_base_traits_ {
+public:
+    adl_MAKE_FUNCTION_CHECK_CLASS(void, on_prepare_);
+    adl_MAKE_FUNCTION_CHECK_CLASS(ResultType, on_execute_);
+    adl_MAKE_FUNCTION_CHECK_CLASS(void, on_finished_);
+};
+
+template <typename DbmType, typename ContextType>
+class oper_base_traits_<DbmType, ContextType, void> {
+public:
+    adl_MAKE_FUNCTION_CHECK_CLASS(void, on_prepare_);
+    adl_MAKE_FUNCTION_CHECK_CLASS(void, on_execute_);
+    adl_MAKE_FUNCTION_CHECK_CLASS(void, on_finished_);
+};
 
 template <typename SubType, typename DbmType, typename ContextType, typename ResultType>
 class oper_base_seq_ : public crtp_base<SubType> {
-private:
+protected:
     using subtype_ = SubType;
+    using traits_ = oper_base_traits_<DbmType, ContextType, ResultType>;
 
 public:
     using context_type = ContextType;
@@ -75,8 +92,6 @@ protected:
     timer_type_ timer_;
 };
 
-}
-
 template <typename SubType, typename DbmType, typename ContextType, typename ResultType>
 class oper_base_ {
 #if 0
@@ -95,8 +110,8 @@ class oper_base_ {
 };
 
 template <typename SubType, typename DbmType, typename ResultType>
-class oper_base_<SubType, seq_context, DbmType, ResultType> : public oper_detail_::oper_base_seq_<SubType, DbmType, seq_context, ResultType> {
-    using superclass_ = oper_detail_::oper_base_seq_<SubType, DbmType, seq_context, ResultType>;
+class oper_base_<SubType, seq_context, DbmType, ResultType> : public detail_::oper_base_seq_<SubType, DbmType, seq_context, ResultType> {
+    using superclass_ = detail_::oper_base_seq_<SubType, DbmType, seq_context, ResultType>;
 public:
     static_assert(std::is_reference<ResultType>::value, "References are not allowed, no real use-case for now");
     static_assert(std::is_move_assignable<ResultType>::value
@@ -105,7 +120,9 @@ public:
 
     using typename superclass_::context_type;
     using typename superclass_::duration_type;
+    using typename superclass_::dbm_type;
     using typename superclass_::subtype_;
+    using typename superclass_::traits_;
     using result_type = ResultType;
 
     // CONSTRUCTORS AND ASSIGNS
@@ -129,15 +146,12 @@ public:
 
 protected:
     context_type & context();
-    adl_MAKE_FUNCTION_CHECK_CLASS(void, on_prepare_);
-    adl_MAKE_FUNCTION_CHECK_CLASS(ResultType, on_execute_);
-    adl_MAKE_FUNCTION_CHECK_CLASS(void, on_finished_);
 };
 
 template <typename SubType, typename DbmType>
-class oper_base_<SubType, seq_context, DbmType, void> : public oper_detail_::oper_base_seq_<SubType, DbmType, seq_context, void> {
+class oper_base_<SubType, seq_context, DbmType, void> : public detail_::oper_base_seq_<SubType, DbmType, seq_context, void> {
 private:
-    using superclass_ = oper_detail_::oper_base_seq_<SubType, DbmType, seq_context, void>;
+    using superclass_ = detail_::oper_base_seq_<SubType, DbmType, seq_context, void>;
     using timer_type_ = static_mark_timer<5>;
 
 public:
@@ -145,8 +159,8 @@ public:
     using typename superclass_::dbm_type;
     using typename superclass_::duration_type;
     using typename superclass_::subtype_;
+    using typename superclass_::traits_;
     using result_type = void;
-    using duration_type = typename timer_type_::duration_type;
 
     // CONSTRUCTORS AND ASSIGNS
     oper_base_(oper_base_ const&) = default;
@@ -167,12 +181,10 @@ public:
 
 protected:
     context_type & context();
-    adl_MAKE_FUNCTION_CHECK_CLASS(void, on_prepare_);
-    adl_MAKE_FUNCTION_CHECK_CLASS(void, on_execute_);
-    adl_MAKE_FUNCTION_CHECK_CLASS(void, on_finished_);
 };
 
 
+} // namespace detail_
 } // namespace cpu
 } // namespace oct
 
@@ -184,7 +196,7 @@ adl_END_ROOT_MODULE
 //
 adl_BEGIN_MAIN_MODULE(oct)
 namespace cpu {
-namespace oper_detail_ {
+namespace detail_ {
 
 //
 // oper_state_ (specialized for seq_context)
@@ -245,16 +257,16 @@ void oper_base_<SubType, seq_context, DbmType, void>::get() {
         this->state_ = oper_state::queued;
         this->timer_.mark(); // 1
     case oper_state::queued:
-        do_on_prepare_<subtype_>(*this);
+        traits_::do_on_prepare_(this->as_subclass_());
         this->state_ = oper_state::prepared;
         this->timer_.mark(); // 2
         // non-stop
     case oper_state::prepared:
         this->state_ = oper_state::started;
         this->timer_.mark(); // 3
-        do_on_execute_<subtype_>(*this);
+        traits_::do_on_execute_(this->as_subclass_());
         this->state_ = oper_state::finished;
-        do_on_finished_<subtype_>(*this);
+        traits_::do_on_finished_(this->as_subclass_());
         this->timer_.mark(); // 4
     default:
         throw std::logic_error("Illegal operator state");
@@ -269,16 +281,16 @@ oper_base_<SubType, seq_context, DbmType, ResultType>::get() {
         this->state_ = oper_state::queued;
         this->timer_.mark(); // 1
     case oper_state::queued:
-        do_on_prepare_<subtype_>(*this);
+        traits_::do_on_prepare_(this->as_subclass_());
         this->state_ = oper_state::prepared;
         this->timer_.mark(); // 2
         // non-stop
     case oper_state::prepared:
         this->state_ = oper_state::started;
         this->timer_.mark(); // 3
-        auto ret = do_on_execute_<subtype_>(*this);
+        auto ret = traits_::do_on_execute_(this->as_subclass_());
         this->state_ = oper_state::finished;
-        do_on_finished_<subtype_>(*this);
+        traits_::do_on_finished_(this->as_subclass_());
         this->timer_.mark(); // 4
         return ret;
     default:
@@ -289,11 +301,11 @@ oper_base_<SubType, seq_context, DbmType, ResultType>::get() {
 template <typename SubType, typename DbmType, typename ResultType>
 typename oper_base_<SubType, seq_context, DbmType, ResultType>::subtype_&
 oper_base_<SubType, seq_context, DbmType, ResultType>::discard() {
-    get(); return as_subclass_();
+    get(); return this->as_subclass_();
 };
 
 
-} // namespace oper_detail_
+} // namespace detail_
 } // namespace cpu
 adl_END_MAIN_MODULE
 
