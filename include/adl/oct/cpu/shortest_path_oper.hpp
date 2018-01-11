@@ -27,7 +27,8 @@ class shortest_path_oper : public detail_::oper_base_<cpu::shortest_path_oper<Db
     using superclass_ = detail_::oper_base_<shortest_path_oper, DbmType, ContextType, void>;
 
 public:
-    using typename superclass_::dbm_type;
+    using dbm_type = DbmType; //typename superclass_::dbm_type;
+    using context_type = ContextType; //typename superclass_::context_type;
 
     shortest_path_oper() = delete;
     shortest_path_oper(shortest_path_oper const&) = delete;
@@ -35,7 +36,7 @@ public:
     shortest_path_oper& operator=(shortest_path_oper const&) = delete;
     shortest_path_oper& operator=(shortest_path_oper &&) noexcept = default;
 
-    explicit shortest_path_oper(dbm_type& dbm) : superclass_(dbm.context()), dbm_(&dbm) {}
+    explicit shortest_path_oper(dbm_type& dbm) : superclass_(), dbm_(&dbm) {}
 
     void on_execute_() {
         using namespace adl::operators;
@@ -50,7 +51,7 @@ public:
     }
 
 private:
-    dbm_type* dbm_;
+    dbm_type* dbm_ = nullptr;
 };
 
 }

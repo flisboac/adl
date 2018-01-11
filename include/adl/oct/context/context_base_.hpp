@@ -202,27 +202,29 @@ public:
     //
 
     template <template <typename, typename> class OperClass,
-            typename DbmType = void,
+            typename DbmType,
             typename... Args>
     std::enable_if_t<
-    std::is_constructible<
+    std::is_same<subclass_, typename DbmType::context_type>::value
+    && std::is_constructible<
             OperClass<DbmType, subclass_>,
-            subclass_&, DbmType&, Args...>::value,
+            DbmType&, Args...>::value,
     OperClass<DbmType, subclass_>>
     make_oper(DbmType& dbm, Args... args) {
         return OperClass<DbmType, subclass_>(dbm, args...);
     }
 
     template <template <typename, typename> class OperClass,
-            typename DbmType = void,
+            typename DbmType,
             typename... Args>
     std::enable_if_t<
-    std::is_constructible<
+    std::is_same<subclass_, typename DbmType::context_type>::value
+    && std::is_constructible<
             OperClass<DbmType, subclass_>,
-            subclass_&, DbmType&, Args...>::value,
+            subclass_ const&, DbmType const&, Args...>::value,
     OperClass<DbmType, subclass_>>
     make_oper(DbmType const& dbm, Args... args) {
-        return OperClass<DbmType, subclass_>(dbm, args...);
+        return OperClass<DbmType, subclass_>(dbm.context(), dbm, args...);
     }
 
 private:

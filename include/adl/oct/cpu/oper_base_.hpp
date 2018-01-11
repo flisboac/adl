@@ -42,9 +42,12 @@ namespace cpu {
     template <typename T> constexpr static const bool has_ ## FunctionName ## _function_v = has_ ## FunctionName ## _function <T>::value; \
     template <typename T> using has_ ## FunctionName ## _function_t = std::enable_if_t< \
         has_ ## FunctionName ## _function <T>::value, T>; \
-    template <typename U, typename = has_ ## FunctionName ## _function_t<U>, typename... Args> \
-        static ReturnType do_ ## FunctionName (U& oper, Args... args) { return (ReturnType)(oper.FunctionName(args...)); } \
-    template <typename U> static ReturnType do_ ## FunctionName(...) { return (ReturnType) 0; }
+    template <typename U, typename... Args> \
+        static std::enable_if_t<has_ ## FunctionName ## _function_v<U>, ReturnType> \
+        do_ ## FunctionName (U& oper, Args... args) { return (ReturnType)(oper.FunctionName(args...)); } \
+    template <typename U, typename... Args> \
+        static std::enable_if_t<!has_ ## FunctionName ## _function_v<U>, ReturnType> \
+        do_ ## FunctionName(U& oper, Args...) { return (ReturnType) 0; }
 
 
 namespace detail_ {
@@ -70,24 +73,25 @@ class oper_base_seq_ : public crtp_base<SubType> {
 protected:
     using subtype_ = SubType;
     using traits_ = oper_base_traits_<DbmType, ContextType, ResultType>;
+    using timer_type_ = static_mark_timer<5>;
 
 public:
     using context_type = ContextType;
     using dbm_type = DbmType;
+    using duration_type = typename timer_type_::duration_type;
 
+    oper_base_seq_();
     oper_base_seq_(oper_base_seq_ const&) = default;
     oper_base_seq_(oper_base_seq_ &&) noexcept = default;
     oper_base_seq_& operator=(oper_base_seq_ const&) = default;
     oper_base_seq_& operator=(oper_base_seq_ &&) noexcept = default;
 
-    explicit oper_base_seq_(context_type& context) : context_(&context) {}
+    // Properties
+    oper_state state() const;
+    duration_type time() const;
+    duration_type time(oper_timing timing) const;
 
 protected:
-    using timer_type_ = static_mark_timer<5>;
-    using duration_type = typename timer_type_::duration_type;
-
-protected:
-    context_type * context_;
     oper_state state_;
     timer_type_ timer_;
 };
@@ -110,7 +114,7 @@ class oper_base_ {
 };
 
 template <typename SubType, typename DbmType, typename ResultType>
-class oper_base_<SubType, seq_context, DbmType, ResultType> : public detail_::oper_base_seq_<SubType, DbmType, seq_context, ResultType> {
+class oper_base_<SubType, DbmType, seq_context, ResultType> : public detail_::oper_base_seq_<SubType, DbmType, seq_context, ResultType> {
     using superclass_ = detail_::oper_base_seq_<SubType, DbmType, seq_context, ResultType>;
 public:
     static_assert(std::is_reference<ResultType>::value, "References are not allowed, no real use-case for now");
@@ -119,37 +123,50 @@ public:
         "Return type is not valid");
 
     using typename superclass_::context_type;
-    using typename superclass_::duration_type;
     using typename superclass_::dbm_type;
     using typename superclass_::subtype_;
     using typename superclass_::traits_;
     using result_type = ResultType;
 
     // CONSTRUCTORS AND ASSIGNS
+    oper_base_() = default;
     oper_base_(oper_base_ const&) = default;
     oper_base_(oper_base_ &&) noexcept = default;
     oper_base_& operator=(oper_base_ const&) = default;
     oper_base_& operator=(oper_base_ &&) noexcept = default;
 
-    explicit oper_base_(context_type& context);
-
-    // PROPERTIES
-    context_type const& context() const;
-    context_type const* context_ptr() const;
-    oper_state state() const;
-    duration_type time() const;
-    duration_type time(oper_timing timing) const;
-
     // "OPERATIONS"
-    result_type get();
-    subtype_& discard();
+    result_type get() {
+        switch (this->state_) {
+            case oper_state::created:
+                this->state_ = oper_state::queued;
+                this->timer_.mark(); // 1
+            case oper_state::queued:
+                traits_::do_on_prepare_(static_cast<SubType&>(*this));
+                this->state_ = oper_state::prepared;
+                this->timer_.mark(); // 2
+                // non-stop
+            case oper_state::prepared:
+                this->state_ = oper_state::started;
+                this->timer_.mark(); // 3
+                auto ret = traits_::do_on_execute_(static_cast<SubType&>(*this));
+                this->state_ = oper_state::finished;
+                traits_::do_on_finished_(static_cast<SubType&>(*this));
+                this->timer_.mark(); // 4
+                return ret;
+            default:
+                throw std::logic_error("Illegal operator state");
+        }
+    }
 
-protected:
-    context_type & context();
+    subtype_& discard() {
+        get();
+        return static_cast<SubType&>(*this);
+    };
 };
 
 template <typename SubType, typename DbmType>
-class oper_base_<SubType, seq_context, DbmType, void> : public detail_::oper_base_seq_<SubType, DbmType, seq_context, void> {
+class oper_base_<SubType, DbmType, seq_context, void> : public detail_::oper_base_seq_<SubType, DbmType, seq_context, void> {
 private:
     using superclass_ = detail_::oper_base_seq_<SubType, DbmType, seq_context, void>;
     using timer_type_ = static_mark_timer<5>;
@@ -163,24 +180,40 @@ public:
     using result_type = void;
 
     // CONSTRUCTORS AND ASSIGNS
+    oper_base_() = default;
     oper_base_(oper_base_ const&) = default;
     oper_base_(oper_base_ &&) noexcept = default;
     oper_base_& operator=(oper_base_ const&) = default;
     oper_base_& operator=(oper_base_ &&) noexcept = default;
 
-    explicit oper_base_(context_type& context);
+    // "Operations"
+    void get() {
+        switch (this->state_) {
+            case oper_state::created:
+                this->state_ = oper_state::queued;
+                this->timer_.mark(); // 1
+            case oper_state::queued:
+                traits_::do_on_prepare_(static_cast<SubType&>(*this));
+                this->state_ = oper_state::prepared;
+                this->timer_.mark(); // 2
+                // non-stop
+            case oper_state::prepared:
+                this->state_ = oper_state::started;
+                this->timer_.mark(); // 3
+                traits_::do_on_execute_(static_cast<SubType&>(*this));
+                this->state_ = oper_state::finished;
+                traits_::do_on_finished_(static_cast<SubType&>(*this));
+                this->timer_.mark(); // 4
+                break;
+            default:
+                throw std::logic_error("Illegal operator state");
+        }
+    }
 
-    // PROPERTIES
-    context_type const& context() const;
-    context_type const* context_ptr() const;
-    oper_state state() const;
-    duration_type time() const;
-    duration_type time(oper_timing timing) const;
-    void get();
-    subtype_& discard();
-
-protected:
-    context_type & context();
+    subtype_& discard() {
+        get();
+        return static_cast<SubType&>(*this);
+    };
 };
 
 
@@ -201,39 +234,25 @@ namespace detail_ {
 //
 // oper_state_ (specialized for seq_context)
 //
-template <typename SubType, typename DbmType, typename ResultType>
-oper_base_<SubType, seq_context, DbmType, ResultType>::oper_base_(context_type& context) :
-    superclass_(context)
-{
+template <typename SubType, typename DbmType, typename ContextType, typename ResultType>
+oper_base_seq_<SubType, DbmType, ContextType, ResultType>::oper_base_seq_() : state_(oper_state::created) {
     this->timer_.mark();
 };
 
-template <typename SubType, typename DbmType, typename ResultType>
-typename oper_base_<SubType, seq_context, DbmType, ResultType>::context_type const&
-oper_base_<SubType, seq_context, DbmType, ResultType>::context() const {
-    return *this->context_;
-};
-
-template <typename SubType, typename DbmType, typename ResultType>
-typename oper_base_<SubType, seq_context, DbmType, ResultType>::context_type const*
-oper_base_<SubType, seq_context, DbmType, ResultType>::context_ptr() const {
-    return this->context_;
-}
-
-template <typename SubType, typename DbmType, typename ResultType>
-oper_state oper_base_<SubType, seq_context, DbmType, ResultType>::state() const {
+template <typename SubType, typename DbmType, typename ContextType, typename ResultType>
+oper_state oper_base_seq_<SubType, DbmType, ContextType, ResultType>::state() const {
     return this->state_;
 };
 
-template <typename SubType, typename DbmType, typename ResultType>
-typename oper_base_<SubType, seq_context, DbmType, ResultType>::duration_type
-oper_base_<SubType, seq_context, DbmType, ResultType>::time() const {
+template <typename SubType, typename DbmType, typename ContextType, typename ResultType>
+typename oper_base_seq_<SubType, DbmType, ContextType, ResultType>::duration_type
+oper_base_seq_<SubType, DbmType, ContextType, ResultType>::time() const {
     return this->time(oper_timing::total);
 }
 
-template <typename SubType, typename DbmType, typename ResultType>
-typename oper_base_<SubType, seq_context, DbmType, ResultType>::duration_type
-oper_base_<SubType, seq_context, DbmType, ResultType>::time(oper_timing timing) const {
+template <typename SubType, typename DbmType, typename ContextType, typename ResultType>
+typename oper_base_seq_<SubType, DbmType, ContextType, ResultType>::duration_type
+oper_base_seq_<SubType, DbmType, ContextType, ResultType>::time(oper_timing timing) const {
     if (this->state_ != oper_state::finished) throw std::logic_error("Invalid state, please run the operator first.");
     switch (timing) {
     case oper_timing::total: return this->time(oper_timing::queue) + this->time(oper_timing::launch) + this->time(oper_timing::execution);
@@ -242,66 +261,6 @@ oper_base_<SubType, seq_context, DbmType, ResultType>::time(oper_timing timing) 
     case oper_timing::launch: return this->timer_.time(2, 3);
     case oper_timing::execution: return this->timer_.time(3, 4);
     }
-};
-
-template <typename SubType, typename DbmType, typename ResultType>
-typename oper_base_<SubType, seq_context, DbmType, ResultType>::context_type&
-oper_base_<SubType, seq_context, DbmType, ResultType>::context() {
-    return *this->context_;
-};
-
-template <typename SubType, typename DbmType>
-void oper_base_<SubType, seq_context, DbmType, void>::get() {
-    switch (this->state_) {
-    case oper_state::created:
-        this->state_ = oper_state::queued;
-        this->timer_.mark(); // 1
-    case oper_state::queued:
-        traits_::do_on_prepare_(this->as_subclass_());
-        this->state_ = oper_state::prepared;
-        this->timer_.mark(); // 2
-        // non-stop
-    case oper_state::prepared:
-        this->state_ = oper_state::started;
-        this->timer_.mark(); // 3
-        traits_::do_on_execute_(this->as_subclass_());
-        this->state_ = oper_state::finished;
-        traits_::do_on_finished_(this->as_subclass_());
-        this->timer_.mark(); // 4
-    default:
-        throw std::logic_error("Illegal operator state");
-    }
-}
-
-template <typename SubType, typename DbmType, typename ResultType>
-typename oper_base_<SubType, seq_context, DbmType, ResultType>::result_type
-oper_base_<SubType, seq_context, DbmType, ResultType>::get() {
-    switch (this->state_) {
-    case oper_state::created:
-        this->state_ = oper_state::queued;
-        this->timer_.mark(); // 1
-    case oper_state::queued:
-        traits_::do_on_prepare_(this->as_subclass_());
-        this->state_ = oper_state::prepared;
-        this->timer_.mark(); // 2
-        // non-stop
-    case oper_state::prepared:
-        this->state_ = oper_state::started;
-        this->timer_.mark(); // 3
-        auto ret = traits_::do_on_execute_(this->as_subclass_());
-        this->state_ = oper_state::finished;
-        traits_::do_on_finished_(this->as_subclass_());
-        this->timer_.mark(); // 4
-        return ret;
-    default:
-        throw std::logic_error("Illegal operator state");
-    }
-}
-
-template <typename SubType, typename DbmType, typename ResultType>
-typename oper_base_<SubType, seq_context, DbmType, ResultType>::subtype_&
-oper_base_<SubType, seq_context, DbmType, ResultType>::discard() {
-    get(); return this->as_subclass_();
 };
 
 
