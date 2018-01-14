@@ -134,7 +134,7 @@ target_sources(${api} INTERFACE
     "${api_dir_root}/adl/oct/cpu/dense_dbm.hpp"
 
     #adl/oct/cpu/operators
-    "${api_dir_root}/adl/oct/cpu/shortest_path_oper.hpp"
+    "${api_dir_root}/adl/oct/cpu/close_oper.hpp"
     )
 
 
@@ -200,7 +200,7 @@ add_executable(${test}
     "${test_dir_unit}/adl/oct/cpu/dense_dbm.unit.cpp"
 
     # unit:adl/oct/cpu
-    "${test_dir_unit}/adl/oct/cpu/shortest_path_oper.unit.cpp"
+    "${test_dir_unit}/adl/oct/cpu/close_oper.unit.cpp"
 )
 target_link_libraries(${test} ${test_iapi})
 enable_testing()

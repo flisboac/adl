@@ -177,7 +177,7 @@ namespace cpu {
     template <typename DbmType, typename ContextType> class null_oper;
 
     // Closure
-    template <typename DbmType, typename ContextType> class shortest_path_oper;
+    template <typename DbmType, typename ContextType> class close_oper;
     template <typename DbmType, typename ContextType> class strengthen_oper;
     template <typename DbmType, typename ContextType> class tighten_oper;
     template <typename DbmType, typename ContextType> class closure_oper;

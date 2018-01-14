@@ -34,7 +34,7 @@ enum class oper_kind {
     invalid = 0,
 
     // Closure
-    shortest_path,
+    close,
     strengthen,
     tighten,
     closure, // Implements an is_not_empty verification. Accounts for StrongClosure and TightClosure, from Aziem's paper, depending on the value's type

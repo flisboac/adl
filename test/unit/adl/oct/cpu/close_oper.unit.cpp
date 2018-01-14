@@ -2,7 +2,7 @@
 //
 
 #include "adl_catch.hpp"
-#include "adl/oct/cpu/shortest_path_oper.hpp"
+#include "adl/oct/cpu/close_oper.hpp"
 #include "adl/oct/cons.hpp"
 #include "adl/oct/system.hpp"
 #include "adl/oct/cpu/dense_dbm.hpp"
@@ -14,7 +14,7 @@ using namespace adl::literals;
 using namespace adl::operators;
 using namespace adl::dsl;
 
-TEST_CASE("unit:adl/oct/cpu/shortest_path_oper.hpp", "[unit][oper][adl][adl/oct][adl/oct/cpu]") {
+TEST_CASE("unit:adl/oct/cpu/close_oper.hpp", "[unit][oper][adl][adl/oct][adl/oct/cpu]") {
 
     auto xi = 1_ov;
     auto xj = 2_ov;
@@ -59,7 +59,7 @@ TEST_CASE("unit:adl/oct/cpu/shortest_path_oper.hpp", "[unit][oper][adl][adl/oct]
     REQUIRE( (dbm.is_top(-xdj, -xdj)) );
 
 
-    auto oper = context.make_oper<cpu::shortest_path_oper>(dbm);
+    auto oper = context.make_oper<cpu::close_oper>(dbm);
     oper.get();
 
     for (auto k = dbm.first_var(); k < dbm.end_var(); k++) {

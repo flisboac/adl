@@ -1,7 +1,7 @@
 // $flavio.lisboa @ 2017-11-23.
 //
 /*
- * @file shortest_path_oper.hpp
+ * @file close_oper.hpp
  */
 
 
@@ -25,20 +25,20 @@ adl_BEGIN_MAIN_MODULE(oct)
 namespace cpu {
 
 template <typename DbmType, typename ContextType>
-class shortest_path_oper : public detail_::oper_base_<cpu::shortest_path_oper<DbmType, ContextType>, DbmType, ContextType, void> {
-    using superclass_ = detail_::oper_base_<shortest_path_oper, DbmType, ContextType, void>;
+class close_oper : public detail_::oper_base_<cpu::close_oper<DbmType, ContextType>, DbmType, ContextType, void> {
+    using superclass_ = detail_::oper_base_<close_oper, DbmType, ContextType, void>;
 
 public:
     using dbm_type = DbmType; //typename superclass_::dbm_type;
     using context_type = ContextType; //typename superclass_::context_type;
 
-    shortest_path_oper() = delete;
-    shortest_path_oper(shortest_path_oper const&) = delete;
-    shortest_path_oper(shortest_path_oper &&) noexcept = default;
-    shortest_path_oper& operator=(shortest_path_oper const&) = delete;
-    shortest_path_oper& operator=(shortest_path_oper &&) noexcept = default;
+    close_oper() = delete;
+    close_oper(close_oper const&) = delete;
+    close_oper(close_oper &&) noexcept = default;
+    close_oper& operator=(close_oper const&) = delete;
+    close_oper& operator=(close_oper &&) noexcept = default;
 
-    explicit shortest_path_oper(dbm_type& dbm) : superclass_(), dbm_(&dbm) {}
+    explicit close_oper(dbm_type& dbm) : superclass_(), dbm_(&dbm) {}
 
     void on_execute_() {
         using namespace adl::operators;
