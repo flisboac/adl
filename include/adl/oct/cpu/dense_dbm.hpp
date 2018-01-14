@@ -83,6 +83,9 @@ public:
 
     void initialize(constant_type value);
     void resize(octdiff_var new_last_var, constant_type value = value_limits::top());
+    template <typename CharType, typename CharTraits = std::char_traits<CharType>>
+        void print(std::basic_ostream<CharType, CharTraits> &os) const;
+    std::string to_string() const;
 
 public:
     constant_type& constant_(std::size_t index);
@@ -93,6 +96,7 @@ private:
     context_type * context_;
 };
 
+// TODO Async-enabled dense_dbm
 template <typename ValueType, typename ValueLimits>
 class dense_dbm<async_context, ValueType, ValueLimits>
     : public dense_dbm<seq_context, ValueType, ValueLimits>,
@@ -182,6 +186,35 @@ dense_dbm<ContextType, ValueType, ValueLimits>::constant_(std::size_t index) con
     return data_.at(index);
 };
 
+template <typename ContextType, typename ValueType, typename ValueLimits>
+inline typename dense_dbm<ContextType, ValueType, ValueLimits>::context_type const&
+dense_dbm<ContextType, ValueType, ValueLimits>::context() const {
+    return *this->context_;
+};
+
+template <typename ContextType, typename ValueType, typename ValueLimits>
+inline typename dense_dbm<ContextType, ValueType, ValueLimits>::context_type&
+dense_dbm<ContextType, ValueType, ValueLimits>::context() {
+    return *this->context_;
+};
+
+template <typename ContextType, typename ValueType, typename ValueLimits>
+template <typename CharType, typename CharTraits>
+inline void dense_dbm<ContextType, ValueType, ValueLimits>::print(std::basic_ostream<CharType, CharTraits> &os) const {
+    char const* sep = "";
+    os << "{";
+    for (auto x = 0; x < data_.size(); x++) {
+        os << sep << this->data_[x];
+        sep = ", ";
+    }
+    os << "}";
+};
+template <typename ContextType, typename ValueType, typename ValueLimits>
+inline std::string dense_dbm<ContextType, ValueType, ValueLimits>::to_string() const {
+    std::stringstream ss;
+    this->print(ss);
+    return ss.str();
+};
 
 } // namespace cpu
 } // namespace oct

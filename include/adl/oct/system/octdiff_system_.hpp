@@ -52,14 +52,17 @@ public:
     std::size_t count(oct_var var) const;
     std::size_t count(octdiff_vexpr vexpr) const;
     std::size_t count(oct_vexpr vexpr) const;
+    std::size_t count(octdiff_var xi, octdiff_var xj) const;
 
     const_iterator find(oct_var var) const;
     const_iterator find(octdiff_vexpr vexpr) const;
     const_iterator find(oct_vexpr vexpr) const;
+    const_iterator find(octdiff_var xi, octdiff_var xj) const;
 
     value_type get(oct_var var) const;
     value_type get(octdiff_vexpr vexpr) const;
     value_type get(oct_vexpr vexpr) const;
+    value_type get(octdiff_var xi, octdiff_var xj) const;
 
     value_type const& at(oct_var var) const;
     value_type const& at(octdiff_vexpr vexpr) const;
@@ -130,6 +133,11 @@ inline std::size_t octdiff_system<ValueType, ValueLimits>::count(oct_vexpr vexpr
 };
 
 template <typename ValueType, typename ValueLimits>
+inline std::size_t octdiff_system<ValueType, ValueLimits>::count(octdiff_var xi, octdiff_var xj) const {
+    return this->count(octdiff_vexpr::make_sub(xi, xj));
+};
+
+template <typename ValueType, typename ValueLimits>
 inline typename octdiff_system<ValueType, ValueLimits>::const_iterator
 octdiff_system<ValueType, ValueLimits>::find(oct_var var) const {
     const auto key = to_key_(var);
@@ -159,6 +167,12 @@ octdiff_system<ValueType, ValueLimits>::find(oct_vexpr vexpr) const {
 };
 
 template <typename ValueType, typename ValueLimits>
+inline typename octdiff_system<ValueType, ValueLimits>::const_iterator
+octdiff_system<ValueType, ValueLimits>::find(octdiff_var xi, octdiff_var xj) const {
+    return this->find(octdiff_vexpr::make_sub(xi, xj));
+};
+
+template <typename ValueType, typename ValueLimits>
 inline typename octdiff_system<ValueType, ValueLimits>::value_type
 octdiff_system<ValueType, ValueLimits>::get(oct_var var) const {
     auto iter = find(var);
@@ -180,6 +194,12 @@ octdiff_system<ValueType, ValueLimits>::get(oct_vexpr vexpr) const {
     auto iter = find(vexpr);
     if (iter != this->end()) return *iter;
     return value_type::invalid();
+};
+
+template <typename ValueType, typename ValueLimits>
+inline typename octdiff_system<ValueType, ValueLimits>::value_type
+octdiff_system<ValueType, ValueLimits>::get(octdiff_var xi, octdiff_var xj) const {
+    return this->get(octdiff_vexpr(xi, xj));
 };
 
 template <typename ValueType, typename ValueLimits>

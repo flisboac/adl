@@ -76,6 +76,11 @@ public:
     constant_type const& at(oct_vexpr vexpr) const;
     constant_type const& at(octdiff_vexpr vexpr) const;
 
+    bool is_top(oct_var xi) const { return is_top(this->at(xi)); }
+    bool is_top(octdiff_var xi, octdiff_var xj) const { return is_top(this->at(xi, xj)); }
+    bool is_top(oct_vexpr vexpr) const { return is_top(this->at(vexpr)); }
+    bool is_top(octdiff_vexpr vexpr) const { return is_top(this->at(vexpr)); }
+
     constant_type const& operator[](octdiff_vexpr vexpr) const;
     constant_type const& operator[](oct_vexpr vexpr) const;
     constant_type const& operator[](oct_var var) const;
@@ -85,6 +90,9 @@ public:
     constant_type& operator[](oct_vexpr vexpr);
     constant_type& operator[](oct_var var);
     constant_type& operator[](std::size_t index);
+
+    constexpr static constant_type top() { return value_limits::top(); }
+    constexpr static bool is_top(constant_type c) { return value_limits::is_top(c); }
 
 protected:
     dbm_major const major_;

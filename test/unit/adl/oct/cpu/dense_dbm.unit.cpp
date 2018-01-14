@@ -156,6 +156,8 @@ static void do_test_dbm_by_cons_(cpu::seq_context & seq_ctx, oct_cons<ValueType>
 static void test_dbm_creation_by_conversion_(cpu::seq_context & seq_ctx) {
     constexpr auto xi = 1_ov;
     constexpr auto xj = 2_ov;
+    constexpr auto dxi = xi.to_counterpart();
+    constexpr auto dxj = xj.to_counterpart();
     constexpr auto c = 10.4;
 
     dbm_major majors[] = { dbm_major::row, dbm_major::col };

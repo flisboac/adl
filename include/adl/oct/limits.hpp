@@ -32,6 +32,7 @@ struct value_limits {
     constexpr static value_type top() noexcept;
     constexpr static value_type bottom() noexcept;
     constexpr static bool is_null(value_type value) noexcept;
+    constexpr static bool is_top(value_type c) noexcept;
     static std::string to_string(value_type value);
 };
 
@@ -127,6 +128,12 @@ template <typename Constant>
 constexpr typename adl::oct::value_limits<Constant>::value_type
 adl::oct::value_limits<Constant>::top() noexcept {
     return numeric_limits::has_infinity ? numeric_limits::infinity() : numeric_limits::max();
+}
+
+template <typename Constant>
+constexpr bool
+adl::oct::value_limits<Constant>::is_top(Constant c) noexcept {
+    return numeric_limits::has_infinity ? numeric_limits::infinity() <= c  : numeric_limits::max() == c;
 }
 
 template <typename Constant>
