@@ -41,7 +41,8 @@ enum class oper_kind {
 
     // Validity checking
     is_coherent,
-    is_consistent, // Accounts for both the int and real operators, depending on the value's type
+    is_int_consistent,
+    is_consistent,
     is_closed, // Implies a stronger form of consistency (center diagonal's elements = 0)
     is_strongly_closed, // Accounts for strong closure (for reals) and tight closure (for integers). Not applicable after tightening!
     is_tightly_closed, // Applicable only for the result of tighten

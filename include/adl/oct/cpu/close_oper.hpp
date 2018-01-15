@@ -8,6 +8,8 @@
 #ifndef adl__oct__cpu__shortest_path_oper__hpp__
 #define adl__oct__cpu__shortest_path_oper__hpp__
 
+#include <algorithm>
+
 #include "adl.cfg.hpp"
 #include "adl/timer.hpp"
 

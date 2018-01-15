@@ -28,8 +28,10 @@ struct value_limits {
           "for the provided value type.");
 
     constexpr static const bool valid = numeric_limits::is_specialized;
+	constexpr static const bool integer = numeric_limits::is_integer;
+	constexpr static const bool native_integer = numeric_limits::is_integer;
 
-    constexpr static value_type top() noexcept;
+	constexpr static value_type top() noexcept;
     constexpr static value_type bottom() noexcept;
     constexpr static bool is_null(value_type value) noexcept;
     constexpr static bool is_top(value_type c) noexcept;
