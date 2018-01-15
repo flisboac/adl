@@ -8,8 +8,6 @@
 #ifndef adl__oct__cpu__shortest_path_oper__hpp__
 #define adl__oct__cpu__shortest_path_oper__hpp__
 
-#include <fstream>
-
 #include "adl.cfg.hpp"
 #include "adl/timer.hpp"
 
@@ -44,13 +42,24 @@ public:
         using namespace adl::operators;
         auto &dbm = *dbm_;
         for (auto k = dbm.first_var(); k < dbm.end_var(); k++) {
+            auto const v_kK = dbm.at(k, -k);
+            auto const v_Kk = dbm.at(-k, k);
+
             for (auto i = dbm.first_var(); i < dbm.end_var(); i++) {
-                auto v_ik = dbm.at(i, k);
+                auto const v_ik = dbm.at(i, k);
+                auto const v_iK = dbm.at(i, -k);
 
                 for (auto j = dbm.first_var(); j < dbm.end_var(); j++) {
-                    auto v_ij = dbm.at(i, j);
-                    auto v_kj = dbm.at(k, j);
-                    auto val = std::min(v_ij, v_ik + v_kj);
+                    auto const v_ij = dbm.at(i, j);
+                    auto const v_kj = dbm.at(k, j);
+                    auto const v_Kj = dbm.at(-k, j);
+                    auto const val = std::min({
+                        v_ij,
+                        v_ik + v_kj,
+                        v_iK + v_Kj,
+                        v_ik + v_kK + v_Kj,
+                        v_iK + v_Kk + v_kj
+                    });
                     dbm.at(i, j) = val;
                 }
             }

@@ -135,6 +135,7 @@ target_sources(${api} INTERFACE
 
     #adl/oct/cpu/operators
     "${api_dir_root}/adl/oct/cpu/close_oper.hpp"
+    "${api_dir_root}/adl/oct/cpu/strengthen_oper.hpp"
     )
 
 
@@ -201,6 +202,7 @@ add_executable(${test}
 
     # unit:adl/oct/cpu
     "${test_dir_unit}/adl/oct/cpu/close_oper.unit.cpp"
+    "${test_dir_unit}/adl/oct/cpu/strengthen_oper.unit.cpp"
 )
 target_link_libraries(${test} ${test_iapi})
 enable_testing()
