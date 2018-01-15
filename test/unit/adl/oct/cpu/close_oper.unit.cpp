@@ -39,7 +39,7 @@ TEST_CASE("unit:adl/oct/cpu/close_oper.hpp", "[unit][oper][adl][adl/oct][adl/oct
     REQUIRE( (diff_system.get(-xdi,  xdi).c() ==  6.0) );
 
     auto context = cpu::seq_context::make();
-    auto dbm = context.make_dbm<cpu::dense_dbm>(diff_system, dbm_major::col);
+    auto dbm = context.make_dbm<cpu::dense_dbm>(diff_system);
 
     REQUIRE( (dbm.is_top( xdi,  xdi)) );
     REQUIRE( (dbm.at    ( xdi, -xdi) == 6.0) );
