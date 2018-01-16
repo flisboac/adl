@@ -27,6 +27,7 @@ protected:
 
 public:
     using typename superclass_::identity_var_type;
+    using typename superclass_::counterpart_identity_var_type;
 
     constexpr static std::size_t no_index() noexcept;
     identity_var_type first_var() const noexcept;

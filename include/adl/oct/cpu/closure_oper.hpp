@@ -60,7 +60,7 @@ public:
     bool on_execute_() {
         close_.get();
         if (is_consistent_.get()) {
-            strengthen_.get();
+            if (close_.strengthening()) strengthen_.get();
             return true;
         }
         return false;

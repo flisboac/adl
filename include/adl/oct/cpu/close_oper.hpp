@@ -43,7 +43,7 @@ public:
     void on_execute_() {
         using namespace adl::operators;
         auto &dbm = *dbm_;
-        for (auto k = dbm.first_var(); k < dbm.end_var(); k++) {
+        for (auto k = dbm.first_var(); k < dbm.end_var(); k.increment_oct()) {
             auto const v_kK = dbm.at(k, -k);
             auto const v_Kk = dbm.at(-k, k);
 
@@ -65,8 +65,23 @@ public:
                     dbm.at(i, j) = val;
                 }
             }
+
+            // TODO Check: Is this really needed? (as per Miné, p. 20, Figure 9)
+            if (this->strengthening()) {
+                for (auto i = dbm.first_var(); i < dbm.end_var(); i++) {
+                    for (auto j = dbm.first_var(); j < dbm.end_var(); j++) {
+                        auto const v_ij = dbm.at(i, j);
+                        auto const v_iI = dbm.at(i, -i);
+                        auto const v_Jj = dbm.at(-j, j);
+                        auto const val = std::min(v_ij, (v_iI + v_Jj) / 2);
+                        dbm.at(i, j) = val;
+                    }
+                }
+            }
         }
     }
+
+    bool strengthening() const noexcept { return true; }
 
 private:
     dbm_type* dbm_ = nullptr;

@@ -112,6 +112,7 @@ public:
     constexpr var_type& negate() noexcept;
     constexpr var_type& increment(std::size_t offset = 1) noexcept;
     constexpr var_type& decrement(std::size_t offset = 1) noexcept;
+    constexpr var_type& increment_oct(std::size_t offset = 1) noexcept;
 
     // Utility functions
     template <typename CharTraits = std::char_traits<char>> void print(std::basic_ostream<char, CharTraits>& os) const;
@@ -127,6 +128,7 @@ public:
     constexpr var_type to_post_incremented(std::size_t offset = 1) noexcept;
     constexpr var_type to_decremented(std::size_t offset = 1) const noexcept;
     constexpr var_type to_post_decremented(std::size_t offset = 1) noexcept;
+    constexpr var_type to_incremented_oct(std::size_t offset = 1) const noexcept;
 
     // conversion functions
     constexpr std::size_t to_index() const noexcept;
@@ -383,6 +385,12 @@ var_base_<VarType, VarTraits>::to_negated() const noexcept {
 }
 
 template <typename VarType, typename VarTraits>
+constexpr typename var_base_<VarType, VarTraits>::var_type
+var_base_<VarType, VarTraits>::to_incremented_oct(std::size_t offset) const noexcept {
+    return this->to_normalized().incremented(offset * 2);
+}
+
+template <typename VarType, typename VarTraits>
 constexpr typename var_base_<VarType, VarTraits>::var_type&
 var_base_<VarType, VarTraits>::increment(size_t offset) noexcept {
     id_ = var_id_traits::increment_id(id_, offset);
@@ -452,6 +460,12 @@ constexpr typename var_base_<VarType, VarTraits>::var_type&
 var_base_<VarType, VarTraits>::as_valid() noexcept {
     id_ = valid() ? id_ : var_id_limits::invalid_var_id;
     return this->as_subclass_();
+}
+
+template <typename VarType, typename VarTraits>
+constexpr typename var_base_<VarType, VarTraits>::var_type&
+var_base_<VarType, VarTraits>::increment_oct(std::size_t offset) noexcept {
+    return this->normalize().increment(offset * 2);
 }
 
 template <typename VarType, typename VarTraits>

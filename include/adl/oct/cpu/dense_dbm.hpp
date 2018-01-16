@@ -41,6 +41,10 @@ public:
     using typename superclass_::identity_var_type;
     using typename superclass_::constant_type;
     using typename superclass_::value_limits;
+    using typename superclass_::identity_cons_type;
+    using typename superclass_::counterpart_identity_cons_type;
+    using typename superclass_::identity_vexpr_type;
+    using typename superclass_::counterpart_identity_vexpr_type;
 
     using superclass_::to_end_index_;
 
@@ -86,6 +90,22 @@ public:
     template <typename CharType, typename CharTraits = std::char_traits<CharType>>
         void print(std::basic_ostream<CharType, CharTraits> &os) const;
     std::string to_string() const;
+
+    // NOTE These are NOT a substitute for the `add_cons` operations!
+    // They do NOT verify other constraints or implement any specific incremental algorithm.
+    // They just assign values to the constraints' indexes in the matrix. They're supposed to be used
+    // as means to prepare a DBM without an octdiff_system (primarily for tests, for "poking holes"). Use
+    // at your own risk!
+    void assign(counterpart_identity_cons_type oct_cons);
+    void assign(std::initializer_list<counterpart_identity_cons_type> list);
+    void assign(identity_cons_type cons);
+    void assign(std::initializer_list<identity_cons_type> list);
+
+    // Consider `clear` as an `assign` to `this->top()` (infinity).
+    void clear(counterpart_identity_vexpr_type oct_vexpr);
+    void clear(std::initializer_list<counterpart_identity_vexpr_type> list);
+    void clear(identity_vexpr_type vexpr);
+    void clear(std::initializer_list<identity_vexpr_type> list);
 
 public:
     constant_type& constant_(std::size_t index);
@@ -209,11 +229,66 @@ inline void dense_dbm<ContextType, ValueType, ValueLimits>::print(std::basic_ost
     }
     os << "}";
 };
+
 template <typename ContextType, typename ValueType, typename ValueLimits>
 inline std::string dense_dbm<ContextType, ValueType, ValueLimits>::to_string() const {
     std::stringstream ss;
     this->print(ss);
     return ss.str();
+};
+
+template <typename ContextType, typename ValueType, typename ValueLimits>
+inline void dense_dbm<ContextType, ValueType, ValueLimits>::assign(counterpart_identity_cons_type oct_cons) {
+    auto pair = oct_cons.split();
+    this->assign(pair.di());
+    if (!pair.unit()) this->assign(pair.dj());
+};
+
+template <typename ContextType, typename ValueType, typename ValueLimits>
+inline void dense_dbm<ContextType, ValueType, ValueLimits>::assign(
+    std::initializer_list<counterpart_identity_cons_type> list
+) {
+    for (auto& cons : list) assign(cons);
+};
+
+template <typename ContextType, typename ValueType, typename ValueLimits>
+inline void dense_dbm<ContextType, ValueType, ValueLimits>::assign(identity_cons_type cons) {
+    if (cons.last_var() > this->last_var()) throw std::logic_error("Variable overflow.");
+    this->at(cons) = cons.c();
+};
+
+template <typename ContextType, typename ValueType, typename ValueLimits>
+inline void dense_dbm<ContextType, ValueType, ValueLimits>::assign(
+    std::initializer_list<identity_cons_type> list
+) {
+    for (auto& cons : list) assign(cons);
+};
+
+template <typename ContextType, typename ValueType, typename ValueLimits>
+inline void dense_dbm<ContextType, ValueType, ValueLimits>::clear(counterpart_identity_vexpr_type oct_vexpr) {
+    auto pair = oct_cons<ValueType>(oct_vexpr, 0).split();
+    this->clear(pair.di());
+    if (!pair.unit()) this->clear(pair.dj());
+};
+
+template <typename ContextType, typename ValueType, typename ValueLimits>
+inline void dense_dbm<ContextType, ValueType, ValueLimits>::clear(
+    std::initializer_list<counterpart_identity_vexpr_type> list
+) {
+    for (auto& cons : list) clear(cons);
+};
+
+template <typename ContextType, typename ValueType, typename ValueLimits>
+inline void dense_dbm<ContextType, ValueType, ValueLimits>::clear(identity_vexpr_type vexpr) {
+    if (vexpr.last_var() > this->last_var()) throw std::logic_error("Variable overflow.");
+    this->at(vexpr) = this->top();
+};
+
+template <typename ContextType, typename ValueType, typename ValueLimits>
+inline void dense_dbm<ContextType, ValueType, ValueLimits>::clear(
+    std::initializer_list<identity_vexpr_type> list
+) {
+    for (auto& cons : list) clear(cons);
 };
 
 } // namespace cpu
