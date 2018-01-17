@@ -31,6 +31,7 @@ class tighten_oper : public detail_::oper_base_<cpu::tighten_oper<DbmType, Conte
 public:
     using dbm_type = DbmType; //typename superclass_::dbm_type;
     using context_type = ContextType; //typename superclass_::context_type;
+    using value_limits = typename dbm_type::value_limits;
 
     tighten_oper() = delete;
     tighten_oper(tighten_oper const&) = delete;
@@ -45,7 +46,7 @@ public:
         auto &dbm = *dbm_;
         for (auto i = dbm.first_var(); i < dbm.end_var(); i++) {
             auto const v_iI = dbm.at(i, -i);
-            dbm.at(i, -i) = 2 * std::floor(v_iI / 2);
+            dbm.at(i, -i) = 2 * value_limits::floor(v_iI / 2);
         }
     }
 

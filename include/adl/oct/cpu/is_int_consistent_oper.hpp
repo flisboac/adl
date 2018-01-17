@@ -31,6 +31,7 @@ class is_int_consistent_oper : public detail_::oper_base_<cpu::is_int_consistent
 public:
     using dbm_type = DbmType; //typename superclass_::dbm_type;
     using context_type = ContextType; //typename superclass_::context_type;
+    using value_limits = typename dbm_type::value_limits;
 
     is_int_consistent_oper() = delete;
     is_int_consistent_oper(is_int_consistent_oper const&) = delete;

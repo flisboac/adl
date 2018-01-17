@@ -35,6 +35,12 @@ struct value_limits {
     constexpr static value_type bottom() noexcept;
     constexpr static bool is_null(value_type value) noexcept;
     constexpr static bool is_top(value_type c) noexcept;
+	constexpr static ValueType const& min(ValueType const& a, ValueType const& b);
+	constexpr static ValueType min(std::initializer_list<ValueType> list);
+	template <typename ValueType_, typename = std::enable_if_t<std::numeric_limits<ValueType_>::is_integer>>
+        constexpr static ValueType_ const& floor_div(ValueType_ const& b) { return b; }
+	template <typename ValueType_, typename = std::enable_if_t<!std::numeric_limits<ValueType_>::is_integer>>
+        constexpr static ValueType floor(ValueType_ b) { return std::floor(b); }
     static std::string to_string(value_type value);
 };
 
@@ -152,6 +158,16 @@ constexpr bool adl::oct::value_limits<Constant>::is_null(value_type value) noexc
 template <typename Constant>
 adl_IMPL std::string value_limits<Constant>::to_string(value_type value) {
     return std::to_string(value);
+}
+
+template <typename Constant>
+constexpr Constant const& value_limits<Constant>::min(Constant const& a, Constant const& b) {
+	return std::min(a, b);
+}
+
+template <typename Constant>
+constexpr Constant value_limits<Constant>::min(std::initializer_list<Constant> list) {
+	return std::min(list);
 }
 
 adl_END_MAIN_MODULE

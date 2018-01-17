@@ -29,6 +29,7 @@ class strong_close_oper : public detail_::oper_base_<cpu::strong_close_oper<DbmT
 public:
     using dbm_type = DbmType; //typename superclass_::dbm_type;
     using context_type = ContextType; //typename superclass_::context_type;
+    using value_limits = typename dbm_type::value_limits;
 
     strong_close_oper() = delete;
     strong_close_oper(strong_close_oper const&) = delete;
@@ -53,7 +54,7 @@ public:
                     auto const v_ij = dbm.at(i, j);
                     auto const v_kj = dbm.at(k, j);
                     auto const v_Kj = dbm.at(-k, j);
-                    auto const val = std::min({
+                    auto const val = value_limits::min({
                         v_ij,
                         v_ik + v_kj,
                         v_iK + v_Kj,
@@ -70,7 +71,7 @@ public:
                     auto const v_ij = dbm.at(i, j);
                     auto const v_iI = dbm.at(i, -i);
                     auto const v_Jj = dbm.at(-j, j);
-                    auto const val = std::min(v_ij, (v_iI + v_Jj) / 2);
+                    auto const val = value_limits::min(v_ij, (v_iI + v_Jj) / 2);
                     dbm.at(i, j) = val;
                 }
             }

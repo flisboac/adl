@@ -84,6 +84,7 @@ class closure_oper_impl_<DbmType, ContextType, true> :
 public:
     using dbm_type = DbmType; //typename superclass_::dbm_type;
     using context_type = ContextType; //typename superclass_::context_type;
+    using value_limits = typename dbm_type::value_limits;
 
     closure_oper_impl_() = delete;
     closure_oper_impl_(closure_oper_impl_ const&) = delete;

@@ -30,6 +30,7 @@ class strengthen_oper : public detail_::oper_base_<cpu::strengthen_oper<DbmType,
 public:
     using dbm_type = DbmType; //typename superclass_::dbm_type;
     using context_type = ContextType; //typename superclass_::context_type;
+    using value_limits = typename dbm_type::value_limits;
 
     strengthen_oper() = delete;
     strengthen_oper(strengthen_oper const&) = delete;
@@ -48,7 +49,7 @@ public:
                 auto const v_iI = dbm.at(i, -i);
                 auto const v_Jj = dbm.at(-j, j);
                 auto const v_alt = (v_iI + v_Jj) / 2;
-                auto const val = std::min(v_ij, v_alt);
+                auto const val = value_limits::min(v_ij, v_alt);
                 dbm.at(i, j) = val;
             }
         }
