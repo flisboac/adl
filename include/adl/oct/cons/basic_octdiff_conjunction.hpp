@@ -38,7 +38,7 @@ public:
 
     // Var types
     using var_type = VarType;
-    using value_type = ConstantType;
+    using constant_type = ConstantType;
     using var_traits = typename var_type::var_traits;
     using counterpart_var_type = typename var_traits::counterpart_var_type;
     using identity_var_type = typename var_traits::identity_var_type;
@@ -50,9 +50,9 @@ public:
     using identity_vexpr_type = typename var_traits::identity_vexpr_type;
 
     // Cons types
-    using cons_type = basic_octdiff_cons<value_type, var_type>;
-    using counterpart_cons_type = basic_oct_cons<value_type, counterpart_var_type>;
-    using identity_cons_type = basic_oct_cons<value_type, identity_var_type>;
+    using cons_type = basic_octdiff_cons<constant_type, var_type>;
+    using counterpart_cons_type = basic_oct_cons<constant_type, counterpart_var_type>;
+    using identity_cons_type = basic_oct_cons<constant_type, identity_var_type>;
 
     struct less {
         constexpr bool operator()(basic_octdiff_conjunction const& lhs, basic_octdiff_conjunction const& rhs) const noexcept;
@@ -88,7 +88,7 @@ public:
             typename = std::enable_if_t<
                 common_var<VarType_>::is_oct_space
                 && !std::is_same<VarType_, var_type>::value
-                && std::is_convertible<ConstantType_, value_type>::value>>
+                && std::is_convertible<ConstantType_, constant_type>::value>>
     constexpr basic_octdiff_conjunction(basic_oct_cons<ConstantType_, VarType_> cons) noexcept;
 
     // static construction functions

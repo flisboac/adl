@@ -108,7 +108,7 @@ template <typename CharType,
         typename = adl::oct::is_valid_dbm_t<DbmType>>
 std::basic_ostream<CharType, CharTraits>& operator<<(
         std::basic_ostream<CharType, CharTraits>& os,
-        adl::oct::dense_dbm_base_<DbmType, typename DbmType::value_type, typename DbmType::constant_limits> const& dbm);
+        adl::oct::dense_dbm_base_<DbmType, typename DbmType::constant_type, typename DbmType::constant_limits> const& dbm);
 
 
 //

@@ -191,7 +191,7 @@ private:
                 v_ia + d + v_bB + d + v_AI
             });
 
-            dbm.at(i, I) = 2 * constant_limits::floor(val / 2);
+            dbm.at(i, I) = constant_limits::floor(val / 2) * 2;
         }
 
         for (auto i = dbm.first_var(); i < dbm.end_var(); i++) {

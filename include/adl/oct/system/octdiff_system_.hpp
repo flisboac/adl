@@ -37,9 +37,9 @@ public:
     using typename superclass_::iterator;
     using typename superclass_::const_iterator;
     using typename superclass_::key_type;
-    using typename superclass_::value_type;
-    using typename superclass_::literal_octdiff_conjunction_type;
     using typename superclass_::constant_type;
+    using typename superclass_::literal_octdiff_conjunction_type;
+    using typename superclass_::value_type;
 
     octdiff_system() = default;
     octdiff_system(octdiff_system const&) = default;
@@ -275,7 +275,7 @@ template <typename VarType_, typename>
 inline typename octdiff_system<ConstantType, ValueLimits>::literal_octdiff_conjunction_type
 octdiff_system<ConstantType, ValueLimits>::split_(basic_oct_vexpr<VarType_> vexpr) const {
     if (vexpr.valid()) {
-        const basic_oct_cons<value_type, VarType_> cons(vexpr, value_type());
+        const basic_oct_cons<constant_type, VarType_> cons(vexpr, constant_type());
         auto split = cons.split();
         return split;
     }

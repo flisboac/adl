@@ -34,7 +34,7 @@ public:
 
     // Var types
     using var_type = VarType;
-    using value_type = ConstantType;
+    using constant_type = ConstantType;
     using constant_limits = adl::oct::constant_limits<ConstantType>;
     using var_traits = typename var_type::var_traits;
     using counterpart_var_type = typename var_traits::counterpart_var_type;
@@ -59,7 +59,7 @@ public:
     using cons_type = typename var_traits::template cons_type<ConstantType>;
     using counterpart_cons_type = typename var_traits::template counterpart_cons_type<ConstantType>;
     using identity_cons_type = typename var_traits::template identity_cons_type<ConstantType>;
-    using octdiff_conjunction_type = std::conditional_t<space == domain_space::oct, basic_octdiff_conjunction<value_type, counterpart_var_type>, basic_octdiff_conjunction<value_type, var_type>>;
+    using octdiff_conjunction_type = std::conditional_t<space == domain_space::oct, basic_octdiff_conjunction<constant_type, counterpart_var_type>, basic_octdiff_conjunction<constant_type, var_type>>;
     using octdiff_conjunction_vexpr_type = std::conditional_t<space == domain_space::oct, counterpart_vexpr_type, vexpr_type>;
     using octdiff_conjunction_cons_type = std::conditional_t<space == domain_space::oct, counterpart_cons_type, cons_type>;
 
@@ -88,7 +88,7 @@ public:
     cons_base_& operator=(cons_base_&&) noexcept = default;
 
     // Constructors and assignments
-    constexpr cons_base_(vexpr_type vexpr, value_type c) noexcept;
+    constexpr cons_base_(vexpr_type vexpr, constant_type c) noexcept;
 
     // static construction functions
     constexpr static cons_type invalid() noexcept;
@@ -101,8 +101,8 @@ public:
     constexpr var_type xI() const noexcept;
     constexpr var_type xj() const noexcept; // always invalid if `unit() && space == domain_space::oct`
     constexpr var_type xJ() const noexcept;
-    constexpr value_type const& c() const noexcept;
-    constexpr value_type const& constant() const noexcept;
+    constexpr constant_type const& c() const noexcept;
+    constexpr constant_type const& constant() const noexcept;
     constexpr var_type last_var() const noexcept;
     constexpr std::size_t last_var_index() const noexcept;
     constexpr bool valid() const noexcept;
@@ -139,7 +139,7 @@ public:
     constexpr bool operator!() const noexcept;
     constexpr explicit operator bool() const noexcept;
     constexpr explicit operator std::string() const;
-    constexpr explicit operator value_type() const noexcept;
+    constexpr explicit operator constant_type() const noexcept;
 
 private:
     constexpr subclass_& as_subclass_() noexcept;
@@ -147,7 +147,7 @@ private:
 
 protected:
     vexpr_type vexpr_;
-    value_type c_ = value_type();
+    constant_type c_ = constant_type();
 };
 
 template <typename ConstantType, typename FirstVarType, typename SecondVarType, bool Specialized = common_var<FirstVarType, SecondVarType>::valid>
@@ -187,7 +187,7 @@ public:
     constexpr static const domain_space counterpart_space = domain_space::oct;
     constexpr static const bool valid = common_var<FirstVarType, SecondVarType>::valid && space == common_var<FirstVarType, SecondVarType>::space;
     typedef typename var_traits::template cons_type<ConstantType> var_type;
-    using value_type = ConstantType;
+    using constant_type = ConstantType;
     using type = basic_octdiff_conjunction<ConstantType, var_type>;
     constexpr static const bool is_oct_space = false;
     constexpr static const bool is_octdiff_space = true;
@@ -237,7 +237,7 @@ constexpr std::size_t cons_base_<ConstantType, VarType>::hash::operator()(cons_t
 }
 
 template <typename ConstantType, typename VarType>
-constexpr cons_base_<ConstantType, VarType>::cons_base_(vexpr_type vexpr, value_type c) noexcept :
+constexpr cons_base_<ConstantType, VarType>::cons_base_(vexpr_type vexpr, constant_type c) noexcept :
         vexpr_(vexpr),
         c_(c) {}
 
@@ -272,13 +272,13 @@ cons_base_<ConstantType, VarType>::xJ() const noexcept {
 }
 
 template <typename ConstantType, typename VarType>
-constexpr typename cons_base_<ConstantType, VarType>::value_type const&
+constexpr typename cons_base_<ConstantType, VarType>::constant_type const&
 cons_base_<ConstantType, VarType>::c() const noexcept {
     return c_;
 }
 
 template <typename ConstantType, typename VarType>
-constexpr typename cons_base_<ConstantType, VarType>::value_type const&
+constexpr typename cons_base_<ConstantType, VarType>::constant_type const&
 cons_base_<ConstantType, VarType>::constant() const noexcept {
     return c();
 }
@@ -328,7 +328,7 @@ template <typename ConstantType, typename VarType>
 constexpr typename cons_base_<ConstantType, VarType>::cons_type&
 cons_base_<ConstantType, VarType>::invalidate() noexcept {
     vexpr_.invalidate();
-    c_ = value_type();
+    c_ = constant_type();
     return as_subclass_();
 }
 
@@ -398,7 +398,7 @@ constexpr cons_base_<ConstantType, VarType>::operator std::string() const {
 }
 
 template <typename ConstantType, typename VarType>
-constexpr cons_base_<ConstantType, VarType>::operator value_type() const noexcept {
+constexpr cons_base_<ConstantType, VarType>::operator constant_type() const noexcept {
     return c();
 }
 

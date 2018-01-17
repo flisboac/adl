@@ -399,7 +399,7 @@ adl_IMPL typename var_set<Domain>::value_type const& var_set<Domain>::at(var_typ
 
 template <domain_space Domain>
 adl_IMPL typename var_set<Domain>::value_type const& var_set<Domain>::operator[](var_type var) const {
-    return get(var);
+    return this->get(var);
 }
 
 

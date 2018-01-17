@@ -35,7 +35,7 @@ private:
 
 public:
     using typename superclass_::var_type;
-    using typename superclass_::value_type;
+    using typename superclass_::constant_type;
     using typename superclass_::vexpr_type;
     using typename superclass_::octdiff_conjunction_type;
     using typename superclass_::octdiff_conjunction_cons_type;
@@ -62,8 +62,8 @@ public:
             typename VarType_,
             typename = std::enable_if_t<
                     common_var<VarType_>::is_oct_space
-                    && (!std::is_same<VarType_, var_type>::value || !std::is_same<ConstantType_, value_type>::value)
-                    && std::is_convertible<ConstantType_, value_type>::value>>
+                    && (!std::is_same<VarType_, var_type>::value || !std::is_same<ConstantType_, constant_type>::value)
+                    && std::is_convertible<ConstantType_, constant_type>::value>>
         constexpr basic_oct_cons(basic_oct_cons<ConstantType_, VarType_> const& cons);
 
     template <
@@ -73,11 +73,11 @@ public:
                     && !std::is_same<VarType_, var_type>::value>>
         explicit constexpr basic_oct_cons(basic_oct_vexpr<VarType_> vexpr);
 
-    constexpr basic_oct_cons(var_type xi, value_type c);
-    constexpr static basic_oct_cons make_upper_limit(var_type xi, value_type c) noexcept; // xi <= c
-    constexpr static basic_oct_cons make_upper_limit(vexpr_type vexpr, value_type c) noexcept; // +-xi [+- xj] <= c
-    constexpr static basic_oct_cons make_lower_limit(var_type xi, value_type c) noexcept; // xi >= c (only)
-    constexpr static basic_oct_cons make_lower_limit(vexpr_type vexpr, value_type c) noexcept; // xi >= c (only)
+    constexpr basic_oct_cons(var_type xi, constant_type c);
+    constexpr static basic_oct_cons make_upper_limit(var_type xi, constant_type c) noexcept; // xi <= c
+    constexpr static basic_oct_cons make_upper_limit(vexpr_type vexpr, constant_type c) noexcept; // +-xi [+- xj] <= c
+    constexpr static basic_oct_cons make_lower_limit(var_type xi, constant_type c) noexcept; // xi >= c (only)
+    constexpr static basic_oct_cons make_lower_limit(vexpr_type vexpr, constant_type c) noexcept; // xi >= c (only)
 
     template <
             typename ConstantType_,
@@ -312,15 +312,15 @@ namespace oct {
 template <typename ConstantType, typename VarType>
 template <typename ConstantType_, typename VarType_, typename>
 constexpr basic_oct_cons<ConstantType, VarType>::basic_oct_cons(basic_oct_cons<ConstantType_, VarType_> const& cons)
-        : basic_oct_cons(vexpr_type(var_type(cons.xi()), var_type(cons.xj())), value_type(cons.c())) {};
+        : basic_oct_cons(vexpr_type(var_type(cons.xi()), var_type(cons.xj())), constant_type(cons.c())) {};
 
 template <typename ConstantType, typename VarType>
 template <typename VarType_, typename>
 constexpr basic_oct_cons<ConstantType, VarType>::basic_oct_cons(basic_oct_vexpr<VarType_> vexpr)
-        : basic_oct_cons(basic_oct_vexpr<var_type>(vexpr.xi(), vexpr.xj()), value_type()) {};
+        : basic_oct_cons(basic_oct_vexpr<var_type>(vexpr.xi(), vexpr.xj()), constant_type()) {};
 
 template <typename ConstantType, typename VarType>
-constexpr basic_oct_cons<ConstantType, VarType>::basic_oct_cons(var_type xi, value_type c) :
+constexpr basic_oct_cons<ConstantType, VarType>::basic_oct_cons(var_type xi, constant_type c) :
         superclass_(vexpr_type::make_unit(xi), c) {}
 
 template <typename ConstantType, typename VarType>
@@ -346,7 +346,7 @@ constexpr basic_oct_cons<ConstantType, VarType>::operator basic_oct_vexpr<VarTyp
 template <typename ConstantType, typename VarType>
 constexpr basic_oct_cons<ConstantType, VarType> basic_oct_cons<ConstantType, VarType>::make_upper_limit(
         var_type xi,
-        value_type c
+        constant_type c
 ) noexcept {
     return basic_oct_cons<ConstantType, VarType>(xi, c).as_valid();
 }
@@ -354,7 +354,7 @@ constexpr basic_oct_cons<ConstantType, VarType> basic_oct_cons<ConstantType, Var
 template <typename ConstantType, typename VarType>
 constexpr basic_oct_cons<ConstantType, VarType> basic_oct_cons<ConstantType, VarType>::make_upper_limit(
         vexpr_type vexpr,
-        value_type c
+        constant_type c
 ) noexcept {
     return basic_oct_cons<ConstantType, VarType>(vexpr, c).as_valid();
 }
@@ -362,7 +362,7 @@ constexpr basic_oct_cons<ConstantType, VarType> basic_oct_cons<ConstantType, Var
 template <typename ConstantType, typename VarType>
 constexpr basic_oct_cons<ConstantType, VarType> basic_oct_cons<ConstantType, VarType>::make_lower_limit(
         var_type xi,
-        value_type c
+        constant_type c
 ) noexcept {
     return basic_oct_cons<ConstantType, VarType>(xi.to_negated(), -c).as_valid();
 }
@@ -370,7 +370,7 @@ constexpr basic_oct_cons<ConstantType, VarType> basic_oct_cons<ConstantType, Var
 template <typename ConstantType, typename VarType>
 constexpr basic_oct_cons<ConstantType, VarType> basic_oct_cons<ConstantType, VarType>::make_lower_limit(
         vexpr_type vexpr,
-        value_type c
+        constant_type c
 ) noexcept {
     return vexpr.unit() ? basic_oct_cons<ConstantType, VarType>(vexpr.xi().to_negated(), -c).as_valid() : invalid();
 }

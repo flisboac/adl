@@ -22,15 +22,24 @@ enum class domain_space {
     octdiff
 };
 
+
+//
+// constant.hpp
+//
+using default_constant_type = float;
+template <typename ConstantType> class constant_limits;
+template <typename FloatType> class basic_float_int;
+using float_int = basic_float_int<float>;
+using double_int = basic_float_int<double>;
+using ldouble_int = basic_float_int<long double>;
+
+
 //
 // var_id.hpp, constant.hpp
 //
-
 using default_var_id_type = int;
-using default_constant_type = float;
-
-template <typename ConstantType> class constant_limits;
 template <domain_space Domain> struct var_id_limits;
+
 
 /**
  * The hard-limit maximum number of octagonal variables supported for a given variable id's type.

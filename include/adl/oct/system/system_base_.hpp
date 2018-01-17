@@ -65,8 +65,8 @@ public:
     constexpr static const auto counterpart_space = domain_space_traits::counterpart_space;
 
 protected:
-    using container_value_type_ = literal_cons_type; //typename std::conditional<space == domain_space::oct, literal_cons_type, literal_octdiff_conjunction_type>::type;
-    using container_type_ = std::set<container_value_type_, typename container_value_type_::less>;
+    using container_constant_type_ = literal_cons_type; //typename std::conditional<space == domain_space::oct, literal_cons_type, literal_octdiff_conjunction_type>::type;
+    using container_type_ = std::set<container_constant_type_, typename container_constant_type_::less>;
     using container_const_iterator_ = typename container_type_::const_iterator;
     using container_iterator_ = typename container_type_::iterator;
     using container_reverse_iterator_ = typename container_type_::reverse_iterator;
@@ -74,7 +74,7 @@ protected:
 
 public:
     using var_set_type = var_set<space>;
-    using value_type = container_value_type_;
+    using value_type = container_constant_type_;
     using key_type = value_type;
     using const_iterator = container_const_iterator_;
     using iterator = container_iterator_;

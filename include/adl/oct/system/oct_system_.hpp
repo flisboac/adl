@@ -33,11 +33,11 @@ public:
     using typename superclass_::counterpart_system_type;
     using typename superclass_::identity_cons_type;
     using typename superclass_::key_type;
-    using typename superclass_::value_type;
+    using typename superclass_::constant_type;
     using typename superclass_::literal_var_type;
     using typename superclass_::iterator;
     using typename superclass_::const_iterator;
-    using typename superclass_::constant_type;
+    using typename superclass_::value_type;
     using typename superclass_::literal_cons_type;
     using typename superclass_::literal_vexpr_type;
 

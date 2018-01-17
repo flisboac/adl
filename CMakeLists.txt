@@ -192,7 +192,7 @@ add_executable(${test}
     "${test_dir_unit}/adl/timer.unit.cpp"
 
     # unit:adl/oct
-    "${test_dir_unit}/adl/oct/limits.unit.cpp"
+    "${test_dir_unit}/adl/oct/constant.unit.cpp"
     "${test_dir_unit}/adl/oct/traits.unit.cpp"
     "${test_dir_unit}/adl/oct/var.unit.cpp"
     "${test_dir_unit}/adl/oct/vexpr.unit.cpp"
