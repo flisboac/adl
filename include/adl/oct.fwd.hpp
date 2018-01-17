@@ -173,6 +173,7 @@ template <typename SubClass> class context_base_;
 // cpu.hpp
 //
 namespace cpu {
+    class seq_queue;
     class seq_context;
     class async_context;
 

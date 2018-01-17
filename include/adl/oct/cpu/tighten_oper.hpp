@@ -31,6 +31,7 @@ class tighten_oper : public detail_::oper_base_<cpu::tighten_oper<DbmType, Conte
 public:
     using dbm_type = DbmType; //typename superclass_::dbm_type;
     using context_type = ContextType; //typename superclass_::context_type;
+    using queue_type = typename context_type::queue_type;
     using constant_limits = typename dbm_type::constant_limits;
 
     tighten_oper() = delete;
@@ -39,7 +40,7 @@ public:
     tighten_oper& operator=(tighten_oper const&) = delete;
     tighten_oper& operator=(tighten_oper &&) noexcept = default;
 
-    explicit tighten_oper(dbm_type& dbm) : superclass_(), dbm_(&dbm) {}
+    explicit tighten_oper(queue_type&, dbm_type& dbm) : superclass_(), dbm_(&dbm) {}
 
     void on_execute_() {
         using namespace adl::operators;

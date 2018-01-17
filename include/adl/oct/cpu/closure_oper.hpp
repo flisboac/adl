@@ -45,6 +45,7 @@ class closure_oper_impl_<DbmType, ContextType, false> :
 public:
     using dbm_type = DbmType; //typename superclass_::dbm_type;
     using context_type = ContextType; //typename superclass_::context_type;
+    using queue_type = typename context_type::queue_type;
 
     closure_oper_impl_() = delete;
     closure_oper_impl_(closure_oper_impl_ const&) = delete;
@@ -52,9 +53,9 @@ public:
     closure_oper_impl_& operator=(closure_oper_impl_ const&) = delete;
     closure_oper_impl_& operator=(closure_oper_impl_ &&) noexcept = default;
 
-    explicit closure_oper_impl_(dbm_type const& dbm) :
+    explicit closure_oper_impl_(queue_type&, dbm_type const& dbm) :
         superclass_(), close_(&dbm), is_consistent_(&dbm), strengthen_(&dbm) {}
-    explicit closure_oper_impl_(dbm_type& dbm) :
+    explicit closure_oper_impl_(queue_type&, dbm_type& dbm) :
         superclass_(), close_(&dbm), is_consistent_(&dbm), strengthen_(&dbm)  {}
 
     bool on_execute_() {

@@ -37,6 +37,7 @@ class add_cons_close_oper_impl_<DbmType, ContextType, false> :
 public:
     using dbm_type = DbmType; //typename superclass_::dbm_type;
     using context_type = ContextType; //typename superclass_::context_type;
+    using queue_type = typename context_type::queue_type;
     using constant_limits = typename dbm_type::constant_limits;
     using counterpart_cons_type = typename dbm_type::counterpart_identity_cons_type;
     using cons_type = typename dbm_type::identity_cons_type;
@@ -48,10 +49,10 @@ public:
     add_cons_close_oper_impl_& operator=(add_cons_close_oper_impl_ const&) = delete;
     add_cons_close_oper_impl_& operator=(add_cons_close_oper_impl_ &&) noexcept = default;
 
-    add_cons_close_oper_impl_(dbm_type& dbm, cons_type di, cons_type dj) : superclass_(), dbm_(&dbm), di_(di), dj_(dj) {}
-    add_cons_close_oper_impl_(dbm_type& dbm, cons_type cons) : add_cons_close_oper_impl_(dbm, cons, cons_type::invalid()) {}
-    add_cons_close_oper_impl_(dbm_type& dbm, counterpart_cons_type oct_cons) : add_cons_close_oper_impl_(dbm, oct_cons.split()) {}
-    add_cons_close_oper_impl_(dbm_type& dbm, octdiff_conjunction_type conj) : add_cons_close_oper_impl_(dbm, conj.di(), conj.dj()) {}
+    add_cons_close_oper_impl_(queue_type&, dbm_type& dbm, cons_type di, cons_type dj) : superclass_(), dbm_(&dbm), di_(di), dj_(dj) {}
+    add_cons_close_oper_impl_(queue_type&, dbm_type& dbm, cons_type cons) : add_cons_close_oper_impl_(dbm, cons, cons_type::invalid()) {}
+    add_cons_close_oper_impl_(queue_type&, dbm_type& dbm, counterpart_cons_type oct_cons) : add_cons_close_oper_impl_(dbm, oct_cons.split()) {}
+    add_cons_close_oper_impl_(queue_type&, dbm_type& dbm, octdiff_conjunction_type conj) : add_cons_close_oper_impl_(dbm, conj.di(), conj.dj()) {}
 
     bool on_execute_() {
         return add_cons_(di_) && (dj_.valid() && add_cons_(dj_));

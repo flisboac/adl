@@ -59,7 +59,8 @@ TEST_CASE("unit:adl/oct/cpu/close_oper.hpp", "[unit][oper][adl][adl/oct][adl/oct
     REQUIRE( (dbm.is_top(-xdj, -xdj)) );
 
 
-    auto oper = context.make_oper<cpu::close_oper>(dbm);
+    auto queue = context.make_queue();
+    auto oper = queue.make_oper<cpu::close_oper>(dbm);
     oper.get();
 
     for (auto k = dbm.first_var(); k < dbm.end_var(); k++) {

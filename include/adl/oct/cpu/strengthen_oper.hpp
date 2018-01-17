@@ -30,6 +30,7 @@ class strengthen_oper : public detail_::oper_base_<cpu::strengthen_oper<DbmType,
 public:
     using dbm_type = DbmType; //typename superclass_::dbm_type;
     using context_type = ContextType; //typename superclass_::context_type;
+    using queue_type = typename context_type::queue_type;
     using constant_limits = typename dbm_type::constant_limits;
 
     strengthen_oper() = delete;
@@ -38,7 +39,7 @@ public:
     strengthen_oper& operator=(strengthen_oper const&) = delete;
     strengthen_oper& operator=(strengthen_oper &&) noexcept = default;
 
-    explicit strengthen_oper(dbm_type& dbm) : superclass_(), dbm_(&dbm) {}
+    explicit strengthen_oper(queue_type&, dbm_type& dbm) : superclass_(), dbm_(&dbm) {}
 
     void on_execute_() {
         using namespace adl::operators;

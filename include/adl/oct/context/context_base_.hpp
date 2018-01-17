@@ -50,6 +50,8 @@ public:
                     dbm_tags::create_from_last_var_tag, subclass_&, octdiff_var, ConstantType>::value>>
         using default_dbm_return_type = dbm_type<DbmClass, ConstantType, ValueLimits>;
 
+    using queue_type = cpu::seq_queue;
+
     context_base_() = default;
     context_base_(context_base_ const&) = delete;
     context_base_(context_base_ &&) noexcept = default;
@@ -197,6 +199,19 @@ public:
         );
     }
 
+private:
+    subclass_ const& as_subclass_() const noexcept;
+    subclass_ & as_subclass_() noexcept;
+};
+
+template <typename SubClass, typename ContextType>
+class queue_base_ {
+private:
+    using subclass_ = SubClass;
+
+public:
+    using context_type = ContextType;
+
     //
     // OPERATOR FACTORY FUNCTIONS
     //
@@ -205,31 +220,27 @@ public:
             typename DbmType,
             typename... Args>
     std::enable_if_t<
-    std::is_same<subclass_, typename DbmType::context_type>::value
-    && std::is_constructible<
-            OperClass<DbmType, subclass_>,
-            DbmType&, Args...>::value,
-    OperClass<DbmType, subclass_>>
+            std::is_same<context_type, typename DbmType::context_type>::value
+            && std::is_constructible<
+                    OperClass<DbmType, context_type>,
+                    subclass_&, DbmType&, Args...>::value,
+            OperClass<DbmType, context_type>>
     make_oper(DbmType& dbm, Args... args) {
-        return OperClass<DbmType, subclass_>(dbm, args...);
+        return OperClass<DbmType, context_type>(static_cast<subclass_&>(*this), dbm, args...);
     }
 
     template <template <typename, typename> class OperClass,
             typename DbmType,
             typename... Args>
     std::enable_if_t<
-    std::is_same<subclass_, typename DbmType::context_type>::value
-    && std::is_constructible<
-            OperClass<DbmType, subclass_>,
-            subclass_ const&, DbmType const&, Args...>::value,
-    OperClass<DbmType, subclass_>>
+            std::is_same<context_type, typename DbmType::context_type>::value
+            && std::is_constructible<
+                    OperClass<DbmType, context_type>,
+                    subclass_ const&, DbmType const&, Args...>::value,
+            OperClass<DbmType, context_type>>
     make_oper(DbmType const& dbm, Args... args) {
-        return OperClass<DbmType, subclass_>(dbm.context(), dbm, args...);
+        return OperClass<DbmType, context_type>(static_cast<subclass_&>(*this), dbm, args...);
     }
-
-private:
-    subclass_ const& as_subclass_() const noexcept;
-    subclass_ & as_subclass_() noexcept;
 };
 
 }

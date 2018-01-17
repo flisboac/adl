@@ -40,7 +40,8 @@ TEST_CASE("unit:adl/oct/cpu/strengthen_oper.hpp", "[unit][oper][adl][adl/oct][ad
     dbm.at(-xdj,  xdj) = 16;
     dbm.at(-xdj, -xdj) = 11;
 
-    auto oper = context.make_oper<cpu::strengthen_oper>(dbm);
+    auto queue = context.make_queue();
+    auto oper = queue.make_oper<cpu::strengthen_oper>(dbm);
     oper.get();
 
     for (auto i = dbm.first_var(); i < dbm.end_var(); i++) {

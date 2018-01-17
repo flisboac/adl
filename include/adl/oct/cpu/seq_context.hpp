@@ -35,6 +35,24 @@ struct context_traits<cpu::seq_context> {
 
 namespace cpu {
 
+class seq_queue : public queue_base_<seq_queue, seq_context> {
+private:
+    friend class seq_context;
+    explicit seq_queue(seq_context& context) : context_(&context) {}
+
+public:
+    seq_queue(seq_queue const&) = delete;
+    seq_queue(seq_queue&&) noexcept = default;
+    seq_queue& operator=(seq_queue const&) = delete;
+    seq_queue& operator=(seq_queue&&) noexcept = default;
+
+    seq_context& context() { return *context_; }
+    seq_context const& context() const { return *context_; }
+
+private:
+    seq_context* context_;
+};
+
 class seq_context : public context_base_<seq_context> {
 private:
     seq_context() = default;
@@ -47,6 +65,7 @@ public:
     seq_context& operator=(seq_context const&) = delete;
     seq_context& operator=(seq_context&&) noexcept = default;
 
+    auto make_queue() { return seq_queue(*this); }
 };
 
 } // namespace cpu
