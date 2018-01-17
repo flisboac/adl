@@ -178,6 +178,7 @@ namespace cpu {
 
     // Closure
     template <typename DbmType, typename ContextType> class close_oper;
+    template <typename DbmType, typename ContextType> class strong_close_oper;
     template <typename DbmType, typename ContextType> class strengthen_oper;
     template <typename DbmType, typename ContextType> class tighten_oper;
     template <typename DbmType, typename ContextType> class closure_oper;
@@ -185,6 +186,7 @@ namespace cpu {
     // Validity
     template <typename DbmType, typename ContextType> class is_coherent_oper;
     template <typename DbmType, typename ContextType> class is_consistent_oper;
+    template <typename DbmType, typename ContextType> class is_int_consistent_oper;
     template <typename DbmType, typename ContextType> class is_closed_oper;
     template <typename DbmType, typename ContextType> class is_strongly_closed_oper;
     template <typename DbmType, typename ContextType> class is_tightly_closed_oper;
@@ -208,10 +210,9 @@ namespace cpu {
     template <typename DbmType, typename ContextType> class to_top_oper;
     template <typename DbmType, typename ContextType> class to_bottom_oper;
     template <typename DbmType, typename ContextType> class copy_oper;
-    template <typename DbmType, typename ContextType> class forget_oct_var_oper;
-    template <typename DbmType, typename ContextType> class add_oct_cons_oper;
-    template <typename DbmType, typename ContextType> class add_octdiff_cons_oper;
-    template <typename DbmType, typename ContextType> class add_dbm_oper;
+    template <typename DbmType, typename ContextType> class add_cons_oper;
+    template <typename DbmType, typename ContextType> class add_cons_close_oper;
+    template <typename DbmType, typename ContextType> class forget_var_oper;
 
     // Abstraction-based system construction
     template <typename DbmType, typename ContextType> class add_oct_test_oper;

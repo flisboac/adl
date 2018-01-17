@@ -135,12 +135,14 @@ target_sources(${api} INTERFACE
 
     #adl/oct/cpu/operators
     "${api_dir_root}/adl/oct/cpu/close_oper.hpp"
+    "${api_dir_root}/adl/oct/cpu/strong_close_oper.hpp"
     "${api_dir_root}/adl/oct/cpu/strengthen_oper.hpp"
     "${api_dir_root}/adl/oct/cpu/tighten_oper.hpp"
     "${api_dir_root}/adl/oct/cpu/is_coherent_oper.hpp"
     "${api_dir_root}/adl/oct/cpu/is_consistent_oper.hpp"
     "${api_dir_root}/adl/oct/cpu/is_int_consistent_oper.hpp"
     "${api_dir_root}/adl/oct/cpu/closure_oper.hpp"
+    "${api_dir_root}/adl/oct/cpu/add_cons_close_oper.hpp"
     )
 
 
@@ -207,12 +209,14 @@ add_executable(${test}
 
     # unit:adl/oct/cpu
     "${test_dir_unit}/adl/oct/cpu/close_oper.unit.cpp"
+    "${test_dir_unit}/adl/oct/cpu/strong_close_oper.unit.cpp"
     "${test_dir_unit}/adl/oct/cpu/strengthen_oper.unit.cpp"
     "${test_dir_unit}/adl/oct/cpu/tighten_oper.unit.cpp"
     "${test_dir_unit}/adl/oct/cpu/is_coherent_oper.unit.cpp"
     "${test_dir_unit}/adl/oct/cpu/is_consistent_oper.unit.cpp"
     "${test_dir_unit}/adl/oct/cpu/is_int_consistent_oper.unit.cpp"
     "${test_dir_unit}/adl/oct/cpu/closure_oper.unit.cpp"
+    "${test_dir_unit}/adl/oct/cpu/add_cons_close_oper.unit.cpp"
 )
 target_link_libraries(${test} ${test_iapi})
 enable_testing()

@@ -66,10 +66,9 @@ enum class oper_kind {
     to_top,
     to_bottom,
     copy,
-    forget_oct_var,
-    add_oct_cons,
-    add_octdiff_cons,
-    add_dbm,
+    add_cons,
+    add_cons_close,
+    forget_var,
 
     // Abstraction-based system construction
     add_oct_test,

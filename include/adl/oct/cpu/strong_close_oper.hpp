@@ -1,12 +1,10 @@
-// $flavio.lisboa @ 2017-11-23.
-//
-/*
- * @file close_oper.hpp
+// $flisboac 2018-01-16
+/**
+ * @file strong_close_oper.hpp
  */
-
-
-#ifndef adl__oct__cpu__shortest_path_oper__hpp__
-#define adl__oct__cpu__shortest_path_oper__hpp__
+#pragma once
+#ifndef adl__oct__cpu__strong_close_oper__hpp__
+#define adl__oct__cpu__strong_close_oper__hpp__
 
 #include <algorithm>
 
@@ -25,20 +23,20 @@ adl_BEGIN_MAIN_MODULE(oct)
 namespace cpu {
 
 template <typename DbmType, typename ContextType>
-class close_oper : public detail_::oper_base_<cpu::close_oper<DbmType, ContextType>, DbmType, ContextType, void> {
-    using superclass_ = detail_::oper_base_<close_oper, DbmType, ContextType, void>;
+class strong_close_oper : public detail_::oper_base_<cpu::strong_close_oper<DbmType, ContextType>, DbmType, ContextType, void> {
+    using superclass_ = detail_::oper_base_<strong_close_oper, DbmType, ContextType, void>;
 
 public:
     using dbm_type = DbmType; //typename superclass_::dbm_type;
     using context_type = ContextType; //typename superclass_::context_type;
 
-    close_oper() = delete;
-    close_oper(close_oper const&) = delete;
-    close_oper(close_oper &&) noexcept = default;
-    close_oper& operator=(close_oper const&) = delete;
-    close_oper& operator=(close_oper &&) noexcept = default;
+    strong_close_oper() = delete;
+    strong_close_oper(strong_close_oper const&) = delete;
+    strong_close_oper(strong_close_oper &&) noexcept = default;
+    strong_close_oper& operator=(strong_close_oper const&) = delete;
+    strong_close_oper& operator=(strong_close_oper &&) noexcept = default;
 
-    explicit close_oper(dbm_type& dbm) : superclass_(), dbm_(&dbm) {}
+    explicit strong_close_oper(dbm_type& dbm) : superclass_(), dbm_(&dbm) {}
 
     void on_execute_() {
         using namespace adl::operators;
@@ -65,6 +63,17 @@ public:
                     dbm.at(i, j) = val;
                 }
             }
+
+            // TODO Check: Is this really needed? (as per Miné, p. 20, Figure 9)
+            for (auto i = dbm.first_var(); i < dbm.end_var(); i++) {
+                for (auto j = dbm.first_var(); j < dbm.end_var(); j++) {
+                    auto const v_ij = dbm.at(i, j);
+                    auto const v_iI = dbm.at(i, -i);
+                    auto const v_Jj = dbm.at(-j, j);
+                    auto const val = std::min(v_ij, (v_iI + v_Jj) / 2);
+                    dbm.at(i, j) = val;
+                }
+            }
         }
     }
 
@@ -75,4 +84,4 @@ private:
 }
 adl_END_MAIN_MODULE
 
-#endif // adl__oct__cpu__shortest_path_oper__hpp__
+#endif //adl__oct__cpu__strong_close_oper__hpp__
