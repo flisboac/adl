@@ -28,10 +28,10 @@ adl_BEGIN_ROOT_MODULE
 namespace oct {
 
 
-template <typename Subclass, typename ValueType, typename ValueLimits>
-class dense_dbm_base_ : public dbm_base_<Subclass, ValueType, ValueLimits> {
+template <typename Subclass, typename ConstantType, typename ValueLimits>
+class dense_dbm_base_ : public dbm_base_<Subclass, ConstantType, ValueLimits> {
 private:
-    using superclass_ = dbm_base_<Subclass, ValueType, ValueLimits>;
+    using superclass_ = dbm_base_<Subclass, ConstantType, ValueLimits>;
 
 protected:
     using traits_ = dbm_traits<Subclass>;
@@ -42,7 +42,7 @@ public:
     using typename superclass_::subclass_;
     using typename superclass_::identity_var_type;
     using typename superclass_::constant_type;
-    using typename superclass_::value_limits;
+    using typename superclass_::constant_limits;
     using typename superclass_::identity_cons_type;
 
     using superclass_::no_index;
@@ -91,8 +91,8 @@ public:
     constant_type& operator[](oct_var var);
     constant_type& operator[](std::size_t index);
 
-    constexpr static constant_type top() { return value_limits::top(); }
-    constexpr static bool is_top(constant_type c) { return value_limits::is_top(c); }
+    constexpr static constant_type top() { return constant_limits::top(); }
+    constexpr static bool is_top(constant_type c) { return constant_limits::is_top(c); }
 
 protected:
     dbm_major const major_;
@@ -108,7 +108,7 @@ template <typename CharType,
         typename = adl::oct::is_valid_dbm_t<DbmType>>
 std::basic_ostream<CharType, CharTraits>& operator<<(
         std::basic_ostream<CharType, CharTraits>& os,
-        adl::oct::dense_dbm_base_<DbmType, typename DbmType::value_type, typename DbmType::value_limits> const& dbm);
+        adl::oct::dense_dbm_base_<DbmType, typename DbmType::value_type, typename DbmType::constant_limits> const& dbm);
 
 
 //
@@ -120,84 +120,84 @@ namespace oct {
 //
 // dense_dbm_base_
 //
-template <typename SubClass, typename ValueType, typename ValueLimits>
-dense_dbm_base_<SubClass, ValueType, ValueLimits>::dense_dbm_base_(dbm_major major) noexcept
+template <typename SubClass, typename ConstantType, typename ValueLimits>
+dense_dbm_base_<SubClass, ConstantType, ValueLimits>::dense_dbm_base_(dbm_major major) noexcept
     : major_(major) {};
 
-template <typename SubClass, typename ValueType, typename ValueLimits>
-bool dense_dbm_base_<SubClass, ValueType, ValueLimits>::dense() const noexcept {
+template <typename SubClass, typename ConstantType, typename ValueLimits>
+bool dense_dbm_base_<SubClass, ConstantType, ValueLimits>::dense() const noexcept {
     return true;
 };
 
-template <typename SubClass, typename ValueType, typename ValueLimits>
-bool dense_dbm_base_<SubClass, ValueType, ValueLimits>::autocoherent() const noexcept {
+template <typename SubClass, typename ConstantType, typename ValueLimits>
+bool dense_dbm_base_<SubClass, ConstantType, ValueLimits>::autocoherent() const noexcept {
     return false;
 };
 
-template <typename SubClass, typename ValueType, typename ValueLimits>
-dbm_major dense_dbm_base_<SubClass, ValueType, ValueLimits>::major() const noexcept {
+template <typename SubClass, typename ConstantType, typename ValueLimits>
+dbm_major dense_dbm_base_<SubClass, ConstantType, ValueLimits>::major() const noexcept {
     return major_;
 };
 
-template <typename SubClass, typename ValueType, typename ValueLimits>
-inline octdiff_cons<typename dense_dbm_base_<SubClass, ValueType, ValueLimits>::constant_type>
-dense_dbm_base_<SubClass, ValueType, ValueLimits>::get(oct_var xi) const {
+template <typename SubClass, typename ConstantType, typename ValueLimits>
+inline octdiff_cons<typename dense_dbm_base_<SubClass, ConstantType, ValueLimits>::constant_type>
+dense_dbm_base_<SubClass, ConstantType, ValueLimits>::get(oct_var xi) const {
     return get(oct_vexpr::make_unit(xi));
 };
 
-template <typename SubClass, typename ValueType, typename ValueLimits>
-inline octdiff_cons<typename dense_dbm_base_<SubClass, ValueType, ValueLimits>::constant_type>
-dense_dbm_base_<SubClass, ValueType, ValueLimits>::get(octdiff_var xi, octdiff_var xj) const {
+template <typename SubClass, typename ConstantType, typename ValueLimits>
+inline octdiff_cons<typename dense_dbm_base_<SubClass, ConstantType, ValueLimits>::constant_type>
+dense_dbm_base_<SubClass, ConstantType, ValueLimits>::get(octdiff_var xi, octdiff_var xj) const {
     using vexpr_type_ = typename octdiff_cons<constant_type>::vexpr_type;
     auto constant = at(xi, xj);
-    if (!value_limits::is_null(constant)) return octdiff_cons<constant_type>(vexpr_type_::make_sub(xi, xj), constant);
+    if (!constant_limits::is_null(constant)) return octdiff_cons<constant_type>(vexpr_type_::make_sub(xi, xj), constant);
     return identity_cons_type::invalid();
 };
 
-template <typename SubClass, typename ValueType, typename ValueLimits>
-inline octdiff_cons<typename dense_dbm_base_<SubClass, ValueType, ValueLimits>::constant_type>
-dense_dbm_base_<SubClass, ValueType, ValueLimits>::get(oct_vexpr vexpr) const {
+template <typename SubClass, typename ConstantType, typename ValueLimits>
+inline octdiff_cons<typename dense_dbm_base_<SubClass, ConstantType, ValueLimits>::constant_type>
+dense_dbm_base_<SubClass, ConstantType, ValueLimits>::get(oct_vexpr vexpr) const {
     const oct_cons<constant_type> cons(vexpr, constant_type());
     auto conj = cons.split();
     auto constant_di = at(conj.di());
     auto constant_dj = at(conj.dj());
-    if (constant_di != constant_dj || value_limits::is_null(constant_di)) return identity_cons_type::invalid();
+    if (constant_di != constant_dj || constant_limits::is_null(constant_di)) return identity_cons_type::invalid();
     return octdiff_cons<constant_type>(conj.di().to_vexpr(), constant_di);
 };
 
-template <typename SubClass, typename ValueType, typename ValueLimits>
-inline octdiff_cons<typename dense_dbm_base_<SubClass, ValueType, ValueLimits>::constant_type>
-dense_dbm_base_<SubClass, ValueType, ValueLimits>::get(octdiff_vexpr vexpr) const {
+template <typename SubClass, typename ConstantType, typename ValueLimits>
+inline octdiff_cons<typename dense_dbm_base_<SubClass, ConstantType, ValueLimits>::constant_type>
+dense_dbm_base_<SubClass, ConstantType, ValueLimits>::get(octdiff_vexpr vexpr) const {
     return get(vexpr.xi(), vexpr.xj());
 };
 
-template <typename SubClass, typename ValueType, typename ValueLimits>
-inline typename dense_dbm_base_<SubClass, ValueType, ValueLimits>::constant_type&
-dense_dbm_base_<SubClass, ValueType, ValueLimits>::at(oct_var xi) {
+template <typename SubClass, typename ConstantType, typename ValueLimits>
+inline typename dense_dbm_base_<SubClass, ConstantType, ValueLimits>::constant_type&
+dense_dbm_base_<SubClass, ConstantType, ValueLimits>::at(oct_var xi) {
     return const_cast<constant_type&>(const_cast<dense_dbm_base_ const&>(*this).at(xi));
 };
 
-template <typename SubClass, typename ValueType, typename ValueLimits>
-inline typename dense_dbm_base_<SubClass, ValueType, ValueLimits>::constant_type&
-dense_dbm_base_<SubClass, ValueType, ValueLimits>::at(octdiff_var xi, octdiff_var xj) {
+template <typename SubClass, typename ConstantType, typename ValueLimits>
+inline typename dense_dbm_base_<SubClass, ConstantType, ValueLimits>::constant_type&
+dense_dbm_base_<SubClass, ConstantType, ValueLimits>::at(octdiff_var xi, octdiff_var xj) {
     return const_cast<constant_type&>(const_cast<dense_dbm_base_ const&>(*this).at(xi, xj));
 };
 
-template <typename SubClass, typename ValueType, typename ValueLimits>
-inline typename dense_dbm_base_<SubClass, ValueType, ValueLimits>::constant_type&
-dense_dbm_base_<SubClass, ValueType, ValueLimits>::at(oct_vexpr vexpr) {
+template <typename SubClass, typename ConstantType, typename ValueLimits>
+inline typename dense_dbm_base_<SubClass, ConstantType, ValueLimits>::constant_type&
+dense_dbm_base_<SubClass, ConstantType, ValueLimits>::at(oct_vexpr vexpr) {
     return const_cast<constant_type&>(const_cast<dense_dbm_base_ const&>(*this).at(vexpr));
 };
 
-template <typename SubClass, typename ValueType, typename ValueLimits>
-inline typename dense_dbm_base_<SubClass, ValueType, ValueLimits>::constant_type&
-dense_dbm_base_<SubClass, ValueType, ValueLimits>::at(octdiff_vexpr vexpr) {
+template <typename SubClass, typename ConstantType, typename ValueLimits>
+inline typename dense_dbm_base_<SubClass, ConstantType, ValueLimits>::constant_type&
+dense_dbm_base_<SubClass, ConstantType, ValueLimits>::at(octdiff_vexpr vexpr) {
     return const_cast<constant_type&>(const_cast<dense_dbm_base_ const&>(*this).at(vexpr));
 };
 
-template <typename SubClass, typename ValueType, typename ValueLimits>
-inline typename dense_dbm_base_<SubClass, ValueType, ValueLimits>::constant_type const&
-dense_dbm_base_<SubClass, ValueType, ValueLimits>::at(oct_var xi) const {
+template <typename SubClass, typename ConstantType, typename ValueLimits>
+inline typename dense_dbm_base_<SubClass, ConstantType, ValueLimits>::constant_type const&
+dense_dbm_base_<SubClass, ConstantType, ValueLimits>::at(oct_var xi) const {
     using cons_type_ = oct_cons<constant_type>;
     using vexpr_type_ = typename cons_type_::vexpr_type;
     auto cons = cons_type_::make_upper_limit(vexpr_type_::make_unit(xi), constant_type());
@@ -205,9 +205,9 @@ dense_dbm_base_<SubClass, ValueType, ValueLimits>::at(oct_var xi) const {
     return at(diff_vexpr);
 };
 
-template <typename SubClass, typename ValueType, typename ValueLimits>
-inline typename dense_dbm_base_<SubClass, ValueType, ValueLimits>::constant_type const&
-dense_dbm_base_<SubClass, ValueType, ValueLimits>::at(octdiff_var xi, octdiff_var xj) const {
+template <typename SubClass, typename ConstantType, typename ValueLimits>
+inline typename dense_dbm_base_<SubClass, ConstantType, ValueLimits>::constant_type const&
+dense_dbm_base_<SubClass, ConstantType, ValueLimits>::at(octdiff_var xi, octdiff_var xj) const {
     if (!xi.valid() || !xj.valid()) throw std::logic_error("Invalid variables passed as indexes to DBM.");
     auto real_xi = major_ == dbm_major::row ? xi : xj;
     auto real_xj = major_ == dbm_major::row ? xj : xi;
@@ -216,9 +216,9 @@ dense_dbm_base_<SubClass, ValueType, ValueLimits>::at(octdiff_var xi, octdiff_va
     return this->as_subclass_().constant_(index);
 };
 
-template <typename SubClass, typename ValueType, typename ValueLimits>
-inline typename dense_dbm_base_<SubClass, ValueType, ValueLimits>::constant_type const&
-dense_dbm_base_<SubClass, ValueType, ValueLimits>::at(oct_vexpr vexpr) const {
+template <typename SubClass, typename ConstantType, typename ValueLimits>
+inline typename dense_dbm_base_<SubClass, ConstantType, ValueLimits>::constant_type const&
+dense_dbm_base_<SubClass, ConstantType, ValueLimits>::at(oct_vexpr vexpr) const {
     using cons_type_ = oct_cons<constant_type>;
     using vexpr_type_ = typename cons_type_::vexpr_type;
     auto cons = cons_type_::make_upper_limit(vexpr, constant_type());
@@ -226,57 +226,57 @@ dense_dbm_base_<SubClass, ValueType, ValueLimits>::at(oct_vexpr vexpr) const {
     return at(diff_vexpr);
 };
 
-template <typename SubClass, typename ValueType, typename ValueLimits>
-inline typename dense_dbm_base_<SubClass, ValueType, ValueLimits>::constant_type const&
-dense_dbm_base_<SubClass, ValueType, ValueLimits>::at(octdiff_vexpr vexpr) const {
+template <typename SubClass, typename ConstantType, typename ValueLimits>
+inline typename dense_dbm_base_<SubClass, ConstantType, ValueLimits>::constant_type const&
+dense_dbm_base_<SubClass, ConstantType, ValueLimits>::at(octdiff_vexpr vexpr) const {
     return at(vexpr.xi(), vexpr.xj());
 };
 
-template <typename SubClass, typename ValueType, typename ValueLimits>
-inline typename dense_dbm_base_<SubClass, ValueType, ValueLimits>::constant_type const&
-dense_dbm_base_<SubClass, ValueType, ValueLimits>::operator[](octdiff_vexpr vexpr) const {
+template <typename SubClass, typename ConstantType, typename ValueLimits>
+inline typename dense_dbm_base_<SubClass, ConstantType, ValueLimits>::constant_type const&
+dense_dbm_base_<SubClass, ConstantType, ValueLimits>::operator[](octdiff_vexpr vexpr) const {
     return const_cast<dense_dbm_base_&>(*this).operator[](vexpr);
 };
 
-template <typename SubClass, typename ValueType, typename ValueLimits>
-inline typename dense_dbm_base_<SubClass, ValueType, ValueLimits>::constant_type const&
-dense_dbm_base_<SubClass, ValueType, ValueLimits>::operator[](oct_vexpr vexpr) const {
+template <typename SubClass, typename ConstantType, typename ValueLimits>
+inline typename dense_dbm_base_<SubClass, ConstantType, ValueLimits>::constant_type const&
+dense_dbm_base_<SubClass, ConstantType, ValueLimits>::operator[](oct_vexpr vexpr) const {
     return const_cast<dense_dbm_base_&>(*this).operator[](vexpr);
 };
 
-template <typename SubClass, typename ValueType, typename ValueLimits>
-typename dense_dbm_base_<SubClass, ValueType, ValueLimits>::constant_type const&
-dense_dbm_base_<SubClass, ValueType, ValueLimits>::operator[](oct_var var) const {
+template <typename SubClass, typename ConstantType, typename ValueLimits>
+typename dense_dbm_base_<SubClass, ConstantType, ValueLimits>::constant_type const&
+dense_dbm_base_<SubClass, ConstantType, ValueLimits>::operator[](oct_var var) const {
     return const_cast<dense_dbm_base_&>(*this).operator[](var);
 };
 
-template <typename SubClass, typename ValueType, typename ValueLimits>
-typename dense_dbm_base_<SubClass, ValueType, ValueLimits>::constant_type const&
-dense_dbm_base_<SubClass, ValueType, ValueLimits>::operator[](std::size_t index) const {
+template <typename SubClass, typename ConstantType, typename ValueLimits>
+typename dense_dbm_base_<SubClass, ConstantType, ValueLimits>::constant_type const&
+dense_dbm_base_<SubClass, ConstantType, ValueLimits>::operator[](std::size_t index) const {
     return this->as_subclass_().constant_(index);
 };
 
-template <typename SubClass, typename ValueType, typename ValueLimits>
-inline typename dense_dbm_base_<SubClass, ValueType, ValueLimits>::constant_type&
-dense_dbm_base_<SubClass, ValueType, ValueLimits>::operator[](octdiff_vexpr vexpr) {
+template <typename SubClass, typename ConstantType, typename ValueLimits>
+inline typename dense_dbm_base_<SubClass, ConstantType, ValueLimits>::constant_type&
+dense_dbm_base_<SubClass, ConstantType, ValueLimits>::operator[](octdiff_vexpr vexpr) {
     return at(vexpr);
 };
 
-template <typename SubClass, typename ValueType, typename ValueLimits>
-inline typename dense_dbm_base_<SubClass, ValueType, ValueLimits>::constant_type&
-dense_dbm_base_<SubClass, ValueType, ValueLimits>::operator[](oct_vexpr vexpr) {
+template <typename SubClass, typename ConstantType, typename ValueLimits>
+inline typename dense_dbm_base_<SubClass, ConstantType, ValueLimits>::constant_type&
+dense_dbm_base_<SubClass, ConstantType, ValueLimits>::operator[](oct_vexpr vexpr) {
     return at(vexpr);
 };
 
-template <typename SubClass, typename ValueType, typename ValueLimits>
-typename dense_dbm_base_<SubClass, ValueType, ValueLimits>::constant_type&
-dense_dbm_base_<SubClass, ValueType, ValueLimits>::operator[](oct_var var) {
+template <typename SubClass, typename ConstantType, typename ValueLimits>
+typename dense_dbm_base_<SubClass, ConstantType, ValueLimits>::constant_type&
+dense_dbm_base_<SubClass, ConstantType, ValueLimits>::operator[](oct_var var) {
     return at(var);
 };
 
-template <typename SubClass, typename ValueType, typename ValueLimits>
-typename dense_dbm_base_<SubClass, ValueType, ValueLimits>::constant_type&
-dense_dbm_base_<SubClass, ValueType, ValueLimits>::operator[](std::size_t index) {
+template <typename SubClass, typename ConstantType, typename ValueLimits>
+typename dense_dbm_base_<SubClass, ConstantType, ValueLimits>::constant_type&
+dense_dbm_base_<SubClass, ConstantType, ValueLimits>::operator[](std::size_t index) {
     return this->as_subclass_().constant_(index);
 };
 

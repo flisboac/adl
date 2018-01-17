@@ -26,9 +26,9 @@ template <>
 struct context_traits<cpu::async_context> {
 
     template <template <typename, typename, typename> class DbmClass,
-            typename ValueType,
-            typename ValueLimits = value_limits<ValueType>>
-        using dbm_type = std::shared_ptr<DbmClass<cpu::async_context, ValueType, ValueLimits>>;
+            typename ConstantType,
+            typename ValueLimits = constant_limits<ConstantType>>
+        using dbm_type = std::shared_ptr<DbmClass<cpu::async_context, ConstantType, ValueLimits>>;
 };
 
 namespace cpu {

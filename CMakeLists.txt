@@ -81,8 +81,10 @@ target_sources(${api} INTERFACE
     "${api_dir_root}/adl/oct.fwd.hpp"
     "${api_dir_root}/adl/oct/limits.hpp"
     "${api_dir_root}/adl/oct/traits.hpp"
+    "${api_dir_root}/adl/oct/constant.hpp"
 
     # adl/oct/var
+    "${api_dir_root}/adl/oct/var_id.hpp"
     "${api_dir_root}/adl/oct/var.hpp"
     "${api_dir_root}/adl/oct/var/var_base_.hpp"
     "${api_dir_root}/adl/oct/var/identity_var_base_.hpp"

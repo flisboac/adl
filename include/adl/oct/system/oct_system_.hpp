@@ -24,10 +24,10 @@ adl_BEGIN_ROOT_MODULE
 
 namespace oct {
 
-template <typename ValueType, typename ValueLimits>
-class oct_system : public system_base_<domain_space::oct, ValueType, ValueLimits> {
+template <typename ConstantType, typename ValueLimits>
+class oct_system : public system_base_<domain_space::oct, ConstantType, ValueLimits> {
 private:
-    using superclass_ = system_base_<domain_space::oct, ValueType, ValueLimits>;
+    using superclass_ = system_base_<domain_space::oct, ConstantType, ValueLimits>;
 
 public:
     using typename superclass_::counterpart_system_type;
@@ -74,10 +74,10 @@ public:
 
     template <typename VarType_, typename = common_var_t<VarType_>>
         void setup_var(VarType_ var); // Can only be done if the variable hasn't been configured before
-    template <typename ValueType_, typename VarType_, typename = std::enable_if<
-        std::is_convertible<ValueType_, ValueType>::value
-        && common_cons<ValueType_, VarType_>::is_oct_space>>
-        std::pair<iterator, bool> insert(basic_oct_cons<ValueType_, VarType_> cons);
+    template <typename ConstantType_, typename VarType_, typename = std::enable_if<
+        std::is_convertible<ConstantType_, ConstantType>::value
+        && common_cons<ConstantType_, VarType_>::is_oct_space>>
+        std::pair<iterator, bool> insert(basic_oct_cons<ConstantType_, VarType_> cons);
     template <typename VarType_, typename = std::enable_if<
         common_var<VarType_>::space == space>>
         std::size_t erase(basic_oct_vexpr<common_var_t<VarType_>> vexpr);
@@ -91,9 +91,9 @@ private:
         value_type to_value_(basic_oct_vexpr<VarType_> vexpr) const;
     template <typename VarType_, typename = common_var_t<VarType_>>
         value_type to_value_(basic_oct_vexpr<VarType_> vexpr);
-    template <typename ValueType_, typename VarType_, typename = std::enable_if_t<
-        common_cons<ValueType_, VarType_>::valid && std::is_convertible<ValueType, ValueType_>::value> >
-        value_type to_value_(basic_oct_cons<ValueType_, VarType_> cons);
+    template <typename ConstantType_, typename VarType_, typename = std::enable_if_t<
+        common_cons<ConstantType_, VarType_>::valid && std::is_convertible<ConstantType, ConstantType_>::value> >
+        value_type to_value_(basic_oct_cons<ConstantType_, VarType_> cons);
     template <typename VarType_, typename = common_var_t<VarType_>>
         literal_var_type to_var_(VarType_ var) const;
     template <typename VarType_, typename = common_var_t<VarType_>>
@@ -104,10 +104,10 @@ private:
 
 adl_END_ROOT_MODULE
 
-template <typename CharType, typename CharTraits, typename ValueType, typename ValueLimits>
+template <typename CharType, typename CharTraits, typename ConstantType, typename ValueLimits>
 std::basic_ostream<CharType, CharTraits>& operator<<(
     std::basic_ostream<CharType, CharTraits>& os,
-    adl::oct::oct_system<ValueType, ValueLimits> const& system);
+    adl::oct::oct_system<ConstantType, ValueLimits> const& system);
 
 //
 // [[ TEMPLATE IMPLEMENTATION ]]
@@ -118,10 +118,10 @@ namespace oct {
 //
 // oct_system
 //
-//template <typename ValueType, typename ValueLimits>
-//template <typename ValueType_, typename VarType_, typename>
-//inline oct_system<ValueType, ValueLimits>::oct_system(
-//    std::initializer_list<adl::oct::basic_oct_cons<ValueType_, VarType_>> list
+//template <typename ConstantType, typename ValueLimits>
+//template <typename ConstantType_, typename VarType_, typename>
+//inline oct_system<ConstantType, ValueLimits>::oct_system(
+//    std::initializer_list<adl::oct::basic_oct_cons<ConstantType_, VarType_>> list
 //) {
 //    for (auto cons : list) {
 //        constant_type value = cons.constant();
@@ -129,148 +129,148 @@ namespace oct {
 //    }
 //};
 
-template <typename ValueType, typename ValueLimits>
-inline oct_system<ValueType, ValueLimits>::oct_system(std::initializer_list<adl::oct::oct_cons<constant_type>> list) {
+template <typename ConstantType, typename ValueLimits>
+inline oct_system<ConstantType, ValueLimits>::oct_system(std::initializer_list<adl::oct::oct_cons<constant_type>> list) {
     for (auto cons : list) {
         constant_type value = cons.constant();
         insert(cons);
     }
 };
 
-template <typename ValueType, typename ValueLimits>
-inline oct_system<ValueType, ValueLimits>::oct_system(std::initializer_list<adl::oct::oct_lcons<constant_type>> list) {
+template <typename ConstantType, typename ValueLimits>
+inline oct_system<ConstantType, ValueLimits>::oct_system(std::initializer_list<adl::oct::oct_lcons<constant_type>> list) {
     for (auto cons : list) {
         constant_type value = cons.constant();
         insert(cons);
     }
 };
 
-template <typename ValueType, typename ValueLimits>
-inline oct_system<ValueType, ValueLimits>&
-oct_system<ValueType, ValueLimits>::clear() {
+template <typename ConstantType, typename ValueLimits>
+inline oct_system<ConstantType, ValueLimits>&
+oct_system<ConstantType, ValueLimits>::clear() {
     constraints_.clear();
     variables_.clear();
     return *this;
 }
 
-template <typename ValueType, typename ValueLimits>
-inline oct_system<ValueType, ValueLimits>&
-oct_system<ValueType, ValueLimits>::reset() {
+template <typename ConstantType, typename ValueLimits>
+inline oct_system<ConstantType, ValueLimits>&
+oct_system<ConstantType, ValueLimits>::reset() {
     constraints_.clear();
     variables_.reset();
     return *this;
 }
 
-template <typename ValueType, typename ValueLimits>
-inline std::size_t oct_system<ValueType, ValueLimits>::count(oct_var var) const {
+template <typename ConstantType, typename ValueLimits>
+inline std::size_t oct_system<ConstantType, ValueLimits>::count(oct_var var) const {
     auto key = to_value_(var);
     return constraints_.count(key);
 };
 
-template <typename ValueType, typename ValueLimits>
-inline std::size_t oct_system<ValueType, ValueLimits>::count(oct_vexpr vexpr) const {
+template <typename ConstantType, typename ValueLimits>
+inline std::size_t oct_system<ConstantType, ValueLimits>::count(oct_vexpr vexpr) const {
     auto key = to_value_(vexpr);
     return constraints_.count(key);
 };
 
-template <typename ValueType, typename ValueLimits>
-inline typename oct_system<ValueType, ValueLimits>::const_iterator
-oct_system<ValueType, ValueLimits>::find(oct_var var) const {
+template <typename ConstantType, typename ValueLimits>
+inline typename oct_system<ConstantType, ValueLimits>::const_iterator
+oct_system<ConstantType, ValueLimits>::find(oct_var var) const {
     auto idx = to_value_(var);
     return constraints_.find(idx);
 };
 
-template <typename ValueType, typename ValueLimits>
-inline typename oct_system<ValueType, ValueLimits>::const_iterator
-oct_system<ValueType, ValueLimits>::find(oct_vexpr vexpr) const {
+template <typename ConstantType, typename ValueLimits>
+inline typename oct_system<ConstantType, ValueLimits>::const_iterator
+oct_system<ConstantType, ValueLimits>::find(oct_vexpr vexpr) const {
     auto idx = to_value_(vexpr);
     return constraints_.find(idx);
 };
 
-template <typename ValueType, typename ValueLimits>
-inline typename oct_system<ValueType, ValueLimits>::value_type
-oct_system<ValueType, ValueLimits>::get(oct_var var) const {
+template <typename ConstantType, typename ValueLimits>
+inline typename oct_system<ConstantType, ValueLimits>::value_type
+oct_system<ConstantType, ValueLimits>::get(oct_var var) const {
     auto iter = find(var);
     if (iter != this->end()) return *iter;
     return value_type::invalid();
 };
 
-template <typename ValueType, typename ValueLimits>
-inline typename oct_system<ValueType, ValueLimits>::value_type
-oct_system<ValueType, ValueLimits>::get(oct_vexpr vexpr) const {
+template <typename ConstantType, typename ValueLimits>
+inline typename oct_system<ConstantType, ValueLimits>::value_type
+oct_system<ConstantType, ValueLimits>::get(oct_vexpr vexpr) const {
     auto iter = find(vexpr);
     if (iter != this->end()) return *iter;
     return value_type::invalid();
 };
 
-template <typename ValueType, typename ValueLimits>
-inline typename oct_system<ValueType, ValueLimits>::value_type const&
-oct_system<ValueType, ValueLimits>::at(oct_var var) const {
+template <typename ConstantType, typename ValueLimits>
+inline typename oct_system<ConstantType, ValueLimits>::value_type const&
+oct_system<ConstantType, ValueLimits>::at(oct_var var) const {
     auto iter = find(var);
     if (iter == this->end()) throw std::logic_error("Constraint not found.");
     return *iter;
 };
 
-template <typename ValueType, typename ValueLimits>
-inline typename oct_system<ValueType, ValueLimits>::value_type const&
-oct_system<ValueType, ValueLimits>::at(oct_vexpr vexpr) const {
+template <typename ConstantType, typename ValueLimits>
+inline typename oct_system<ConstantType, ValueLimits>::value_type const&
+oct_system<ConstantType, ValueLimits>::at(oct_vexpr vexpr) const {
     auto iter = find(vexpr);
     if (iter == this->end()) throw std::logic_error("Constraint not found.");
     return *iter;
 };
 
-template <typename ValueType, typename ValueLimits>
-inline typename oct_system<ValueType, ValueLimits>::constant_type const&
-oct_system<ValueType, ValueLimits>::operator[](oct_var var) const {
+template <typename ConstantType, typename ValueLimits>
+inline typename oct_system<ConstantType, ValueLimits>::constant_type const&
+oct_system<ConstantType, ValueLimits>::operator[](oct_var var) const {
     return at(var).c();
 };
 
-template <typename ValueType, typename ValueLimits>
-inline typename oct_system<ValueType, ValueLimits>::constant_type const&
-oct_system<ValueType, ValueLimits>::operator[](oct_vexpr vexpr) const {
+template <typename ConstantType, typename ValueLimits>
+inline typename oct_system<ConstantType, ValueLimits>::constant_type const&
+oct_system<ConstantType, ValueLimits>::operator[](oct_vexpr vexpr) const {
     return at(vexpr).c();
 };
 
-template <typename ValueType, typename ValueLimits>
+template <typename ConstantType, typename ValueLimits>
 template <typename VarType, typename>
-inline void oct_system<ValueType, ValueLimits>::setup_var(VarType var) {
+inline void oct_system<ConstantType, ValueLimits>::setup_var(VarType var) {
     variables_.setup(var);
 }
 
-template <typename ValueType, typename ValueLimits>
-template <typename ValueType_, typename VarType_, typename>
-inline std::pair<typename oct_system<ValueType, ValueLimits>::iterator, bool>
-oct_system<ValueType, ValueLimits>::insert(basic_oct_cons<ValueType_, VarType_> cons) {
+template <typename ConstantType, typename ValueLimits>
+template <typename ConstantType_, typename VarType_, typename>
+inline std::pair<typename oct_system<ConstantType, ValueLimits>::iterator, bool>
+oct_system<ConstantType, ValueLimits>::insert(basic_oct_cons<ConstantType_, VarType_> cons) {
     auto value = to_value_(cons);
     return constraints_.insert(value);
 }
 
-template <typename ValueType, typename ValueLimits>
+template <typename ConstantType, typename ValueLimits>
 template <typename VarType_, typename>
 inline std::size_t
-oct_system<ValueType, ValueLimits>::erase(basic_oct_vexpr<common_var_t<VarType_>> vexpr) {
+oct_system<ConstantType, ValueLimits>::erase(basic_oct_vexpr<common_var_t<VarType_>> vexpr) {
     auto value = to_value_(vexpr);
     return constraints_.erase(value);
 }
 
-template <typename ValueType, typename ValueLimits>
-inline typename oct_system<ValueType, ValueLimits>::counterpart_system_type
-oct_system<ValueType, ValueLimits>::to_counterpart() const {
+template <typename ConstantType, typename ValueLimits>
+inline typename oct_system<ConstantType, ValueLimits>::counterpart_system_type
+oct_system<ConstantType, ValueLimits>::to_counterpart() const {
     return counterpart_system_type(*this);
 }
 
-template <typename ValueType, typename ValueLimits>
+template <typename ConstantType, typename ValueLimits>
 template <typename VarType_, typename>
-inline typename oct_system<ValueType, ValueLimits>::value_type
-oct_system<ValueType, ValueLimits>::to_value_(VarType_ var) const {
+inline typename oct_system<ConstantType, ValueLimits>::value_type
+oct_system<ConstantType, ValueLimits>::to_value_(VarType_ var) const {
     auto vexpr = literal_vexpr_type::make_unit(var);
     return to_value_(vexpr);
 };
 
-template <typename ValueType, typename ValueLimits>
+template <typename ConstantType, typename ValueLimits>
 template <typename VarType_, typename>
-inline typename oct_system<ValueType, ValueLimits>::value_type
-oct_system<ValueType, ValueLimits>::to_value_(basic_oct_vexpr<VarType_> vexpr) const {
+inline typename oct_system<ConstantType, ValueLimits>::value_type
+oct_system<ConstantType, ValueLimits>::to_value_(basic_oct_vexpr<VarType_> vexpr) const {
     if (!vexpr.valid()) throw std::logic_error("Invalid variable expression.");
     auto real_xi = to_var_(vexpr.xi());
     auto real_xj = (vexpr.xj().valid()) ? to_var_(vexpr.xj()) : literal_var_type::invalid();
@@ -278,17 +278,17 @@ oct_system<ValueType, ValueLimits>::to_value_(basic_oct_vexpr<VarType_> vexpr) c
     return value_type(real_vexpr, constant_type());
 }
 
-template <typename ValueType, typename ValueLimits>
+template <typename ConstantType, typename ValueLimits>
 template <typename VarType_, typename>
-inline typename oct_system<ValueType, ValueLimits>::value_type
-oct_system<ValueType, ValueLimits>::to_value_(basic_oct_vexpr<VarType_> vexpr) {
+inline typename oct_system<ConstantType, ValueLimits>::value_type
+oct_system<ConstantType, ValueLimits>::to_value_(basic_oct_vexpr<VarType_> vexpr) {
     return to_value_(basic_oct_cons<VarType_, constant_type>::make_upper_limit(vexpr, constant_type()));
 }
 
-template <typename ValueType, typename ValueLimits>
-template <typename ValueType_, typename VarType_, typename>
-inline typename oct_system<ValueType, ValueLimits>::value_type
-oct_system<ValueType, ValueLimits>::to_value_(basic_oct_cons<ValueType_, VarType_> cons) {
+template <typename ConstantType, typename ValueLimits>
+template <typename ConstantType_, typename VarType_, typename>
+inline typename oct_system<ConstantType, ValueLimits>::value_type
+oct_system<ConstantType, ValueLimits>::to_value_(basic_oct_cons<ConstantType_, VarType_> cons) {
     if (!cons.valid()) throw std::logic_error("Invalid constraint.");
     auto real_xi = to_var_(cons.xi());
     auto real_xj = (cons.xj().valid()) ? to_var_(cons.xj()) : literal_var_type::invalid();
@@ -296,19 +296,19 @@ oct_system<ValueType, ValueLimits>::to_value_(basic_oct_cons<ValueType_, VarType
     return value_type(real_vexpr, cons.c());
 }
 
-template <typename ValueType, typename ValueLimits>
+template <typename ConstantType, typename ValueLimits>
 template <typename VarType_, typename>
-inline typename oct_system<ValueType, ValueLimits>::literal_var_type
-oct_system<ValueType, ValueLimits>::to_var_(VarType_ var) const {
+inline typename oct_system<ConstantType, ValueLimits>::literal_var_type
+oct_system<ConstantType, ValueLimits>::to_var_(VarType_ var) const {
     literal_var_type real_var = variables_.at(var).normalized_var();
     if (var.negative()) real_var.negate();
     return real_var;
 }
 
-template <typename ValueType, typename ValueLimits>
+template <typename ConstantType, typename ValueLimits>
 template <typename VarType_, typename>
-inline typename oct_system<ValueType, ValueLimits>::literal_var_type
-oct_system<ValueType, ValueLimits>::to_var_(VarType_ var) {
+inline typename oct_system<ConstantType, ValueLimits>::literal_var_type
+oct_system<ConstantType, ValueLimits>::to_var_(VarType_ var) {
     auto iter = variables_.insert(var);
     auto& var_data = *iter.first;
     literal_var_type real_var = var_data.normalized_var();
@@ -319,10 +319,10 @@ oct_system<ValueType, ValueLimits>::to_var_(VarType_ var) {
 } // namespace oct
 adl_END_ROOT_MODULE
 
-template <typename CharType, typename CharTraits, typename ValueType, typename ValueLimits>
+template <typename CharType, typename CharTraits, typename ConstantType, typename ValueLimits>
 std::basic_ostream<CharType, CharTraits>& operator<<(
     std::basic_ostream<CharType, CharTraits>& os,
-    adl::oct::oct_system<ValueType, ValueLimits> const& system
+    adl::oct::oct_system<ConstantType, ValueLimits> const& system
 ) {
     os << system.to_string();
     return os;

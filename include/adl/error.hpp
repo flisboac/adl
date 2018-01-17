@@ -113,7 +113,7 @@ public:
     std::error_code code() const noexcept;
     std::size_t call_level() const noexcept;
     any info() const noexcept;
-    template <typename ValueType> ValueType info_to() const;
+    template <typename ConstantType> ConstantType info_to() const;
 
 private:
     std::error_code code_;

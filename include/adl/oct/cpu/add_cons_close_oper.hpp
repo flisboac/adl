@@ -22,7 +22,7 @@
 adl_BEGIN_MAIN_MODULE(oct)
 namespace cpu {
 
-template <typename DbmType, typename ContextType, bool UsingIntegerAlgorithm = DbmType::value_limits::integer>
+template <typename DbmType, typename ContextType, bool UsingIntegerAlgorithm = DbmType::constant_limits::integer>
 class add_cons_close_oper_impl_ {};
 
 /*
@@ -37,7 +37,7 @@ class add_cons_close_oper_impl_<DbmType, ContextType, false> :
 public:
     using dbm_type = DbmType; //typename superclass_::dbm_type;
     using context_type = ContextType; //typename superclass_::context_type;
-    using value_limits = typename dbm_type::value_limits;
+    using constant_limits = typename dbm_type::constant_limits;
     using counterpart_cons_type = typename dbm_type::counterpart_identity_cons_type;
     using cons_type = typename dbm_type::identity_cons_type;
     using octdiff_conjunction_type = typename dbm_type::octdiff_conjunction_type;
@@ -79,7 +79,7 @@ private:
             auto const v_AI = dbm.at(A, I);
             auto const v_bI = dbm.at(b, I);
 
-            auto const val = value_limits::min({
+            auto const val = constant_limits::min({
                 v_iI,
                 v_ia + d + v_bI,
                 v_iB + d + v_Aa + d + v_bI,
@@ -104,7 +104,7 @@ private:
                     auto const v_iB = dbm.at(i, B);
                     auto const v_Aj = dbm.at(A, j);
 
-                    auto const val = value_limits::min({
+                    auto const val = constant_limits::min({
                         v_ij,
                         v_ia + d + v_bj,
                         v_iB + d + v_Aj,
@@ -141,7 +141,7 @@ class add_cons_close_oper_impl_<DbmType, ContextType, true> :
 public:
     using dbm_type = DbmType; //typename superclass_::dbm_type;
     using context_type = ContextType; //typename superclass_::context_type;
-    using value_limits = typename dbm_type::value_limits;
+    using constant_limits = typename dbm_type::constant_limits;
     using counterpart_cons_type = typename dbm_type::counterpart_identity_cons_type;
     using cons_type = typename dbm_type::identity_cons_type;
     using octdiff_conjunction_type = typename dbm_type::octdiff_conjunction_type;
@@ -183,7 +183,7 @@ private:
             auto const v_AI = dbm.at(A, I);
             auto const v_bI = dbm.at(b, I);
 
-            auto const val = value_limits::min({
+            auto const val = constant_limits::min({
                 v_iI,
                 v_ia + d + v_bI,
                 v_iB + d + v_AI,
@@ -191,7 +191,7 @@ private:
                 v_ia + d + v_bB + d + v_AI
             });
 
-            dbm.at(i, I) = 2 * value_limits::floor(val / 2);
+            dbm.at(i, I) = 2 * constant_limits::floor(val / 2);
         }
 
         for (auto i = dbm.first_var(); i < dbm.end_var(); i++) {
@@ -209,7 +209,7 @@ private:
                     auto const v_iB = dbm.at(i, B);
                     auto const v_Aj = dbm.at(A, j);
 
-                    auto const val = value_limits::min({
+                    auto const val = constant_limits::min({
                         v_ij,
                         v_ia + d + v_bj,
                         v_iB + d + v_Aj,

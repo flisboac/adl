@@ -30,7 +30,7 @@
 adl_BEGIN_MAIN_MODULE(oct)
 namespace cpu {
 
-template <typename DbmType, typename ContextType, bool UsingIntegerAlgorithm = DbmType::value_limits::integer>
+template <typename DbmType, typename ContextType, bool UsingIntegerAlgorithm = DbmType::constant_limits::integer>
 class closure_oper_impl_ {};
 
 /*
@@ -84,7 +84,7 @@ class closure_oper_impl_<DbmType, ContextType, true> :
 public:
     using dbm_type = DbmType; //typename superclass_::dbm_type;
     using context_type = ContextType; //typename superclass_::context_type;
-    using value_limits = typename dbm_type::value_limits;
+    using constant_limits = typename dbm_type::constant_limits;
 
     closure_oper_impl_() = delete;
     closure_oper_impl_(closure_oper_impl_ const&) = delete;

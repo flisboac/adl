@@ -69,16 +69,16 @@ public:
         this->clear();
     }
 
-    /// Constructs an object of type any that contains an object of type T direct-initialized with std::forward<ValueType>(value).
+    /// Constructs an object of type any that contains an object of type T direct-initialized with std::forward<ConstantType>(value).
     ///
     /// T shall satisfy the CopyConstructible requirements, otherwise the program is ill-formed.
     /// This is because an `any` may be copy constructed into another `any` at any time, so a copy should always be allowed.
-    template<typename ValueType, typename = typename std::enable_if<!std::is_same<typename std::decay<ValueType>::type, any>::value>::type>
-    any(ValueType&& value)
+    template<typename ConstantType, typename = typename std::enable_if<!std::is_same<typename std::decay<ConstantType>::type, any>::value>::type>
+    any(ConstantType&& value)
     {
-        static_assert(std::is_copy_constructible<typename std::decay<ValueType>::type>::value,
+        static_assert(std::is_copy_constructible<typename std::decay<ConstantType>::type>::value,
             "T shall satisfy the CopyConstructible requirements.");
-        this->construct(std::forward<ValueType>(value));
+        this->construct(std::forward<ConstantType>(value));
     }
 
     /// Has the same effect as any(rhs).swap(*this). No effects if an exception is thrown.
@@ -98,16 +98,16 @@ public:
         return *this;
     }
 
-    /// Has the same effect as any(std::forward<ValueType>(value)).swap(*this). No effect if a exception is thrown.
+    /// Has the same effect as any(std::forward<ConstantType>(value)).swap(*this). No effect if a exception is thrown.
     ///
     /// T shall satisfy the CopyConstructible requirements, otherwise the program is ill-formed.
     /// This is because an `any` may be copy constructed into another `any` at any time, so a copy should always be allowed.
-    template<typename ValueType, typename = typename std::enable_if<!std::is_same<typename std::decay<ValueType>::type, any>::value>::type>
-    any& operator=(ValueType&& value)
+    template<typename ConstantType, typename = typename std::enable_if<!std::is_same<typename std::decay<ConstantType>::type, any>::value>::type>
+    any& operator=(ConstantType&& value)
     {
-        static_assert(std::is_copy_constructible<typename std::decay<ValueType>::type>::value,
+        static_assert(std::is_copy_constructible<typename std::decay<ConstantType>::type>::value,
             "T shall satisfy the CopyConstructible requirements.");
-        any(std::forward<ValueType>(value)).swap(*this);
+        any(std::forward<ConstantType>(value)).swap(*this);
         return *this;
     }
 
@@ -335,30 +335,30 @@ private:
     storage_union storage; // on offset(0) so no padding for align
     vtable_type*  vtable;
 
-    template<typename ValueType, typename T>
+    template<typename ConstantType, typename T>
     typename std::enable_if<requires_allocation<T>::value>::type
-    do_construct(ValueType&& value)
+    do_construct(ConstantType&& value)
     {
-        storage.dynamic = new T(std::forward<ValueType>(value));
+        storage.dynamic = new T(std::forward<ConstantType>(value));
     }
 
-    template<typename ValueType, typename T>
+    template<typename ConstantType, typename T>
     typename std::enable_if<!requires_allocation<T>::value>::type
-    do_construct(ValueType&& value)
+    do_construct(ConstantType&& value)
     {
-        new (&storage.stack) T(std::forward<ValueType>(value));
+        new (&storage.stack) T(std::forward<ConstantType>(value));
     }
 
-    /// Chooses between stack and dynamic allocation for the type decay_t<ValueType>,
+    /// Chooses between stack and dynamic allocation for the type decay_t<ConstantType>,
     /// assigns the correct vtable, and constructs the object on our storage.
-    template<typename ValueType>
-    void construct(ValueType&& value)
+    template<typename ConstantType>
+    void construct(ConstantType&& value)
     {
-        using T = typename std::decay<ValueType>::type;
+        using T = typename std::decay<ConstantType>::type;
 
         this->vtable = vtable_for_type<T>();
 
-        do_construct<ValueType,T>(std::forward<ValueType>(value));
+        do_construct<ConstantType,T>(std::forward<ConstantType>(value));
     }
 };
 
@@ -366,64 +366,64 @@ private:
 
 namespace detail
 {
-    template<typename ValueType>
-    inline ValueType any_cast_move_if_true(typename std::remove_reference<ValueType>::type* p, std::true_type)
+    template<typename ConstantType>
+    inline ConstantType any_cast_move_if_true(typename std::remove_reference<ConstantType>::type* p, std::true_type)
     {
         return std::move(*p);
     }
 
-    template<typename ValueType>
-    inline ValueType any_cast_move_if_true(typename std::remove_reference<ValueType>::type* p, std::false_type)
+    template<typename ConstantType>
+    inline ConstantType any_cast_move_if_true(typename std::remove_reference<ConstantType>::type* p, std::false_type)
     {
         return *p;
     }
 }
 
-/// Performs *any_cast<add_const_t<remove_reference_t<ValueType>>>(&operand), or throws bad_any_cast on failure.
-template<typename ValueType>
-inline ValueType any_cast(const any& operand)
+/// Performs *any_cast<add_const_t<remove_reference_t<ConstantType>>>(&operand), or throws bad_any_cast on failure.
+template<typename ConstantType>
+inline ConstantType any_cast(const any& operand)
 {
-    auto p = any_cast<typename std::add_const<typename std::remove_reference<ValueType>::type>::type>(&operand);
+    auto p = any_cast<typename std::add_const<typename std::remove_reference<ConstantType>::type>::type>(&operand);
     if(p == nullptr) throw bad_any_cast();
     return *p;
 }
 
-/// Performs *any_cast<remove_reference_t<ValueType>>(&operand), or throws bad_any_cast on failure.
-template<typename ValueType>
-inline ValueType any_cast(any& operand)
+/// Performs *any_cast<remove_reference_t<ConstantType>>(&operand), or throws bad_any_cast on failure.
+template<typename ConstantType>
+inline ConstantType any_cast(any& operand)
 {
-    auto p = any_cast<typename std::remove_reference<ValueType>::type>(&operand);
+    auto p = any_cast<typename std::remove_reference<ConstantType>::type>(&operand);
     if(p == nullptr) throw bad_any_cast();
     return *p;
 }
 
 ///
 /// If ANY_IMPL_ANYCAST_MOVEABLE is not defined, does as N4562 specifies:
-///     Performs *any_cast<remove_reference_t<ValueType>>(&operand), or throws bad_any_cast on failure.
+///     Performs *any_cast<remove_reference_t<ConstantType>>(&operand), or throws bad_any_cast on failure.
 ///
 /// If ANY_IMPL_ANYCAST_MOVEABLE is defined, does as LWG Defect 2509 specifies:
-///     If ValueType is MoveConstructible and isn't a lvalue reference, performs
-///     std::move(*any_cast<remove_reference_t<ValueType>>(&operand)), otherwise
-///     *any_cast<remove_reference_t<ValueType>>(&operand). Throws bad_any_cast on failure.
+///     If ConstantType is MoveConstructible and isn't a lvalue reference, performs
+///     std::move(*any_cast<remove_reference_t<ConstantType>>(&operand)), otherwise
+///     *any_cast<remove_reference_t<ConstantType>>(&operand). Throws bad_any_cast on failure.
 ///
-template<typename ValueType>
-inline ValueType any_cast(any&& operand)
+template<typename ConstantType>
+inline ConstantType any_cast(any&& operand)
 {
 #ifdef ANY_IMPL_ANY_CAST_MOVEABLE
     // https://cplusplus.github.io/LWG/lwg-active.html#2509
     using can_move = std::integral_constant<bool,
-        std::is_move_constructible<ValueType>::value
-        && !std::is_lvalue_reference<ValueType>::value>;
+        std::is_move_constructible<ConstantType>::value
+        && !std::is_lvalue_reference<ConstantType>::value>;
 #else
     using can_move = std::false_type;
 #endif
 
-    auto p = any_cast<typename std::remove_reference<ValueType>::type>(&operand);
+    auto p = any_cast<typename std::remove_reference<ConstantType>::type>(&operand);
     if(p == nullptr) throw bad_any_cast();
-    return detail::any_cast_move_if_true<ValueType>(p, can_move());
+    return detail::any_cast_move_if_true<ConstantType>(p, can_move());
 }
 
-/// If operand != nullptr && operand->type() == typeid(ValueType), a pointer to the object
+/// If operand != nullptr && operand->type() == typeid(ConstantType), a pointer to the object
 /// contained by operand, otherwise nullptr.
 template<typename T>
 inline const T* any_cast(const any* operand) noexcept
@@ -434,7 +434,7 @@ inline const T* any_cast(const any* operand) noexcept
         return operand->cast<T>();
 }
 
-/// If operand != nullptr && operand->type() == typeid(ValueType), a pointer to the object
+/// If operand != nullptr && operand->type() == typeid(ConstantType), a pointer to the object
 /// contained by operand, otherwise nullptr.
 template<typename T>
 inline T* any_cast(any* operand) noexcept

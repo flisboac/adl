@@ -16,10 +16,10 @@
 adl_BEGIN_ROOT_MODULE
 namespace oct {
 
-template <typename SubClass, typename ValueType, typename ValueLimits>
-class dbm_base_ : public dbm_types_<ValueType, ValueLimits>, public crtp_base<SubClass> {
+template <typename SubClass, typename ConstantType, typename ValueLimits>
+class dbm_base_ : public dbm_types_<ConstantType, ValueLimits>, public crtp_base<SubClass> {
 private:
-    using superclass_ = dbm_types_<ValueType, ValueLimits>;
+    using superclass_ = dbm_types_<ConstantType, ValueLimits>;
 
 protected:
     template <typename VarType_, typename = common_var_t<VarType_>>
@@ -51,33 +51,33 @@ adl_END_ROOT_MODULE
 adl_BEGIN_ROOT_MODULE
 namespace oct {
 
-template <typename SubClass, typename ValueType, typename ValueLimits>
+template <typename SubClass, typename ConstantType, typename ValueLimits>
 template <typename VarType_, typename>
-constexpr std::size_t dbm_base_<SubClass, ValueType, ValueLimits>::to_end_index_(VarType_ last_var) noexcept {
+constexpr std::size_t dbm_base_<SubClass, ConstantType, ValueLimits>::to_end_index_(VarType_ last_var) noexcept {
     return to_octdiff(last_var).normalize().increment(2).to_index();
 };
 
-template <typename SubClass, typename ValueType, typename ValueLimits>
-constexpr std::size_t dbm_base_<SubClass, ValueType, ValueLimits>::no_index() noexcept {
+template <typename SubClass, typename ConstantType, typename ValueLimits>
+constexpr std::size_t dbm_base_<SubClass, ConstantType, ValueLimits>::no_index() noexcept {
     return ((std::size_t)(-1));
 };
 
-template <typename SubClass, typename ValueType, typename ValueLimits>
-inline typename dbm_base_<SubClass, ValueType, ValueLimits>::identity_var_type
-dbm_base_<SubClass, ValueType, ValueLimits>::first_var() const noexcept {
+template <typename SubClass, typename ConstantType, typename ValueLimits>
+inline typename dbm_base_<SubClass, ConstantType, ValueLimits>::identity_var_type
+dbm_base_<SubClass, ConstantType, ValueLimits>::first_var() const noexcept {
     return this->as_subclass_().size() ? identity_var_type::first() : identity_var_type::invalid();
 };
 
-template <typename SubClass, typename ValueType, typename ValueLimits>
-inline typename dbm_base_<SubClass, ValueType, ValueLimits>::identity_var_type
-dbm_base_<SubClass, ValueType, ValueLimits>::last_var() const noexcept {
+template <typename SubClass, typename ConstantType, typename ValueLimits>
+inline typename dbm_base_<SubClass, ConstantType, ValueLimits>::identity_var_type
+dbm_base_<SubClass, ConstantType, ValueLimits>::last_var() const noexcept {
     auto size = this->as_subclass_().size();
     return size ? identity_var_type::from_index(size - 1) : identity_var_type::invalid();
 };
 
-template <typename SubClass, typename ValueType, typename ValueLimits>
-inline typename dbm_base_<SubClass, ValueType, ValueLimits>::identity_var_type
-dbm_base_<SubClass, ValueType, ValueLimits>::end_var() const noexcept {
+template <typename SubClass, typename ConstantType, typename ValueLimits>
+inline typename dbm_base_<SubClass, ConstantType, ValueLimits>::identity_var_type
+dbm_base_<SubClass, ConstantType, ValueLimits>::end_var() const noexcept {
     auto size = this->as_subclass_().size();
     return size ? identity_var_type::from_index(size) : identity_var_type::invalid();
 };

@@ -35,10 +35,10 @@ static std::string dbm_to_string_(T const& dbm) {
 template <
     template <typename, typename, typename> class DbmClass,
     typename ContextType,
-    typename ValueType,
+    typename ConstantType,
     typename ValueLimits>
 static void require_dbm_size_(
-    DbmClass<ContextType, ValueType, ValueLimits> const& dbm,
+    DbmClass<ContextType, ConstantType, ValueLimits> const& dbm,
     octdiff_var last_var
 ) {
     const auto end_var = last_var + 1;
@@ -51,12 +51,12 @@ static void require_dbm_size_(
 template <
     template <typename, typename, typename> class DbmClass,
     typename ContextType,
-    typename ValueType,
+    typename ConstantType,
     typename ValueLimits,
     typename CheckFunction,
     typename = std::enable_if_t<!std::is_arithmetic<CheckFunction>::value>>
 static void require_dbm_values_(
-    DbmClass<ContextType, ValueType, ValueLimits> const& dbm,
+    DbmClass<ContextType, ConstantType, ValueLimits> const& dbm,
     CheckFunction check
 ) {
     for (auto i = dbm.first_var(); i < dbm.end_var(); ++i) {
@@ -73,14 +73,14 @@ static void require_dbm_values_(
 template <
     template <typename, typename, typename> class DbmClass,
     typename ContextType,
-    typename ValueType,
+    typename ConstantType,
     typename ValueLimits,
-    typename = std::enable_if_t<std::is_arithmetic<ValueType>::value>>
+    typename = std::enable_if_t<std::is_arithmetic<ConstantType>::value>>
 static void require_dbm_values_(
-    DbmClass<ContextType, ValueType, ValueLimits> const& dbm,
-    ValueType value = DbmClass<ContextType, ValueType, ValueLimits>::default_constant()
+    DbmClass<ContextType, ConstantType, ValueLimits> const& dbm,
+    ConstantType value = DbmClass<ContextType, ConstantType, ValueLimits>::default_constant()
 ) {
-    require_dbm_values_(dbm, [value](ValueType v, octdiff_var, octdiff_var) -> bool { return value == v; });
+    require_dbm_values_(dbm, [value](ConstantType v, octdiff_var, octdiff_var) -> bool { return value == v; });
 }
 
 static void test_dbm_creation_by_size_(cpu::seq_context & seq_ctx) {
@@ -105,8 +105,8 @@ static void test_dbm_creation_by_size_(cpu::seq_context & seq_ctx) {
     }
 }
 
-template <typename ValueType>
-static void do_test_dbm_by_cons_(cpu::seq_context & seq_ctx, oct_cons<ValueType> cons, dbm_major major) {
+template <typename ConstantType>
+static void do_test_dbm_by_cons_(cpu::seq_context & seq_ctx, oct_cons<ConstantType> cons, dbm_major major) {
     const auto xi = cons.xi();
     const auto xj = cons.xj();
     const auto c = cons.c();
@@ -115,13 +115,13 @@ static void do_test_dbm_by_cons_(cpu::seq_context & seq_ctx, oct_cons<ValueType>
     const auto di = split.di(), dj = split.dj();
     const auto last_var = -to_octdiff(xi.compare(xj) >= 0 ? xi : xj).normalize();
     const auto initial_value = c2 + 13;
-    const oct_system<ValueType> system = { cons };
+    const oct_system<ConstantType> system = { cons };
     const auto diff_system = system.to_counterpart();
     const auto dbm = seq_ctx.make_dbm<cpu::dense_dbm>(diff_system, initial_value, major);
     const std::size_t index_di = di.xi().to_index() * dbm.size() + di.xj().to_index();
     const std::size_t index_dj = dj.valid() ? dj.xi().to_index() * dbm.size() + dj.xj().to_index() : 0;
 
-    auto test_dbm_value = [&](ValueType value, octdiff_var xi_, octdiff_var xj_) {
+    auto test_dbm_value = [&](ConstantType value, octdiff_var xi_, octdiff_var xj_) {
         octdiff_vexpr vexpr_(xi_, xj_);
         bool valid_index = (vexpr_ == to_identity(split.di()).to_vexpr() || vexpr_ == to_identity(split.dj()).to_vexpr());
         INFO("cons = " << cons.to_string()); // Not working, why?
@@ -130,7 +130,7 @@ static void do_test_dbm_by_cons_(cpu::seq_context & seq_ctx, oct_cons<ValueType>
             : value == initial_value;
     };
 
-    auto test_diff_cons = [&](octdiff_cons<ValueType> cons_) {
+    auto test_diff_cons = [&](octdiff_cons<ConstantType> cons_) {
         const std::size_t index = (dbm.major() == dbm_major::row)
             ? cons_.xi().to_index() * dbm.size() + cons_.xj().to_index()
             : cons_.xj().to_index() * dbm.size() + cons_.xi().to_index();

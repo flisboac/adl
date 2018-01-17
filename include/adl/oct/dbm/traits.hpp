@@ -19,12 +19,12 @@ namespace dbm_tags {
     struct create_from_octdiff_system_tag {};
 }
 
-template <typename ValueType, typename ValueLimits>
+template <typename ConstantType, typename ValueLimits>
 class dbm_types_ {
 public:
     using domain_space_traits = adl::oct::domain_space_traits<domain_space::octdiff>;
-    using constant_type = ValueType;
-    using value_limits = ValueLimits;
+    using constant_type = ConstantType;
+    using constant_limits = ValueLimits;
 
     using identity_var_type = typename domain_space_traits::identity_var_type;
     using literal_var_type = typename domain_space_traits::literal_var_type;
@@ -36,15 +36,15 @@ public:
     using counterpart_identity_vexpr_type = typename domain_space_traits::counterpart_identity_vexpr_type;
     using counterpart_literal_vexpr_type = typename domain_space_traits::counterpart_literal_vexpr_type;
 
-    using identity_cons_type = typename domain_space_traits::template identity_cons_type<ValueType>;
-    using literal_cons_type = typename domain_space_traits::template literal_cons_type<ValueType>;
-    using counterpart_identity_cons_type = typename domain_space_traits::template counterpart_identity_cons_type<ValueType>;
-    using counterpart_literal_cons_type = typename domain_space_traits::template counterpart_literal_cons_type<ValueType>;
-    using identity_octdiff_conjunction_type = typename domain_space_traits::template identity_octdiff_conjunction_type <ValueType>;
-    using literal_octdiff_conjunction_type = typename domain_space_traits::template literal_octdiff_conjunction_type<ValueType>;
+    using identity_cons_type = typename domain_space_traits::template identity_cons_type<ConstantType>;
+    using literal_cons_type = typename domain_space_traits::template literal_cons_type<ConstantType>;
+    using counterpart_identity_cons_type = typename domain_space_traits::template counterpart_identity_cons_type<ConstantType>;
+    using counterpart_literal_cons_type = typename domain_space_traits::template counterpart_literal_cons_type<ConstantType>;
+    using identity_octdiff_conjunction_type = typename domain_space_traits::template identity_octdiff_conjunction_type <ConstantType>;
+    using literal_octdiff_conjunction_type = typename domain_space_traits::template literal_octdiff_conjunction_type<ConstantType>;
 
-    using system_type = typename domain_space_traits::template system_type<ValueType, ValueLimits>;
-    using counterpart_system_type = typename domain_space_traits::template counterpart_system_type<ValueType, ValueLimits>;
+    using system_type = typename domain_space_traits::template system_type<ConstantType, ValueLimits>;
+    using counterpart_system_type = typename domain_space_traits::template counterpart_system_type<ConstantType, ValueLimits>;
 
     // Constexpr static values
     constexpr static const auto space = domain_space_traits::space;
@@ -67,9 +67,9 @@ struct dbm_traits {
 #endif
 };
 
-template <typename ValueType, typename ValueLimits, typename Allocator>
-struct dbm_traits<oct::dense_dbm<ValueType, ValueLimits, Allocator>> : public dbm_types_<ValueType, ValueLimits> {
-    using dbm_type = dense_dbm<ValueType, ValueLimits, Allocator>;
+template <typename ConstantType, typename ValueLimits, typename Allocator>
+struct dbm_traits<oct::dense_dbm<ConstantType, ValueLimits, Allocator>> : public dbm_types_<ConstantType, ValueLimits> {
+    using dbm_type = dense_dbm<ConstantType, ValueLimits, Allocator>;
     constexpr const static bool valid = true;
 
     constexpr const static dbm_major default_major = dbm_major::row;

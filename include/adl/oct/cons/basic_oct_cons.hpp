@@ -28,10 +28,10 @@ adl_BEGIN_ROOT_MODULE
 
 namespace oct {
 
-template <typename ValueType, typename VarType>
-class basic_oct_cons : public cons_base_<ValueType, VarType> {
+template <typename ConstantType, typename VarType>
+class basic_oct_cons : public cons_base_<ConstantType, VarType> {
 private:
-    using superclass_ = cons_base_<ValueType, VarType>;
+    using superclass_ = cons_base_<ConstantType, VarType>;
 
 public:
     using typename superclass_::var_type;
@@ -58,13 +58,13 @@ public:
     basic_oct_cons& operator=(basic_oct_cons &&) noexcept = default;
 
     template <
-            typename ValueType_,
+            typename ConstantType_,
             typename VarType_,
             typename = std::enable_if_t<
                     common_var<VarType_>::is_oct_space
-                    && (!std::is_same<VarType_, var_type>::value || !std::is_same<ValueType_, value_type>::value)
-                    && std::is_convertible<ValueType_, value_type>::value>>
-        constexpr basic_oct_cons(basic_oct_cons<ValueType_, VarType_> const& cons);
+                    && (!std::is_same<VarType_, var_type>::value || !std::is_same<ConstantType_, value_type>::value)
+                    && std::is_convertible<ConstantType_, value_type>::value>>
+        constexpr basic_oct_cons(basic_oct_cons<ConstantType_, VarType_> const& cons);
 
     template <
             typename VarType_,
@@ -80,10 +80,10 @@ public:
     constexpr static basic_oct_cons make_lower_limit(vexpr_type vexpr, value_type c) noexcept; // xi >= c (only)
 
     template <
-            typename ValueType_,
+            typename ConstantType_,
             typename =
-                std::enable_if_t<std::is_convertible<ValueType, ValueType_>::value> >
-    constexpr basic_oct_cons& operator=(ValueType_ constant) noexcept;
+                std::enable_if_t<std::is_convertible<ConstantType, ConstantType_>::value> >
+    constexpr basic_oct_cons& operator=(ConstantType_ constant) noexcept;
 
     template <
             typename VarType_ = var_type,
@@ -103,95 +103,95 @@ public:
     constexpr octdiff_conjunction_type split() const noexcept;
 };
 
-template <typename ValueType> constexpr oct_cons<ValueType> to_identity(oct_cons<ValueType> cons) { return cons; }
-template <typename ValueType> constexpr oct_cons<ValueType> to_identity(oct_lcons<ValueType> cons) { return cons.to_identity(); }
+template <typename ConstantType> constexpr oct_cons<ConstantType> to_identity(oct_cons<ConstantType> cons) { return cons; }
+template <typename ConstantType> constexpr oct_cons<ConstantType> to_identity(oct_lcons<ConstantType> cons) { return cons.to_identity(); }
 
 template <
-        typename ValueType,
+        typename ConstantType,
         typename VarType,
         typename = std::enable_if_t<common_var<VarType>::is_oct_space>>
-constexpr basic_oct_cons<ValueType, VarType>
-make_lower_limit(basic_oct_vexpr<VarType> vexpr, ValueType c) noexcept {
-    return basic_oct_cons<ValueType, VarType>::make_lower_limit(vexpr, c);
+constexpr basic_oct_cons<ConstantType, VarType>
+make_lower_limit(basic_oct_vexpr<VarType> vexpr, ConstantType c) noexcept {
+    return basic_oct_cons<ConstantType, VarType>::make_lower_limit(vexpr, c);
 };
 
 template <
-        typename ValueType,
+        typename ConstantType,
         typename VarType,
         typename = std::enable_if_t<common_var<VarType>::is_oct_space>>
-constexpr basic_oct_cons<ValueType, VarType>
-make_lower_unit(VarType xi, ValueType c) noexcept {
-    using vexpr_type = typename basic_oct_cons<ValueType, VarType>::vexpr_type;
+constexpr basic_oct_cons<ConstantType, VarType>
+make_lower_unit(VarType xi, ConstantType c) noexcept {
+    using vexpr_type = typename basic_oct_cons<ConstantType, VarType>::vexpr_type;
     return make_lower_limit(vexpr_type::make_unit(xi), c);
 };
 
 template <
-        typename ValueType,
+        typename ConstantType,
         typename VarTypeA,
         typename VarTypeB,
         typename = std::enable_if_t<common_var<VarTypeA, VarTypeB>::is_oct_space>>
-constexpr basic_oct_cons<ValueType, common_var_t<VarTypeA, VarTypeB>>
-make_lower_add(VarTypeA xi, VarTypeB xj, ValueType c) noexcept {
-    using vexpr_type = typename basic_oct_cons<ValueType, common_var_t<VarTypeA, VarTypeB>>::vexpr_type;
+constexpr basic_oct_cons<ConstantType, common_var_t<VarTypeA, VarTypeB>>
+make_lower_add(VarTypeA xi, VarTypeB xj, ConstantType c) noexcept {
+    using vexpr_type = typename basic_oct_cons<ConstantType, common_var_t<VarTypeA, VarTypeB>>::vexpr_type;
     return make_lower_limit(vexpr_type::make_add(xi, xj), c);
 };
 
 template <
-        typename ValueType,
+        typename ConstantType,
         typename VarTypeA,
         typename VarTypeB,
         typename = std::enable_if_t<common_var<VarTypeA, VarTypeB>::is_oct_space>>
-constexpr basic_oct_cons<ValueType, common_var_t<VarTypeA, VarTypeB>>
-make_lower_sub(VarTypeA xi, VarTypeB xj, ValueType c) noexcept {
-    using vexpr_type = typename basic_oct_cons<ValueType, common_var_t<VarTypeA, VarTypeB>>::vexpr_type;
+constexpr basic_oct_cons<ConstantType, common_var_t<VarTypeA, VarTypeB>>
+make_lower_sub(VarTypeA xi, VarTypeB xj, ConstantType c) noexcept {
+    using vexpr_type = typename basic_oct_cons<ConstantType, common_var_t<VarTypeA, VarTypeB>>::vexpr_type;
     return make_lower_limit(vexpr_type::make_sub(xi, xj), c);
 };
 
 template <
-        typename ValueType,
+        typename ConstantType,
         typename VarType,
         typename = std::enable_if_t<common_var<VarType>::is_oct_space>>
-constexpr basic_oct_cons<ValueType, VarType>
-make_upper_limit(basic_oct_vexpr<VarType> vexpr, ValueType c) noexcept {
-    return basic_oct_cons<ValueType, VarType>::make_upper_limit(vexpr, c);
+constexpr basic_oct_cons<ConstantType, VarType>
+make_upper_limit(basic_oct_vexpr<VarType> vexpr, ConstantType c) noexcept {
+    return basic_oct_cons<ConstantType, VarType>::make_upper_limit(vexpr, c);
 };
 
 template <
-        typename ValueType,
+        typename ConstantType,
         typename VarType,
         typename = std::enable_if_t<common_var<VarType>::is_oct_space>>
-constexpr basic_oct_cons<ValueType, VarType>
-make_upper_unit(VarType xi, ValueType c) noexcept {
-    using vexpr_type = typename basic_oct_cons<ValueType, VarType>::vexpr_type;
+constexpr basic_oct_cons<ConstantType, VarType>
+make_upper_unit(VarType xi, ConstantType c) noexcept {
+    using vexpr_type = typename basic_oct_cons<ConstantType, VarType>::vexpr_type;
     return make_upper_limit(vexpr_type::make_unit(xi), c);
 };
 
 template <
-        typename ValueType,
+        typename ConstantType,
         typename VarTypeA,
         typename VarTypeB,
         typename = std::enable_if_t<common_var<VarTypeA, VarTypeB>::is_oct_space>>
-constexpr basic_oct_cons<ValueType, common_var_t<VarTypeA, VarTypeB>>
-make_upper_add(VarTypeA xi, VarTypeB xj, ValueType c) noexcept {
-    using vexpr_type = typename basic_oct_cons<ValueType, common_var_t<VarTypeA, VarTypeB>>::vexpr_type;
+constexpr basic_oct_cons<ConstantType, common_var_t<VarTypeA, VarTypeB>>
+make_upper_add(VarTypeA xi, VarTypeB xj, ConstantType c) noexcept {
+    using vexpr_type = typename basic_oct_cons<ConstantType, common_var_t<VarTypeA, VarTypeB>>::vexpr_type;
     return make_upper_limit(vexpr_type::make_add(xi, xj), c);
 };
 
 template <
-        typename ValueType,
+        typename ConstantType,
         typename VarType,
         typename = std::enable_if_t<common_var<VarType>::is_oct_space>>
-constexpr basic_oct_cons<ValueType, VarType> make_cons(VarType xi, ValueType c) noexcept {
-    using vexpr_type = typename basic_oct_cons<ValueType, VarType>::vexpr_type;
-    return basic_oct_cons<ValueType, VarType>(vexpr_type(xi), c);
+constexpr basic_oct_cons<ConstantType, VarType> make_cons(VarType xi, ConstantType c) noexcept {
+    using vexpr_type = typename basic_oct_cons<ConstantType, VarType>::vexpr_type;
+    return basic_oct_cons<ConstantType, VarType>(vexpr_type(xi), c);
 };
 
 template <
-        typename ValueType,
+        typename ConstantType,
         typename VarType,
         typename = std::enable_if_t<common_var<VarType>::is_oct_space>>
-constexpr basic_oct_cons<ValueType, VarType> make_cons(basic_oct_vexpr<VarType> vexpr, ValueType c) noexcept {
-    return basic_oct_cons<ValueType, VarType>(vexpr, c);
+constexpr basic_oct_cons<ConstantType, VarType> make_cons(basic_oct_vexpr<VarType> vexpr, ConstantType c) noexcept {
+    return basic_oct_cons<ConstantType, VarType>(vexpr, c);
 };
 
 
@@ -201,47 +201,47 @@ namespace dsl {
     inline namespace oct {
         inline namespace cons {
             template <
-                    typename ValueType,
+                    typename ConstantType,
                     typename VarType,
                     typename = std::enable_if_t<
                             adl::oct::common_var<VarType>::is_oct_space
-                            && std::is_arithmetic<ValueType>::value>>
-            constexpr adl::oct::basic_oct_cons<ValueType, VarType> operator>=(VarType var, ValueType rhs) noexcept {
+                            && std::is_arithmetic<ConstantType>::value>>
+            constexpr adl::oct::basic_oct_cons<ConstantType, VarType> operator>=(VarType var, ConstantType rhs) noexcept {
                 return adl::oct::make_lower_unit(var, rhs);
             };
 
             template <
-                    typename ValueType,
+                    typename ConstantType,
                     typename VarType,
                     typename = std::enable_if_t<
                             adl::oct::common_var<VarType>::is_oct_space
-                            && std::is_arithmetic<ValueType>::value>>
-            constexpr adl::oct::basic_oct_cons<ValueType, VarType> operator<=(VarType var, ValueType rhs) noexcept {
+                            && std::is_arithmetic<ConstantType>::value>>
+            constexpr adl::oct::basic_oct_cons<ConstantType, VarType> operator<=(VarType var, ConstantType rhs) noexcept {
                 return adl::oct::make_upper_unit(var, rhs);
             };
 
             template <
-                    typename ValueType,
+                    typename ConstantType,
                     typename VarType,
                     typename = std::enable_if_t<
                             adl::oct::common_var<VarType>::is_oct_space
-                            && std::is_arithmetic<ValueType>::value>>
-            constexpr adl::oct::basic_oct_cons<ValueType, VarType> operator>=(
+                            && std::is_arithmetic<ConstantType>::value>>
+            constexpr adl::oct::basic_oct_cons<ConstantType, VarType> operator>=(
                 adl::oct::basic_oct_vexpr<VarType> vexpr,
-                ValueType rhs
+                ConstantType rhs
             ) noexcept {
                 return adl::oct::make_lower_limit(vexpr, rhs);
             };
 
             template <
-                    typename ValueType,
+                    typename ConstantType,
                     typename VarType,
                     typename = std::enable_if_t<
                             adl::oct::common_var<VarType>::is_oct_space
-                            && std::is_arithmetic<ValueType>::value>>
-            constexpr adl::oct::basic_oct_cons<ValueType, VarType> operator<=(
+                            && std::is_arithmetic<ConstantType>::value>>
+            constexpr adl::oct::basic_oct_cons<ConstantType, VarType> operator<=(
                 adl::oct::basic_oct_vexpr<VarType> vexpr,
-                ValueType rhs
+                ConstantType rhs
             ) noexcept {
                 return adl::oct::make_upper_limit(vexpr, rhs);
             };
@@ -253,30 +253,30 @@ namespace operators {
     inline namespace oct {
         inline namespace cons {
         inline namespace comparison {
-            template <typename ValueType,
+            template <typename ConstantType,
                     typename VarType,
                     typename = std::enable_if_t<adl::oct::common_var<VarType>::is_oct_space>>
-            constexpr bool operator<(adl::oct::basic_oct_cons<ValueType, VarType> lhs, adl::oct::basic_oct_cons<ValueType, VarType> const& rhs) noexcept { return lhs.compare(rhs) < 0; };
-            template <typename ValueType,
+            constexpr bool operator<(adl::oct::basic_oct_cons<ConstantType, VarType> lhs, adl::oct::basic_oct_cons<ConstantType, VarType> const& rhs) noexcept { return lhs.compare(rhs) < 0; };
+            template <typename ConstantType,
                     typename VarType,
                     typename = std::enable_if_t<adl::oct::common_var<VarType>::is_oct_space>>
-            constexpr bool operator<=(adl::oct::basic_oct_cons<ValueType, VarType> lhs, adl::oct::basic_oct_cons<ValueType, VarType> const& rhs) noexcept { return lhs.compare(rhs) <= 0; }
-            template <typename ValueType,
+            constexpr bool operator<=(adl::oct::basic_oct_cons<ConstantType, VarType> lhs, adl::oct::basic_oct_cons<ConstantType, VarType> const& rhs) noexcept { return lhs.compare(rhs) <= 0; }
+            template <typename ConstantType,
                     typename VarType,
                     typename = std::enable_if_t<adl::oct::common_var<VarType>::is_oct_space>>
-            constexpr bool operator==(adl::oct::basic_oct_cons<ValueType, VarType> lhs, adl::oct::basic_oct_cons<ValueType, VarType> const& rhs) noexcept { return lhs.equals(rhs); }
-            template <typename ValueType,
+            constexpr bool operator==(adl::oct::basic_oct_cons<ConstantType, VarType> lhs, adl::oct::basic_oct_cons<ConstantType, VarType> const& rhs) noexcept { return lhs.equals(rhs); }
+            template <typename ConstantType,
                     typename VarType,
                     typename = std::enable_if_t<adl::oct::common_var<VarType>::is_oct_space>>
-            constexpr bool operator!=(adl::oct::basic_oct_cons<ValueType, VarType> lhs, adl::oct::basic_oct_cons<ValueType, VarType> const& rhs) noexcept { return !lhs.equals(rhs); }
-            template <typename ValueType,
+            constexpr bool operator!=(adl::oct::basic_oct_cons<ConstantType, VarType> lhs, adl::oct::basic_oct_cons<ConstantType, VarType> const& rhs) noexcept { return !lhs.equals(rhs); }
+            template <typename ConstantType,
                     typename VarType,
                     typename = std::enable_if_t<adl::oct::common_var<VarType>::is_oct_space>>
-            constexpr bool operator>=(adl::oct::basic_oct_cons<ValueType, VarType> lhs, adl::oct::basic_oct_cons<ValueType, VarType> const& rhs) noexcept { return lhs.compare(rhs) >= 0; }
-            template <typename ValueType,
+            constexpr bool operator>=(adl::oct::basic_oct_cons<ConstantType, VarType> lhs, adl::oct::basic_oct_cons<ConstantType, VarType> const& rhs) noexcept { return lhs.compare(rhs) >= 0; }
+            template <typename ConstantType,
                     typename VarType,
                     typename = std::enable_if_t<adl::oct::common_var<VarType>::is_oct_space>>
-            constexpr bool operator>(adl::oct::basic_oct_cons<ValueType, VarType> lhs, adl::oct::basic_oct_cons<ValueType, VarType> const& rhs) noexcept { return lhs.compare(rhs) > 0; }
+            constexpr bool operator>(adl::oct::basic_oct_cons<ConstantType, VarType> lhs, adl::oct::basic_oct_cons<ConstantType, VarType> const& rhs) noexcept { return lhs.compare(rhs) > 0; }
             }
         }
     }
@@ -284,13 +284,13 @@ namespace operators {
 
 adl_END_ROOT_MODULE
 
-template <typename ValueType,
+template <typename ConstantType,
         typename VarType,
         typename Traits,
         typename = std::enable_if_t<adl::oct::common_var<VarType>::is_oct_space>>
 std::basic_ostream<char, Traits>& operator<<(
     std::basic_ostream<char, Traits>& os,
-    adl::oct::basic_oct_cons<ValueType, VarType> const& cons
+    adl::oct::basic_oct_cons<ConstantType, VarType> const& cons
 ) {
     cons.print(os);
     return os;
@@ -309,74 +309,74 @@ namespace oct {
 // adl::oct::basic_oct_cons
 //
 
-template <typename ValueType, typename VarType>
-template <typename ValueType_, typename VarType_, typename>
-constexpr basic_oct_cons<ValueType, VarType>::basic_oct_cons(basic_oct_cons<ValueType_, VarType_> const& cons)
+template <typename ConstantType, typename VarType>
+template <typename ConstantType_, typename VarType_, typename>
+constexpr basic_oct_cons<ConstantType, VarType>::basic_oct_cons(basic_oct_cons<ConstantType_, VarType_> const& cons)
         : basic_oct_cons(vexpr_type(var_type(cons.xi()), var_type(cons.xj())), value_type(cons.c())) {};
 
-template <typename ValueType, typename VarType>
+template <typename ConstantType, typename VarType>
 template <typename VarType_, typename>
-constexpr basic_oct_cons<ValueType, VarType>::basic_oct_cons(basic_oct_vexpr<VarType_> vexpr)
+constexpr basic_oct_cons<ConstantType, VarType>::basic_oct_cons(basic_oct_vexpr<VarType_> vexpr)
         : basic_oct_cons(basic_oct_vexpr<var_type>(vexpr.xi(), vexpr.xj()), value_type()) {};
 
-template <typename ValueType, typename VarType>
-constexpr basic_oct_cons<ValueType, VarType>::basic_oct_cons(var_type xi, value_type c) :
+template <typename ConstantType, typename VarType>
+constexpr basic_oct_cons<ConstantType, VarType>::basic_oct_cons(var_type xi, value_type c) :
         superclass_(vexpr_type::make_unit(xi), c) {}
 
-template <typename ValueType, typename VarType>
-template <typename ValueType_, typename>
-constexpr basic_oct_cons<ValueType, VarType>&
-basic_oct_cons<ValueType, VarType>::operator=(ValueType_ constant) noexcept {
+template <typename ConstantType, typename VarType>
+template <typename ConstantType_, typename>
+constexpr basic_oct_cons<ConstantType, VarType>&
+basic_oct_cons<ConstantType, VarType>::operator=(ConstantType_ constant) noexcept {
     c_ = constant;
     return *this;
 }
 
-template <typename ValueType, typename VarType>
+template <typename ConstantType, typename VarType>
 template <typename VarType_, typename>
-constexpr basic_oct_vexpr<VarType_> basic_oct_cons<ValueType, VarType>::to_vexpr() const noexcept {
+constexpr basic_oct_vexpr<VarType_> basic_oct_cons<ConstantType, VarType>::to_vexpr() const noexcept {
     return basic_oct_vexpr<VarType_>(this->xi(), this->xj());
 };
 
-template <typename ValueType, typename VarType>
+template <typename ConstantType, typename VarType>
 template <typename VarType_, typename>
-constexpr basic_oct_cons<ValueType, VarType>::operator basic_oct_vexpr<VarType_>() const noexcept {
+constexpr basic_oct_cons<ConstantType, VarType>::operator basic_oct_vexpr<VarType_>() const noexcept {
     return to_vexpr<VarType_>();
 };
 
-template <typename ValueType, typename VarType>
-constexpr basic_oct_cons<ValueType, VarType> basic_oct_cons<ValueType, VarType>::make_upper_limit(
+template <typename ConstantType, typename VarType>
+constexpr basic_oct_cons<ConstantType, VarType> basic_oct_cons<ConstantType, VarType>::make_upper_limit(
         var_type xi,
         value_type c
 ) noexcept {
-    return basic_oct_cons<ValueType, VarType>(xi, c).as_valid();
+    return basic_oct_cons<ConstantType, VarType>(xi, c).as_valid();
 }
 
-template <typename ValueType, typename VarType>
-constexpr basic_oct_cons<ValueType, VarType> basic_oct_cons<ValueType, VarType>::make_upper_limit(
+template <typename ConstantType, typename VarType>
+constexpr basic_oct_cons<ConstantType, VarType> basic_oct_cons<ConstantType, VarType>::make_upper_limit(
         vexpr_type vexpr,
         value_type c
 ) noexcept {
-    return basic_oct_cons<ValueType, VarType>(vexpr, c).as_valid();
+    return basic_oct_cons<ConstantType, VarType>(vexpr, c).as_valid();
 }
 
-template <typename ValueType, typename VarType>
-constexpr basic_oct_cons<ValueType, VarType> basic_oct_cons<ValueType, VarType>::make_lower_limit(
+template <typename ConstantType, typename VarType>
+constexpr basic_oct_cons<ConstantType, VarType> basic_oct_cons<ConstantType, VarType>::make_lower_limit(
         var_type xi,
         value_type c
 ) noexcept {
-    return basic_oct_cons<ValueType, VarType>(xi.to_negated(), -c).as_valid();
+    return basic_oct_cons<ConstantType, VarType>(xi.to_negated(), -c).as_valid();
 }
 
-template <typename ValueType, typename VarType>
-constexpr basic_oct_cons<ValueType, VarType> basic_oct_cons<ValueType, VarType>::make_lower_limit(
+template <typename ConstantType, typename VarType>
+constexpr basic_oct_cons<ConstantType, VarType> basic_oct_cons<ConstantType, VarType>::make_lower_limit(
         vexpr_type vexpr,
         value_type c
 ) noexcept {
-    return vexpr.unit() ? basic_oct_cons<ValueType, VarType>(vexpr.xi().to_negated(), -c).as_valid() : invalid();
+    return vexpr.unit() ? basic_oct_cons<ConstantType, VarType>(vexpr.xi().to_negated(), -c).as_valid() : invalid();
 }
 
-template <typename ValueType, typename VarType>
-constexpr basic_oct_cons<ValueType, VarType>& basic_oct_cons<ValueType, VarType>::simplify() noexcept {
+template <typename ConstantType, typename VarType>
+constexpr basic_oct_cons<ConstantType, VarType>& basic_oct_cons<ConstantType, VarType>::simplify() noexcept {
     if (!valid()) {
         invalidate();
     } else if (vexpr_.duplicated_var()) {
@@ -386,25 +386,25 @@ constexpr basic_oct_cons<ValueType, VarType>& basic_oct_cons<ValueType, VarType>
     return *this;
 }
 
-template <typename ValueType, typename VarType>
-constexpr basic_oct_cons<ValueType, VarType> basic_oct_cons<ValueType, VarType>::to_simplified() const noexcept {
-    return basic_oct_cons<ValueType, VarType>(*this).simplify();
+template <typename ConstantType, typename VarType>
+constexpr basic_oct_cons<ConstantType, VarType> basic_oct_cons<ConstantType, VarType>::to_simplified() const noexcept {
+    return basic_oct_cons<ConstantType, VarType>(*this).simplify();
 }
 
-template <typename ValueType, typename VarType>
-constexpr basic_oct_cons<ValueType, VarType>& basic_oct_cons<ValueType, VarType>::ensure_simplify() {
+template <typename ConstantType, typename VarType>
+constexpr basic_oct_cons<ConstantType, VarType>& basic_oct_cons<ConstantType, VarType>::ensure_simplify() {
     if (!simplify().valid()) throw std::logic_error("Could not simplify, invalid constraint");
     return *this;
 }
 
-template <typename ValueType, typename VarType>
-constexpr basic_oct_cons<ValueType, VarType> basic_oct_cons<ValueType, VarType>::ensure_simplified() const {
+template <typename ConstantType, typename VarType>
+constexpr basic_oct_cons<ConstantType, VarType> basic_oct_cons<ConstantType, VarType>::ensure_simplified() const {
     return basic_oct_cons(*this).ensure_simplify();
 }
 
-template <typename ValueType, typename VarType>
-constexpr typename basic_oct_cons<ValueType, VarType>::octdiff_conjunction_type
-basic_oct_cons<ValueType, VarType>::split() const noexcept {
+template <typename ConstantType, typename VarType>
+constexpr typename basic_oct_cons<ConstantType, VarType>::octdiff_conjunction_type
+basic_oct_cons<ConstantType, VarType>::split() const noexcept {
     auto simplified = to_simplified();
     auto vexpr = simplified.to_vexpr();
     auto constant = simplified.c();

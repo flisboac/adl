@@ -27,7 +27,7 @@ adl_BEGIN_ROOT_MODULE
 namespace oct {
 
 
-template <domain_space Domain, typename ValueType, typename ValueLimits>
+template <domain_space Domain, typename ConstantType, typename ValueLimits>
 class system_base_ {
     //
     // Types
@@ -35,10 +35,10 @@ class system_base_ {
     using domain_space_traits = adl::oct::domain_space_traits<Domain>;
 
 private:
-    using subclass_ = typename domain_space_traits::template system_type<ValueType, ValueLimits>;
+    using subclass_ = typename domain_space_traits::template system_type<ConstantType, ValueLimits>;
 
 public:
-    using constant_type = ValueType;
+    using constant_type = ConstantType;
 
     using identity_var_type = typename domain_space_traits::identity_var_type;
     using literal_var_type = typename domain_space_traits::literal_var_type;
@@ -50,15 +50,15 @@ public:
     using counterpart_identity_vexpr_type = typename domain_space_traits::counterpart_identity_vexpr_type;
     using counterpart_literal_vexpr_type = typename domain_space_traits::counterpart_literal_vexpr_type;
 
-    using identity_cons_type = typename domain_space_traits::template identity_cons_type<ValueType>;
-    using literal_cons_type = typename domain_space_traits::template literal_cons_type<ValueType>;
-    using counterpart_identity_cons_type = typename domain_space_traits::template counterpart_identity_cons_type<ValueType>;
-    using counterpart_literal_cons_type = typename domain_space_traits::template counterpart_literal_cons_type<ValueType>;
-    using identity_octdiff_conjunction_type = typename domain_space_traits::template identity_octdiff_conjunction_type <ValueType>;
-    using literal_octdiff_conjunction_type = typename domain_space_traits::template literal_octdiff_conjunction_type<ValueType>;
+    using identity_cons_type = typename domain_space_traits::template identity_cons_type<ConstantType>;
+    using literal_cons_type = typename domain_space_traits::template literal_cons_type<ConstantType>;
+    using counterpart_identity_cons_type = typename domain_space_traits::template counterpart_identity_cons_type<ConstantType>;
+    using counterpart_literal_cons_type = typename domain_space_traits::template counterpart_literal_cons_type<ConstantType>;
+    using identity_octdiff_conjunction_type = typename domain_space_traits::template identity_octdiff_conjunction_type <ConstantType>;
+    using literal_octdiff_conjunction_type = typename domain_space_traits::template literal_octdiff_conjunction_type<ConstantType>;
 
-    using system_type = typename domain_space_traits::template system_type<ValueType, ValueLimits>;
-    using counterpart_system_type = typename domain_space_traits::template counterpart_system_type<ValueType, ValueLimits>;
+    using system_type = typename domain_space_traits::template system_type<ConstantType, ValueLimits>;
+    using counterpart_system_type = typename domain_space_traits::template counterpart_system_type<ConstantType, ValueLimits>;
 
     // Constexpr static values
     constexpr static const auto space = domain_space_traits::space;
@@ -120,48 +120,48 @@ adl_END_ROOT_MODULE
 adl_BEGIN_ROOT_MODULE
 namespace oct {
 
-template <domain_space Domain, typename ValueType, typename ValueLimits>
-adl_IMPL typename system_base_<Domain, ValueType, ValueLimits>::var_set_type const&
-system_base_<Domain, ValueType, ValueLimits>::vars() const {
+template <domain_space Domain, typename ConstantType, typename ValueLimits>
+adl_IMPL typename system_base_<Domain, ConstantType, ValueLimits>::var_set_type const&
+system_base_<Domain, ConstantType, ValueLimits>::vars() const {
     return variables_;
 }
 
-template <domain_space Domain, typename ValueType, typename ValueLimits>
-adl_IMPL typename system_base_<Domain, ValueType, ValueLimits>::const_iterator
-system_base_<Domain, ValueType, ValueLimits>::begin() const {
+template <domain_space Domain, typename ConstantType, typename ValueLimits>
+adl_IMPL typename system_base_<Domain, ConstantType, ValueLimits>::const_iterator
+system_base_<Domain, ConstantType, ValueLimits>::begin() const {
     return constraints_.begin();
 }
 
-template <domain_space Domain, typename ValueType, typename ValueLimits>
-adl_IMPL typename system_base_<Domain, ValueType, ValueLimits>::const_iterator
-system_base_<Domain, ValueType, ValueLimits>::end() const {
+template <domain_space Domain, typename ConstantType, typename ValueLimits>
+adl_IMPL typename system_base_<Domain, ConstantType, ValueLimits>::const_iterator
+system_base_<Domain, ConstantType, ValueLimits>::end() const {
     return constraints_.end();
 }
 
-template <domain_space Domain, typename ValueType, typename ValueLimits>
-adl_IMPL typename system_base_<Domain, ValueType, ValueLimits>::const_reverse_iterator
-system_base_<Domain, ValueType, ValueLimits>::rbegin() const {
+template <domain_space Domain, typename ConstantType, typename ValueLimits>
+adl_IMPL typename system_base_<Domain, ConstantType, ValueLimits>::const_reverse_iterator
+system_base_<Domain, ConstantType, ValueLimits>::rbegin() const {
     return constraints_.rbegin();
 }
 
-template <domain_space Domain, typename ValueType, typename ValueLimits>
-adl_IMPL typename system_base_<Domain, ValueType, ValueLimits>::const_reverse_iterator
-system_base_<Domain, ValueType, ValueLimits>::rend() const {
+template <domain_space Domain, typename ConstantType, typename ValueLimits>
+adl_IMPL typename system_base_<Domain, ConstantType, ValueLimits>::const_reverse_iterator
+system_base_<Domain, ConstantType, ValueLimits>::rend() const {
     return constraints_.rend();
 }
 
-template <domain_space Domain, typename ValueType, typename ValueLimits>
-adl_IMPL bool system_base_<Domain, ValueType, ValueLimits>::empty() const {
+template <domain_space Domain, typename ConstantType, typename ValueLimits>
+adl_IMPL bool system_base_<Domain, ConstantType, ValueLimits>::empty() const {
     return constraints_.empty();
 }
 
-template <domain_space Domain, typename ValueType, typename ValueLimits>
-adl_IMPL std::size_t system_base_<Domain, ValueType, ValueLimits>::size() const {
+template <domain_space Domain, typename ConstantType, typename ValueLimits>
+adl_IMPL std::size_t system_base_<Domain, ConstantType, ValueLimits>::size() const {
     return constraints_.size();
 }
 
-template <domain_space Domain, typename ValueType, typename ValueLimits>
-adl_IMPL std::string system_base_<Domain, ValueType, ValueLimits>::to_string() const {
+template <domain_space Domain, typename ConstantType, typename ValueLimits>
+adl_IMPL std::string system_base_<Domain, ConstantType, ValueLimits>::to_string() const {
     std::string repr = "{";
     char const* sep = "";
     for (auto& constraint : constraints_) {

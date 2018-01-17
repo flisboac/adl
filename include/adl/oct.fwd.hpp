@@ -29,7 +29,7 @@ enum class domain_space {
 using default_var_id_type = int;
 using default_value_type = float;
 
-template <typename ValueType> class value_limits;
+template <typename ConstantType> class constant_limits;
 template <domain_space Domain> struct var_id_limits;
 
 /**
@@ -97,32 +97,32 @@ template <typename FirstVarType, typename SecondVarType = FirstVarType> using co
 //
 // cons.hpp
 //
-template <typename ValueType, typename VarType> class cons_base_;
-template <typename ValueType, typename VarType = oct_var> class basic_oct_cons;
-template <typename ValueType, typename VarType = octdiff_var> class basic_octdiff_cons;
-template <typename ValueType, typename VarType = octdiff_var> class basic_octdiff_conjunction;
+template <typename ConstantType, typename VarType> class cons_base_;
+template <typename ConstantType, typename VarType = oct_var> class basic_oct_cons;
+template <typename ConstantType, typename VarType = octdiff_var> class basic_octdiff_cons;
+template <typename ConstantType, typename VarType = octdiff_var> class basic_octdiff_conjunction;
 
-template <typename ValueType> using oct_cons = basic_oct_cons<ValueType, oct_var>;
-template <typename ValueType> using oct_lcons = basic_oct_cons<ValueType, oct_lvar>;
-template <typename ValueType> using octdiff_cons = basic_octdiff_cons<ValueType, octdiff_var>;
-template <typename ValueType> using octdiff_lcons = basic_octdiff_cons<ValueType, octdiff_lvar>;
-template <typename ValueType> using octdiff_conjunction = basic_octdiff_cons<ValueType, octdiff_var>;
-template <typename ValueType> using octdiff_lconjunction = basic_octdiff_cons<ValueType, octdiff_lvar>;
+template <typename ConstantType> using oct_cons = basic_oct_cons<ConstantType, oct_var>;
+template <typename ConstantType> using oct_lcons = basic_oct_cons<ConstantType, oct_lvar>;
+template <typename ConstantType> using octdiff_cons = basic_octdiff_cons<ConstantType, octdiff_var>;
+template <typename ConstantType> using octdiff_lcons = basic_octdiff_cons<ConstantType, octdiff_lvar>;
+template <typename ConstantType> using octdiff_conjunction = basic_octdiff_cons<ConstantType, octdiff_var>;
+template <typename ConstantType> using octdiff_lconjunction = basic_octdiff_cons<ConstantType, octdiff_lvar>;
 
-template <typename ValueType, typename FirstVarType, typename SecondVarType = FirstVarType> struct common_cons;
-template <typename ValueType, typename FirstVarType, typename SecondVarType = FirstVarType> using common_cons_t = typename common_cons<ValueType, FirstVarType, SecondVarType>::type;
+template <typename ConstantType, typename FirstVarType, typename SecondVarType = FirstVarType> struct common_cons;
+template <typename ConstantType, typename FirstVarType, typename SecondVarType = FirstVarType> using common_cons_t = typename common_cons<ConstantType, FirstVarType, SecondVarType>::type;
 
-template <typename ValueType, typename FirstVarType, typename SecondVarType = FirstVarType> struct common_octdiff_conjunction;
-template <typename ValueType, typename FirstVarType, typename SecondVarType = FirstVarType> using common_octdiff_conjunction_t = typename common_octdiff_conjunction<ValueType, FirstVarType, SecondVarType>::type;
+template <typename ConstantType, typename FirstVarType, typename SecondVarType = FirstVarType> struct common_octdiff_conjunction;
+template <typename ConstantType, typename FirstVarType, typename SecondVarType = FirstVarType> using common_octdiff_conjunction_t = typename common_octdiff_conjunction<ConstantType, FirstVarType, SecondVarType>::type;
 
 
 //
 // system.hpp
 //
 template <domain_space Domain> class var_set;
-template <domain_space Domain, typename ValueType, typename ValueLimits = value_limits<ValueType>> class system_base_;
-template <typename ValueType, typename ValueLimits = value_limits<ValueType>> class oct_system;
-template <typename ValueType, typename ValueLimits = value_limits<ValueType>> class octdiff_system;
+template <domain_space Domain, typename ConstantType, typename ValueLimits = constant_limits<ConstantType>> class system_base_;
+template <typename ConstantType, typename ValueLimits = constant_limits<ConstantType>> class oct_system;
+template <typename ConstantType, typename ValueLimits = constant_limits<ConstantType>> class octdiff_system;
 
 //
 // oper.hpp
@@ -139,16 +139,16 @@ enum class dbm_major {
 };
 
 // dbm/traits.hpp
-template <typename ValueType, typename ValueLimits = value_limits<ValueType>> class dbm_types_;
+template <typename ConstantType, typename ValueLimits = constant_limits<ConstantType>> class dbm_types_;
 template <typename DbmType> struct dbm_traits;
 template <typename DbmType> using is_valid_dbm_t = std::enable_if_t<dbm_traits<DbmType>::valid, typename dbm_traits<DbmType>::dbm_type>;
 
 // dbm/base_.hpp
-template <typename Subclass, typename ValueType, typename ValueLimits = value_limits<ValueType>> class dbm_base_;
+template <typename Subclass, typename ConstantType, typename ValueLimits = constant_limits<ConstantType>> class dbm_base_;
 
 // dbm/dense_dbm.hpp
-template <typename Subclass, typename ValueType, typename ValueLimits = value_limits<ValueType>> class dense_dbm_base_;
-template <typename ValueType, typename ValueLimits = value_limits<ValueType>, typename Allocator = std::allocator<ValueType>> class dense_dbm;
+template <typename Subclass, typename ConstantType, typename ValueLimits = constant_limits<ConstantType>> class dense_dbm_base_;
+template <typename ConstantType, typename ValueLimits = constant_limits<ConstantType>, typename Allocator = std::allocator<ConstantType>> class dense_dbm;
 
 //
 // context.hpp
@@ -171,7 +171,7 @@ namespace cpu {
         template <typename SubType, typename DbmType, typename ContextType, typename ResultType> class oper_base_;
     }
 
-    template <typename ContextType, typename ValueType, typename ValueLimits = value_limits<ValueType>> class dense_dbm;
+    template <typename ContextType, typename ConstantType, typename ValueLimits = constant_limits<ConstantType>> class dense_dbm;
 
     // Specific
     template <typename DbmType, typename ContextType> class null_oper;

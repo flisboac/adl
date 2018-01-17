@@ -25,7 +25,7 @@ adl_BEGIN_ROOT_MODULE
 
 namespace oct {
 
-template <typename ValueType, typename VarType>
+template <typename ConstantType, typename VarType>
 class cons_base_ {
 public:
     //
@@ -34,8 +34,8 @@ public:
 
     // Var types
     using var_type = VarType;
-    using value_type = ValueType;
-    using value_limits = adl::oct::value_limits<ValueType>;
+    using value_type = ConstantType;
+    using constant_limits = adl::oct::constant_limits<ConstantType>;
     using var_traits = typename var_type::var_traits;
     using counterpart_var_type = typename var_traits::counterpart_var_type;
     using identity_var_type = typename var_traits::identity_var_type;
@@ -56,9 +56,9 @@ public:
     constexpr static const bool has_add_cons = vexpr_type::has_add_vexpr;
 
     // Cons types
-    using cons_type = typename var_traits::template cons_type<ValueType>;
-    using counterpart_cons_type = typename var_traits::template counterpart_cons_type<ValueType>;
-    using identity_cons_type = typename var_traits::template identity_cons_type<ValueType>;
+    using cons_type = typename var_traits::template cons_type<ConstantType>;
+    using counterpart_cons_type = typename var_traits::template counterpart_cons_type<ConstantType>;
+    using identity_cons_type = typename var_traits::template identity_cons_type<ConstantType>;
     using octdiff_conjunction_type = std::conditional_t<space == domain_space::oct, basic_octdiff_conjunction<value_type, counterpart_var_type>, basic_octdiff_conjunction<value_type, var_type>>;
     using octdiff_conjunction_vexpr_type = std::conditional_t<space == domain_space::oct, counterpart_vexpr_type, vexpr_type>;
     using octdiff_conjunction_cons_type = std::conditional_t<space == domain_space::oct, counterpart_cons_type, cons_type>;
@@ -150,22 +150,22 @@ protected:
     value_type c_ = value_type();
 };
 
-template <typename ValueType, typename FirstVarType, typename SecondVarType, bool Specialized = common_var<FirstVarType, SecondVarType>::valid>
+template <typename ConstantType, typename FirstVarType, typename SecondVarType, bool Specialized = common_var<FirstVarType, SecondVarType>::valid>
 struct common_cons_ {
     constexpr static const bool valid = Specialized;
     constexpr static const bool is_oct_space = false;
     constexpr static const bool is_octdiff_space = false;
 };
 
-template <typename ValueType, typename FirstVarType, typename SecondVarType>
-struct common_cons_<ValueType, FirstVarType, SecondVarType, true> {
+template <typename ConstantType, typename FirstVarType, typename SecondVarType>
+struct common_cons_<ConstantType, FirstVarType, SecondVarType, true> {
     constexpr static const bool valid = true;
 
 private:
     using var_traits = typename common_var_t<FirstVarType, SecondVarType>::var_traits;
 
 public:
-    typedef typename var_traits::template cons_type<ValueType> type;
+    typedef typename var_traits::template cons_type<ConstantType> type;
     typedef typename var_traits::vexpr_type vexpr_type;
     constexpr static const domain_space space = common_var<FirstVarType, SecondVarType>::space;
     constexpr static const domain_space counterpart_space = common_var<FirstVarType, SecondVarType>::counterpart_space;
@@ -173,11 +173,11 @@ public:
     constexpr static const bool is_octdiff_space = common_var<FirstVarType, SecondVarType>::is_octdiff_space;
 };
 
-template <typename ValueType, typename FirstVarType, typename SecondVarType>
-struct common_cons : public common_cons_<ValueType, FirstVarType, SecondVarType> {};
+template <typename ConstantType, typename FirstVarType, typename SecondVarType>
+struct common_cons : public common_cons_<ConstantType, FirstVarType, SecondVarType> {};
 
 
-template <typename ValueType, typename FirstVarType, typename SecondVarType>
+template <typename ConstantType, typename FirstVarType, typename SecondVarType>
 struct common_octdiff_conjunction {
 private:
     using var_traits = typename common_var_t<FirstVarType, SecondVarType>::var_traits;
@@ -186,30 +186,30 @@ public:
     constexpr static const domain_space space = domain_space::octdiff;
     constexpr static const domain_space counterpart_space = domain_space::oct;
     constexpr static const bool valid = common_var<FirstVarType, SecondVarType>::valid && space == common_var<FirstVarType, SecondVarType>::space;
-    typedef typename var_traits::template cons_type<ValueType> var_type;
-    using value_type = ValueType;
-    using type = basic_octdiff_conjunction<ValueType, var_type>;
+    typedef typename var_traits::template cons_type<ConstantType> var_type;
+    using value_type = ConstantType;
+    using type = basic_octdiff_conjunction<ConstantType, var_type>;
     constexpr static const bool is_oct_space = false;
     constexpr static const bool is_octdiff_space = true;
 };
 
 template <
-        typename ValueType,
+        typename ConstantType,
         typename VarTypeA,
         typename VarTypeB>
-constexpr common_cons_t<ValueType, VarTypeA, VarTypeB> make_cons(VarTypeA xi, VarTypeB xj, ValueType c) noexcept {
-    using vexpr_type = typename common_cons_t<ValueType, VarTypeA, VarTypeB>::vexpr_type;
-    return common_cons_t<ValueType, VarTypeA, VarTypeB>(vexpr_type(xi, xj), c);
+constexpr common_cons_t<ConstantType, VarTypeA, VarTypeB> make_cons(VarTypeA xi, VarTypeB xj, ConstantType c) noexcept {
+    using vexpr_type = typename common_cons_t<ConstantType, VarTypeA, VarTypeB>::vexpr_type;
+    return common_cons_t<ConstantType, VarTypeA, VarTypeB>(vexpr_type(xi, xj), c);
 };
 
 template <
-        typename ValueType,
+        typename ConstantType,
         typename VarTypeA,
         typename VarTypeB>
-constexpr common_cons_t<ValueType, VarTypeA, VarTypeB>
-make_upper_sub(VarTypeA xi, VarTypeB xj, ValueType c) noexcept {
-    using vexpr_type = typename common_cons<ValueType, VarTypeA, VarTypeB>::vexpr_type;
-    return common_cons_t<ValueType, VarTypeA, VarTypeB>::make_upper_limit(vexpr_type::make_sub(xi, xj), c);
+constexpr common_cons_t<ConstantType, VarTypeA, VarTypeB>
+make_upper_sub(VarTypeA xi, VarTypeB xj, ConstantType c) noexcept {
+    using vexpr_type = typename common_cons<ConstantType, VarTypeA, VarTypeB>::vexpr_type;
+    return common_cons_t<ConstantType, VarTypeA, VarTypeB>::make_upper_limit(vexpr_type::make_sub(xi, xj), c);
 };
 
 } // namespace oct
@@ -226,191 +226,191 @@ namespace oct {
 //
 // cons_base_
 //
-template <typename ValueType, typename VarType>
-constexpr bool cons_base_<ValueType, VarType>::less::operator()(cons_type const& lhs, cons_type const& rhs) const noexcept {
+template <typename ConstantType, typename VarType>
+constexpr bool cons_base_<ConstantType, VarType>::less::operator()(cons_type const& lhs, cons_type const& rhs) const noexcept {
     return lhs.compare(rhs) < 0;
 }
 
-template <typename ValueType, typename VarType>
-constexpr std::size_t cons_base_<ValueType, VarType>::hash::operator()(cons_type const& lhs) const noexcept {
+template <typename ConstantType, typename VarType>
+constexpr std::size_t cons_base_<ConstantType, VarType>::hash::operator()(cons_type const& lhs) const noexcept {
     return typename vexpr_type::hash()(lhs);
 }
 
-template <typename ValueType, typename VarType>
-constexpr cons_base_<ValueType, VarType>::cons_base_(vexpr_type vexpr, value_type c) noexcept :
+template <typename ConstantType, typename VarType>
+constexpr cons_base_<ConstantType, VarType>::cons_base_(vexpr_type vexpr, value_type c) noexcept :
         vexpr_(vexpr),
         c_(c) {}
 
-template <typename ValueType, typename VarType>
-constexpr typename cons_base_<ValueType, VarType>::cons_type
-cons_base_<ValueType, VarType>::invalid() noexcept {
+template <typename ConstantType, typename VarType>
+constexpr typename cons_base_<ConstantType, VarType>::cons_type
+cons_base_<ConstantType, VarType>::invalid() noexcept {
     return cons_type();
 }
 
-template <typename ValueType, typename VarType>
-constexpr typename cons_base_<ValueType, VarType>::var_type
-cons_base_<ValueType, VarType>::xi() const noexcept {
+template <typename ConstantType, typename VarType>
+constexpr typename cons_base_<ConstantType, VarType>::var_type
+cons_base_<ConstantType, VarType>::xi() const noexcept {
     return vexpr_.xi();
 }
 
-template <typename ValueType, typename VarType>
-constexpr typename cons_base_<ValueType, VarType>::var_type
-cons_base_<ValueType, VarType>::xI() const noexcept {
+template <typename ConstantType, typename VarType>
+constexpr typename cons_base_<ConstantType, VarType>::var_type
+cons_base_<ConstantType, VarType>::xI() const noexcept {
     return vexpr_.xI();
 }
 
-template <typename ValueType, typename VarType>
-constexpr typename cons_base_<ValueType, VarType>::var_type
-cons_base_<ValueType, VarType>::xj() const noexcept {
+template <typename ConstantType, typename VarType>
+constexpr typename cons_base_<ConstantType, VarType>::var_type
+cons_base_<ConstantType, VarType>::xj() const noexcept {
     return vexpr_.xj();
 }
 
-template <typename ValueType, typename VarType>
-constexpr typename cons_base_<ValueType, VarType>::var_type
-cons_base_<ValueType, VarType>::xJ() const noexcept {
+template <typename ConstantType, typename VarType>
+constexpr typename cons_base_<ConstantType, VarType>::var_type
+cons_base_<ConstantType, VarType>::xJ() const noexcept {
     return vexpr_.xJ();
 }
 
-template <typename ValueType, typename VarType>
-constexpr typename cons_base_<ValueType, VarType>::value_type const&
-cons_base_<ValueType, VarType>::c() const noexcept {
+template <typename ConstantType, typename VarType>
+constexpr typename cons_base_<ConstantType, VarType>::value_type const&
+cons_base_<ConstantType, VarType>::c() const noexcept {
     return c_;
 }
 
-template <typename ValueType, typename VarType>
-constexpr typename cons_base_<ValueType, VarType>::value_type const&
-cons_base_<ValueType, VarType>::constant() const noexcept {
+template <typename ConstantType, typename VarType>
+constexpr typename cons_base_<ConstantType, VarType>::value_type const&
+cons_base_<ConstantType, VarType>::constant() const noexcept {
     return c();
 }
 
-template <typename ValueType, typename VarType>
-constexpr typename cons_base_<ValueType, VarType>::var_type
-cons_base_<ValueType, VarType>::last_var() const noexcept {
+template <typename ConstantType, typename VarType>
+constexpr typename cons_base_<ConstantType, VarType>::var_type
+cons_base_<ConstantType, VarType>::last_var() const noexcept {
     return vexpr_.last_var();
 }
 
-template <typename ValueType, typename VarType>
-constexpr std::size_t cons_base_<ValueType, VarType>::last_var_index() const noexcept {
+template <typename ConstantType, typename VarType>
+constexpr std::size_t cons_base_<ConstantType, VarType>::last_var_index() const noexcept {
     return vexpr_.last_var_index();
 }
 
-template <typename ValueType, typename VarType>
-constexpr bool cons_base_<ValueType, VarType>::valid() const noexcept {
+template <typename ConstantType, typename VarType>
+constexpr bool cons_base_<ConstantType, VarType>::valid() const noexcept {
     return vexpr_.valid();
 }
 
-template <typename ValueType, typename VarType>
-constexpr bool cons_base_<ValueType, VarType>::unit() const noexcept {
+template <typename ConstantType, typename VarType>
+constexpr bool cons_base_<ConstantType, VarType>::unit() const noexcept {
     return vexpr_.unit();
 }
 
-template <typename ValueType, typename VarType>
-constexpr bool cons_base_<ValueType, VarType>::duplicated_var() const noexcept {
+template <typename ConstantType, typename VarType>
+constexpr bool cons_base_<ConstantType, VarType>::duplicated_var() const noexcept {
     return vexpr_.duplicated_var();
 }
 
-template <typename ValueType, typename VarType>
-constexpr vexpr_oper cons_base_<ValueType, VarType>::operation() const noexcept {
+template <typename ConstantType, typename VarType>
+constexpr vexpr_oper cons_base_<ConstantType, VarType>::operation() const noexcept {
     return vexpr_.operation();
 }
 
-template <typename ValueType, typename VarType>
-constexpr bool cons_base_<ValueType, VarType>::equals(cons_type const& rhs) const noexcept {
+template <typename ConstantType, typename VarType>
+constexpr bool cons_base_<ConstantType, VarType>::equals(cons_type const& rhs) const noexcept {
     return vexpr_.equals(rhs.vexpr_);
 }
 
-template <typename ValueType, typename VarType>
-constexpr int cons_base_<ValueType, VarType>::compare(cons_type const& rhs) const noexcept {
+template <typename ConstantType, typename VarType>
+constexpr int cons_base_<ConstantType, VarType>::compare(cons_type const& rhs) const noexcept {
     return vexpr_.compare(rhs.vexpr_);
 };
 
-template <typename ValueType, typename VarType>
-constexpr typename cons_base_<ValueType, VarType>::cons_type&
-cons_base_<ValueType, VarType>::invalidate() noexcept {
+template <typename ConstantType, typename VarType>
+constexpr typename cons_base_<ConstantType, VarType>::cons_type&
+cons_base_<ConstantType, VarType>::invalidate() noexcept {
     vexpr_.invalidate();
     c_ = value_type();
     return as_subclass_();
 }
 
-template <typename ValueType, typename VarType>
+template <typename ConstantType, typename VarType>
 template <typename CharTraits>
-void cons_base_<ValueType, VarType>::print(std::basic_ostream<char, CharTraits>& os) const {
+void cons_base_<ConstantType, VarType>::print(std::basic_ostream<char, CharTraits>& os) const {
     os << this->to_string();
 };
 
-template <typename ValueType, typename VarType>
-constexpr typename cons_base_<ValueType, VarType>::cons_type&
-cons_base_<ValueType, VarType>::ensure_valid() {
+template <typename ConstantType, typename VarType>
+constexpr typename cons_base_<ConstantType, VarType>::cons_type&
+cons_base_<ConstantType, VarType>::ensure_valid() {
     return valid() ? as_subclass_() : throw std::logic_error("Invalid constraint");
 }
 
-template <typename ValueType, typename VarType>
-constexpr typename cons_base_<ValueType, VarType>::cons_type const&
-cons_base_<ValueType, VarType>::ensure_valid() const {
+template <typename ConstantType, typename VarType>
+constexpr typename cons_base_<ConstantType, VarType>::cons_type const&
+cons_base_<ConstantType, VarType>::ensure_valid() const {
     return valid() ? as_subclass_() : throw std::logic_error("Invalid constraint");
 }
 
-template <typename ValueType, typename VarType>
-constexpr typename cons_base_<ValueType, VarType>::cons_type&
-cons_base_<ValueType, VarType>::as_valid() noexcept {
+template <typename ConstantType, typename VarType>
+constexpr typename cons_base_<ConstantType, VarType>::cons_type&
+cons_base_<ConstantType, VarType>::as_valid() noexcept {
     if (!valid()) invalidate();
     return as_subclass_();
 }
 
-template <typename ValueType, typename VarType>
-constexpr typename cons_base_<ValueType, VarType>::cons_type
-cons_base_<ValueType, VarType>::to_valid() const noexcept {
+template <typename ConstantType, typename VarType>
+constexpr typename cons_base_<ConstantType, VarType>::cons_type
+cons_base_<ConstantType, VarType>::to_valid() const noexcept {
     return cons_type(as_subclass_()).as_valid();
 }
 
-template <typename ValueType, typename VarType>
-constexpr typename cons_base_<ValueType, VarType>::cons_type
-cons_base_<ValueType, VarType>::to_identity() const noexcept {
+template <typename ConstantType, typename VarType>
+constexpr typename cons_base_<ConstantType, VarType>::cons_type
+cons_base_<ConstantType, VarType>::to_identity() const noexcept {
     return identity_cons_type(vexpr_.to_identity(), c_);
 }
 
-template <typename ValueType, typename VarType>
-constexpr typename cons_base_<ValueType, VarType>::identity_vexpr_type
-cons_base_<ValueType, VarType>::to_identity_vexpr() const noexcept {
+template <typename ConstantType, typename VarType>
+constexpr typename cons_base_<ConstantType, VarType>::identity_vexpr_type
+cons_base_<ConstantType, VarType>::to_identity_vexpr() const noexcept {
     return vexpr_.to_identity();
 }
 
-template <typename ValueType, typename VarType>
-std::string cons_base_<ValueType, VarType>::to_string() const {
+template <typename ConstantType, typename VarType>
+std::string cons_base_<ConstantType, VarType>::to_string() const {
     std::string repr = vexpr_.to_string();
-    repr += " <= " + value_limits::to_string(c_);
+    repr += " <= " + constant_limits::to_string(c_);
     return repr;
 }
 
-template <typename ValueType, typename VarType>
-constexpr bool cons_base_<ValueType, VarType>::operator!() const noexcept {
+template <typename ConstantType, typename VarType>
+constexpr bool cons_base_<ConstantType, VarType>::operator!() const noexcept {
     return !valid();
 }
 
-template <typename ValueType, typename VarType>
-constexpr cons_base_<ValueType, VarType>::operator bool() const noexcept {
+template <typename ConstantType, typename VarType>
+constexpr cons_base_<ConstantType, VarType>::operator bool() const noexcept {
     return valid();
 }
 
-template <typename ValueType, typename VarType>
-constexpr cons_base_<ValueType, VarType>::operator std::string() const {
+template <typename ConstantType, typename VarType>
+constexpr cons_base_<ConstantType, VarType>::operator std::string() const {
     return to_string();
 }
 
-template <typename ValueType, typename VarType>
-constexpr cons_base_<ValueType, VarType>::operator value_type() const noexcept {
+template <typename ConstantType, typename VarType>
+constexpr cons_base_<ConstantType, VarType>::operator value_type() const noexcept {
     return c();
 }
 
-template <typename ValueType, typename VarType>
-constexpr typename cons_base_<ValueType, VarType>::subclass_&
-cons_base_<ValueType, VarType>::as_subclass_() noexcept {
+template <typename ConstantType, typename VarType>
+constexpr typename cons_base_<ConstantType, VarType>::subclass_&
+cons_base_<ConstantType, VarType>::as_subclass_() noexcept {
     return static_cast<subclass_&>(*this);
 }
 
-template <typename ValueType, typename VarType>
-constexpr typename cons_base_<ValueType, VarType>::subclass_ const&
-cons_base_<ValueType, VarType>::as_subclass_() const noexcept {
+template <typename ConstantType, typename VarType>
+constexpr typename cons_base_<ConstantType, VarType>::subclass_ const&
+cons_base_<ConstantType, VarType>::as_subclass_() const noexcept {
     return static_cast<subclass_&>(*this);
 }
 

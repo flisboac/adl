@@ -9,6 +9,7 @@
 
 #include "adl/oct/limits.hpp"
 #include "adl/oct/traits.hpp"
+#include "adl/oct/constant.hpp"
 #include "adl/oct/var.hpp"
 #include "adl/oct/vexpr.hpp"
 #include "adl/oct/cons.hpp"

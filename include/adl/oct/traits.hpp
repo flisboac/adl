@@ -141,23 +141,23 @@ struct domain_space_traits<domain_space::oct> {
     //
     // Octagonal constraint types
     //
-    template <typename ValueType, typename VarType = identity_var_type> using cons_type = basic_oct_cons<ValueType, VarType>;
-    template <typename ValueType> using identity_cons_type = cons_type<ValueType, identity_var_type>;
-    template <typename ValueType> using literal_cons_type = cons_type<ValueType, literal_var_type>;
+    template <typename ConstantType, typename VarType = identity_var_type> using cons_type = basic_oct_cons<ConstantType, VarType>;
+    template <typename ConstantType> using identity_cons_type = cons_type<ConstantType, identity_var_type>;
+    template <typename ConstantType> using literal_cons_type = cons_type<ConstantType, literal_var_type>;
 
-    template <typename ValueType, typename VarType = counterpart_identity_var_type> using counterpart_cons_type = basic_octdiff_cons<ValueType, VarType>;
-    template <typename ValueType> using counterpart_identity_cons_type = counterpart_cons_type<ValueType, counterpart_identity_var_type>;
-    template <typename ValueType> using counterpart_literal_cons_type = counterpart_cons_type<ValueType, counterpart_literal_var_type>;
+    template <typename ConstantType, typename VarType = counterpart_identity_var_type> using counterpart_cons_type = basic_octdiff_cons<ConstantType, VarType>;
+    template <typename ConstantType> using counterpart_identity_cons_type = counterpart_cons_type<ConstantType, counterpart_identity_var_type>;
+    template <typename ConstantType> using counterpart_literal_cons_type = counterpart_cons_type<ConstantType, counterpart_literal_var_type>;
 
-    template <typename ValueType, typename VarType = identity_var_type> using octdiff_conjunction_type = basic_octdiff_conjunction<ValueType, VarType>;
-    template <typename ValueType> using identity_octdiff_conjunction_type = octdiff_conjunction_type<ValueType, counterpart_identity_var_type>;
-    template <typename ValueType> using literal_octdiff_conjunction_type = octdiff_conjunction_type<ValueType, counterpart_literal_var_type>;
+    template <typename ConstantType, typename VarType = identity_var_type> using octdiff_conjunction_type = basic_octdiff_conjunction<ConstantType, VarType>;
+    template <typename ConstantType> using identity_octdiff_conjunction_type = octdiff_conjunction_type<ConstantType, counterpart_identity_var_type>;
+    template <typename ConstantType> using literal_octdiff_conjunction_type = octdiff_conjunction_type<ConstantType, counterpart_literal_var_type>;
 
     //
     // Octagonal system traits
     //
-    template <typename ValueType, typename ValueLimits = value_limits<ValueType>> using system_type = oct_system<ValueType, ValueLimits>;
-    template <typename ValueType, typename ValueLimits = value_limits<ValueType>> using counterpart_system_type = octdiff_system<ValueType, ValueLimits>;
+    template <typename ConstantType, typename ValueLimits = constant_limits<ConstantType>> using system_type = oct_system<ConstantType, ValueLimits>;
+    template <typename ConstantType, typename ValueLimits = constant_limits<ConstantType>> using counterpart_system_type = octdiff_system<ConstantType, ValueLimits>;
 
     //
     // Constexpr static values
@@ -203,28 +203,28 @@ public:
     // Octagonal-difference constraint types
     //
 private:
-    template <typename ValueType, typename VarType = identity_var_type> using cons_type = basic_octdiff_cons<ValueType, VarType>;
+    template <typename ConstantType, typename VarType = identity_var_type> using cons_type = basic_octdiff_cons<ConstantType, VarType>;
 public:
-    template <typename ValueType> using identity_cons_type = cons_type<ValueType, identity_var_type>;
-    template <typename ValueType> using literal_cons_type = cons_type<ValueType, literal_var_type>;
+    template <typename ConstantType> using identity_cons_type = cons_type<ConstantType, identity_var_type>;
+    template <typename ConstantType> using literal_cons_type = cons_type<ConstantType, literal_var_type>;
 
 private:
-    template <typename ValueType, typename VarType = counterpart_identity_var_type> using counterpart_cons_type = basic_oct_cons<ValueType, VarType>;
+    template <typename ConstantType, typename VarType = counterpart_identity_var_type> using counterpart_cons_type = basic_oct_cons<ConstantType, VarType>;
 public:
-    template <typename ValueType> using counterpart_identity_cons_type = counterpart_cons_type<ValueType, counterpart_identity_var_type>;
-    template <typename ValueType> using counterpart_literal_cons_type = counterpart_cons_type<ValueType, counterpart_literal_var_type>;
+    template <typename ConstantType> using counterpart_identity_cons_type = counterpart_cons_type<ConstantType, counterpart_identity_var_type>;
+    template <typename ConstantType> using counterpart_literal_cons_type = counterpart_cons_type<ConstantType, counterpart_literal_var_type>;
 
 private:
-    template <typename ValueType, typename VarType = identity_var_type> using octdiff_conjunction_type = basic_octdiff_conjunction<ValueType, VarType>;
+    template <typename ConstantType, typename VarType = identity_var_type> using octdiff_conjunction_type = basic_octdiff_conjunction<ConstantType, VarType>;
 public:
-    template <typename ValueType> using identity_octdiff_conjunction_type = octdiff_conjunction_type<ValueType, identity_var_type>;
-    template <typename ValueType> using literal_octdiff_conjunction_type = octdiff_conjunction_type<ValueType, literal_var_type>;
+    template <typename ConstantType> using identity_octdiff_conjunction_type = octdiff_conjunction_type<ConstantType, identity_var_type>;
+    template <typename ConstantType> using literal_octdiff_conjunction_type = octdiff_conjunction_type<ConstantType, literal_var_type>;
 
     //
     // Octagonal-difference system traits
     //
-    template <typename ValueType, typename ValueLimits = value_limits<ValueType>> using system_type = octdiff_system<ValueType, ValueLimits>;
-    template <typename ValueType, typename ValueLimits = value_limits<ValueType>> using counterpart_system_type = oct_system<ValueType, ValueLimits>;
+    template <typename ConstantType, typename ValueLimits = constant_limits<ConstantType>> using system_type = octdiff_system<ConstantType, ValueLimits>;
+    template <typename ConstantType, typename ValueLimits = constant_limits<ConstantType>> using counterpart_system_type = oct_system<ConstantType, ValueLimits>;
 
     // Constexpr static values
     constexpr static const bool valid = true;

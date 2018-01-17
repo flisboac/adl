@@ -31,7 +31,7 @@ class close_oper : public detail_::oper_base_<cpu::close_oper<DbmType, ContextTy
 public:
     using dbm_type = DbmType; //typename superclass_::dbm_type;
     using context_type = ContextType; //typename superclass_::context_type;
-    using value_limits = typename dbm_type::value_limits;
+    using constant_limits = typename dbm_type::constant_limits;
 
     close_oper() = delete;
     close_oper(close_oper const&) = delete;
@@ -56,7 +56,7 @@ public:
                     auto const v_ij = dbm.at(i, j);
                     auto const v_kj = dbm.at(k, j);
                     auto const v_Kj = dbm.at(-k, j);
-                    auto const val = value_limits::min({
+                    auto const val = constant_limits::min({
                         v_ij,
                         v_ik + v_kj,
                         v_iK + v_Kj,

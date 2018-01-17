@@ -28,9 +28,9 @@ template <>
 struct context_traits<cpu::seq_context> {
 
     template <template <typename, typename, typename> class DbmClass,
-            typename ValueType,
-            typename ValueLimits = value_limits<ValueType>>
-        using dbm_type = DbmClass<cpu::seq_context, ValueType, ValueLimits>;
+            typename ConstantType,
+            typename ValueLimits = constant_limits<ConstantType>>
+        using dbm_type = DbmClass<cpu::seq_context, ConstantType, ValueLimits>;
 };
 
 namespace cpu {

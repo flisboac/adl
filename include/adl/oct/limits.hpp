@@ -16,15 +16,15 @@ adl_BEGIN_MAIN_MODULE(oct)
 
 /**
  * An increment of `std::numeric_limits` to define the values and functions needed for matrix calculations.
- * @tparam ValueType The value's type.
+ * @tparam ConstantType The value's type.
  */
-template <typename ValueType>
-struct value_limits {
-    using value_type = ValueType;
-    using numeric_limits = std::numeric_limits<ValueType>;
+template <typename ConstantType>
+struct constant_limits {
+    using value_type = ConstantType;
+    using numeric_limits = std::numeric_limits<ConstantType>;
 
     static_assert(numeric_limits::is_specialized,
-          "The value_limits class is not valid. Please, specialize it correctly "
+          "The constant_limits class is not valid. Please, specialize it correctly "
           "for the provided value type.");
 
     constexpr static const bool valid = numeric_limits::is_specialized;
@@ -35,12 +35,12 @@ struct value_limits {
     constexpr static value_type bottom() noexcept;
     constexpr static bool is_null(value_type value) noexcept;
     constexpr static bool is_top(value_type c) noexcept;
-	constexpr static ValueType const& min(ValueType const& a, ValueType const& b);
-	constexpr static ValueType min(std::initializer_list<ValueType> list);
-	template <typename ValueType_, typename = std::enable_if_t<std::numeric_limits<ValueType_>::is_integer>>
-        constexpr static ValueType_ const& floor_div(ValueType_ const& b) { return b; }
-	template <typename ValueType_, typename = std::enable_if_t<!std::numeric_limits<ValueType_>::is_integer>>
-        constexpr static ValueType floor(ValueType_ b) { return std::floor(b); }
+	constexpr static ConstantType const& min(ConstantType const& a, ConstantType const& b);
+	constexpr static ConstantType min(std::initializer_list<ConstantType> list);
+	template <typename ConstantType_, typename = std::enable_if_t<std::numeric_limits<ConstantType_>::is_integer>>
+        constexpr static ConstantType_ const& floor_div(ConstantType_ const& b) { return b; }
+	template <typename ConstantType_, typename = std::enable_if_t<!std::numeric_limits<ConstantType_>::is_integer>>
+        constexpr static ConstantType floor(ConstantType_ b) { return std::floor(b); }
     static std::string to_string(value_type value);
 };
 
@@ -133,40 +133,40 @@ adl_END_MAIN_MODULE
 adl_BEGIN_MAIN_MODULE(oct)
 
 template <typename Constant>
-constexpr typename adl::oct::value_limits<Constant>::value_type
-adl::oct::value_limits<Constant>::top() noexcept {
+constexpr typename adl::oct::constant_limits<Constant>::value_type
+adl::oct::constant_limits<Constant>::top() noexcept {
     return numeric_limits::has_infinity ? numeric_limits::infinity() : numeric_limits::max();
 }
 
 template <typename Constant>
 constexpr bool
-adl::oct::value_limits<Constant>::is_top(Constant c) noexcept {
+adl::oct::constant_limits<Constant>::is_top(Constant c) noexcept {
     return numeric_limits::has_infinity ? numeric_limits::infinity() <= c  : numeric_limits::max() == c;
 }
 
 template <typename Constant>
-constexpr typename adl::oct::value_limits<Constant>::value_type
-adl::oct::value_limits<Constant>::bottom() noexcept {
+constexpr typename adl::oct::constant_limits<Constant>::value_type
+adl::oct::constant_limits<Constant>::bottom() noexcept {
     return numeric_limits::has_infinity ? -numeric_limits::infinity() : numeric_limits::min();
 }
 
 template <typename Constant>
-constexpr bool adl::oct::value_limits<Constant>::is_null(value_type value) noexcept {
+constexpr bool adl::oct::constant_limits<Constant>::is_null(value_type value) noexcept {
     return value >= top();
 }
 
 template <typename Constant>
-adl_IMPL std::string value_limits<Constant>::to_string(value_type value) {
+adl_IMPL std::string constant_limits<Constant>::to_string(value_type value) {
     return std::to_string(value);
 }
 
 template <typename Constant>
-constexpr Constant const& value_limits<Constant>::min(Constant const& a, Constant const& b) {
+constexpr Constant const& constant_limits<Constant>::min(Constant const& a, Constant const& b) {
 	return std::min(a, b);
 }
 
 template <typename Constant>
-constexpr Constant value_limits<Constant>::min(std::initializer_list<Constant> list) {
+constexpr Constant constant_limits<Constant>::min(std::initializer_list<Constant> list) {
 	return std::min(list);
 }
 
