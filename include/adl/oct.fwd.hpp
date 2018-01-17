@@ -23,11 +23,11 @@ enum class domain_space {
 };
 
 //
-// limits.hpp
+// var_id.hpp, constant.hpp
 //
 
 using default_var_id_type = int;
-using default_value_type = float;
+using default_constant_type = float;
 
 template <typename ConstantType> class constant_limits;
 template <domain_space Domain> struct var_id_limits;

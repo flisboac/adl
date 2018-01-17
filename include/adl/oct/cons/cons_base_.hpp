@@ -14,7 +14,7 @@
 #include "adl.cfg.hpp"
 
 #include "adl/oct.fwd.hpp"
-#include "adl/oct/limits.hpp"
+#include "adl/oct/constant.hpp"
 #include "adl/oct/var.hpp"
 #include "adl/oct/vexpr.hpp"
 

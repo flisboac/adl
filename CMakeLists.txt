@@ -79,7 +79,6 @@ target_sources(${api} INTERFACE
     # adl/oct
     "${api_dir_root}/adl/oct.hpp"
     "${api_dir_root}/adl/oct.fwd.hpp"
-    "${api_dir_root}/adl/oct/limits.hpp"
     "${api_dir_root}/adl/oct/traits.hpp"
     "${api_dir_root}/adl/oct/constant.hpp"
 
