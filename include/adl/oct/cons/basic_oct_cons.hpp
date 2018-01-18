@@ -312,7 +312,7 @@ namespace oct {
 template <typename ConstantType, typename VarType>
 template <typename ConstantType_, typename VarType_, typename>
 constexpr basic_oct_cons<ConstantType, VarType>::basic_oct_cons(basic_oct_cons<ConstantType_, VarType_> const& cons)
-        : basic_oct_cons(vexpr_type(var_type(cons.xi()), var_type(cons.xj())), constant_type(cons.c())) {};
+        : basic_oct_cons(vexpr_type(cons.xi(), cons.xj()), constant_type(cons.c())) {};
 
 template <typename ConstantType, typename VarType>
 template <typename VarType_, typename>

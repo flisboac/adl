@@ -105,17 +105,17 @@ public:
 
     // operators
 
-    constexpr basic_float_int operator + (raw_type v) { return basic_float_int(value_ + v); }
-    constexpr basic_float_int operator - (raw_type v) { return basic_float_int(value_ - v); }
-    constexpr basic_float_int operator * (raw_type v) { return basic_float_int(value_ * v); }
-    constexpr basic_float_int operator / (raw_type v) { return basic_float_int(value_ / v); }
-    constexpr basic_float_int operator % (raw_type v) { return basic_float_int(value_ % v); }
+    constexpr basic_float_int operator + (raw_type v) const { return basic_float_int(value_ + v); }
+    constexpr basic_float_int operator - (raw_type v) const { return basic_float_int(value_ - v); }
+    constexpr basic_float_int operator * (raw_type v) const { return basic_float_int(value_ * v); }
+    constexpr basic_float_int operator / (raw_type v) const { return basic_float_int(value_ / v); }
+    constexpr basic_float_int operator % (raw_type v) const { return basic_float_int(std::fmod(value_, v)); }
 
-    constexpr basic_float_int operator + (basic_float_int const& v) { return basic_float_int(value_ + v.value_); }
-    constexpr basic_float_int operator - (basic_float_int const& v) { return basic_float_int(value_ - v.value_); }
-    constexpr basic_float_int operator * (basic_float_int const& v) { return basic_float_int(value_ * v.value_); }
-    constexpr basic_float_int operator / (basic_float_int const& v) { return basic_float_int(value_ / v.value_); }
-    constexpr basic_float_int operator % (basic_float_int const& v) { return basic_float_int(value_ % v.value_); }
+    constexpr basic_float_int operator + (basic_float_int const& v) const { return basic_float_int(value_ + v.value_); }
+    constexpr basic_float_int operator - (basic_float_int const& v) const { return basic_float_int(value_ - v.value_); }
+    constexpr basic_float_int operator * (basic_float_int const& v) const { return basic_float_int(value_ * v.value_); }
+    constexpr basic_float_int operator / (basic_float_int const& v) const { return basic_float_int(value_ / v.value_); }
+    constexpr basic_float_int operator % (basic_float_int const& v) const { return basic_float_int(value_ % v.value_); }
 
     // increment/decrement
 

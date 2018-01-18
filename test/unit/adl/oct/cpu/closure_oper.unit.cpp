@@ -15,5 +15,40 @@ using namespace adl::dsl;
 
 TEST_CASE("unit:adl/oct/cpu/closure_oper.hpp", "[unit][oper][adl][adl/oct][adl/oct/cpu]") {
 
-    // TODO Implementation
+    auto xi = "x1"_ov;
+    auto xj = "x2"_ov;
+    auto xdi = xi.to_counterpart();
+    auto xdj = xj.to_counterpart();
+
+    auto context = cpu::seq_context::make();
+    auto dbm = context.make_dbm<cpu::dense_dbm, float_int>(xj);
+
+    dbm.assign({
+        xi <= 3.0,
+        xj <= 2.0,
+        xi + xj <= 6.0,
+        -xi - xj <= 5.0,
+        -xi <= 3.0
+    });
+
+    auto queue = context.make_queue();
+    auto closure = queue.make_oper<cpu::closure_oper>(dbm);
+    auto satisfiable = closure.get();
+
+    REQUIRE( (satisfiable) );
+    // dbm.at(xi, -xi) = 3; // IT WORKS! \o/
+
+    for (auto k = dbm.first_var(); k <= dbm.last_var(); k++) {
+        REQUIRE( (dbm.at(k, k) == 0) ); // closure
+        REQUIRE( (dbm.at(k, -k) % 2 == 0) ); // tight closure
+
+        for (auto i = dbm.first_var(); i <= dbm.last_var(); i++) {
+            REQUIRE( (dbm.at(k, i) <= (dbm.at(k, -k) / 2) + (dbm.at(-i, i) / 2)) ); // strong closure
+
+            for (auto j = dbm.first_var(); j <= dbm.last_var(); j++) {
+                REQUIRE( (dbm.at(i, j) <= dbm.at(i, k) + dbm.at(k, j)) ); // closure
+            }
+        }
+    }
 }
+

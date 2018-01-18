@@ -37,11 +37,7 @@ class closure_oper_impl_ {};
  * REAL ALGORITHM IMPLEMENTATION
  */
 template <typename DbmType, typename ContextType>
-class closure_oper_impl_<DbmType, ContextType, false> :
-    public detail_::oper_base_<cpu::closure_oper<DbmType, ContextType>, DbmType, ContextType, bool>
-{
-    using superclass_ = detail_::oper_base_<closure_oper<DbmType, ContextType>, DbmType, ContextType, bool>;
-
+class closure_oper_impl_<DbmType, ContextType, false> {
 public:
     using dbm_type = DbmType; //typename superclass_::dbm_type;
     using context_type = ContextType; //typename superclass_::context_type;
@@ -53,10 +49,8 @@ public:
     closure_oper_impl_& operator=(closure_oper_impl_ const&) = delete;
     closure_oper_impl_& operator=(closure_oper_impl_ &&) noexcept = default;
 
-    explicit closure_oper_impl_(queue_type&, dbm_type const& dbm) :
-        superclass_(), close_(&dbm), is_consistent_(&dbm), strengthen_(&dbm) {}
-    explicit closure_oper_impl_(queue_type&, dbm_type& dbm) :
-        superclass_(), close_(&dbm), is_consistent_(&dbm), strengthen_(&dbm)  {}
+    explicit closure_oper_impl_(queue_type& queue, dbm_type& dbm) :
+        close_(queue, dbm), is_consistent_(queue, dbm), strengthen_(queue, dbm)  {}
 
     bool on_execute_() {
         close_.get();
@@ -77,14 +71,11 @@ private:
  * INTEGER ALGORITHM IMPLEMENTATION
  */
 template <typename DbmType, typename ContextType>
-class closure_oper_impl_<DbmType, ContextType, true> :
-    public detail_::oper_base_<cpu::closure_oper<DbmType, ContextType>, DbmType, ContextType, bool>
-{
-    using superclass_ = detail_::oper_base_<closure_oper<DbmType, ContextType>, DbmType, ContextType, bool>;
-
+class closure_oper_impl_<DbmType, ContextType, true> {
 public:
     using dbm_type = DbmType; //typename superclass_::dbm_type;
     using context_type = ContextType; //typename superclass_::context_type;
+    using queue_type = typename context_type::queue_type;
     using constant_limits = typename dbm_type::constant_limits;
 
     closure_oper_impl_() = delete;
@@ -93,10 +84,8 @@ public:
     closure_oper_impl_& operator=(closure_oper_impl_ const&) = delete;
     closure_oper_impl_& operator=(closure_oper_impl_ &&) noexcept = default;
 
-    explicit closure_oper_impl_(dbm_type const& dbm) :
-        superclass_(), close_(&dbm), is_consistent_(&dbm), tighten_(&dbm), is_int_consistent_(&dbm), strengthen_(&dbm) {}
-    explicit closure_oper_impl_(dbm_type& dbm) :
-        superclass_(), close_(&dbm), is_consistent_(&dbm), tighten_(&dbm), is_int_consistent_(&dbm), strengthen_(&dbm) {}
+    explicit closure_oper_impl_(queue_type& queue, dbm_type& dbm) :
+        close_(queue, dbm), is_consistent_(queue, dbm), tighten_(queue, dbm), is_int_consistent_(queue, dbm), strengthen_(queue, dbm) {}
 
     bool on_execute_() {
         close_.get();
@@ -119,9 +108,28 @@ private:
 };
 
 template <typename DbmType, typename ContextType>
-class closure_oper : public closure_oper_impl_<DbmType, ContextType> {
+class closure_oper : public detail_::oper_base_<cpu::closure_oper<DbmType, ContextType>, DbmType, ContextType, bool> {
+    using superclass_ = detail_::oper_base_<closure_oper<DbmType, ContextType>, DbmType, ContextType, bool>;
+
 public:
-    using closure_oper_impl_<DbmType, ContextType>::closure_oper_impl_;
+    using dbm_type = DbmType; //typename superclass_::dbm_type;
+    using context_type = ContextType; //typename superclass_::context_type;
+    using queue_type = typename context_type::queue_type;
+    using constant_limits = typename dbm_type::constant_limits;
+
+    closure_oper(closure_oper const&) = delete;
+    closure_oper(closure_oper &&) noexcept = default;
+    closure_oper& operator=(closure_oper const&) = delete;
+    closure_oper& operator=(closure_oper &&) noexcept = default;
+
+    closure_oper(queue_type& queue, dbm_type& dbm) : impl_(queue, dbm) {}
+
+    bool on_execute_() {
+        return impl_.on_execute_();
+    }
+
+private:
+    closure_oper_impl_<dbm_type, context_type> impl_;
 };
 
 }

@@ -117,7 +117,7 @@ template <typename SubType, typename DbmType, typename ResultType>
 class oper_base_<SubType, DbmType, seq_context, ResultType> : public detail_::oper_base_seq_<SubType, DbmType, seq_context, ResultType> {
     using superclass_ = detail_::oper_base_seq_<SubType, DbmType, seq_context, ResultType>;
 public:
-    static_assert(std::is_reference<ResultType>::value, "References are not allowed, no real use-case for now");
+    //static_assert(std::is_reference<ResultType>::value, "References are not allowed, no real use-case for now");
     static_assert(std::is_move_assignable<ResultType>::value
             || std::is_copy_assignable<ResultType>::value,
         "Return type is not valid");
@@ -146,7 +146,7 @@ public:
                 this->state_ = oper_state::prepared;
                 this->timer_.mark(); // 2
                 // non-stop
-            case oper_state::prepared:
+            case oper_state::prepared: {
                 this->state_ = oper_state::started;
                 this->timer_.mark(); // 3
                 auto ret = traits_::do_on_execute_(static_cast<SubType&>(*this));
@@ -154,6 +154,7 @@ public:
                 traits_::do_on_finished_(static_cast<SubType&>(*this));
                 this->timer_.mark(); // 4
                 return ret;
+            }
             default:
                 throw std::logic_error("Illegal operator state");
         }
@@ -162,7 +163,7 @@ public:
     subtype_& discard() {
         get();
         return static_cast<SubType&>(*this);
-    };
+    }
 };
 
 template <typename SubType, typename DbmType>
