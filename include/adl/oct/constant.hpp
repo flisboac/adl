@@ -9,6 +9,7 @@
 
 #include <cmath>
 #include <algorithm>
+#include <type_traits>
 
 #include "adl.cfg.hpp"
 #include "adl/oct.fwd.hpp"
@@ -19,6 +20,7 @@
 //
 adl_BEGIN_ROOT_MODULE
 namespace oct {
+
 
 /**
  * An increment of `std::numeric_limits` to define the values and functions needed for matrix calculations.
@@ -50,6 +52,7 @@ public:
     template <typename ConstantType_, typename = std::enable_if_t<!std::numeric_limits<ConstantType_>::is_integer>>
     constexpr static constant_type floor(ConstantType_ b) { return std::floor(b); }
     static std::string to_string(constant_type value) { return std::to_string(value); }
+    constexpr static bool is_pair(constant_type const& c) { return c % 2 == 0; }
 };
 
 
@@ -166,6 +169,7 @@ public:
     constexpr static constant_type min(std::initializer_list<constant_type> list) { return std::min(list); }
     constexpr static constant_type floor(constant_type const& b) { return b.floor(); }
     static std::string to_string(constant_type value) { return std::to_string(value.value()); }
+    constexpr static bool is_pair(constant_type const& c) { return c % 2 == 0; }
 };
 
 template <typename NumberType, typename RawType> using number_float_int_result_t_ = std::enable_if_t<

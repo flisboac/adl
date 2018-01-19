@@ -1,7 +1,10 @@
 // $flisboac 2018-01-14
 
+#include <cmath>
+
 #include "adl_catch.hpp"
 #include "adl/oct/cpu/closure_oper.hpp"
+#include "adl/oct/constant.hpp"
 #include "adl/oct/cons.hpp"
 #include "adl/oct/system.hpp"
 #include "adl/oct/cpu/dense_dbm.hpp"
@@ -13,7 +16,10 @@ using namespace adl::literals;
 using namespace adl::operators;
 using namespace adl::dsl;
 
-TEST_CASE("unit:adl/oct/cpu/closure_oper.hpp", "[unit][oper][adl][adl/oct][adl/oct/cpu]") {
+template <typename FloatType>
+static void do_test() {
+
+    using limits = constant_limits<FloatType>;
 
     auto xi = "x1"_ov;
     auto xj = "x2"_ov;
@@ -21,7 +27,7 @@ TEST_CASE("unit:adl/oct/cpu/closure_oper.hpp", "[unit][oper][adl][adl/oct][adl/o
     auto xdj = xj.to_counterpart();
 
     auto context = cpu::seq_context::make();
-    auto dbm = context.make_dbm<cpu::dense_dbm, float_int>(xj);
+    auto dbm = context.make_dbm<cpu::dense_dbm, FloatType>(xj);
 
     dbm.assign({
         xi <= 3.0,
@@ -40,7 +46,7 @@ TEST_CASE("unit:adl/oct/cpu/closure_oper.hpp", "[unit][oper][adl][adl/oct][adl/o
 
     for (auto k = dbm.first_var(); k <= dbm.last_var(); k++) {
         REQUIRE( (dbm.at(k, k) == 0) ); // closure
-        REQUIRE( (dbm.at(k, -k) % 2 == 0) ); // tight closure
+        REQUIRE( (limits::is_pair(dbm.at(k, -k))) ); // tight closure
 
         for (auto i = dbm.first_var(); i <= dbm.last_var(); i++) {
             REQUIRE( (dbm.at(k, i) <= (dbm.at(k, -k) / 2) + (dbm.at(-i, i) / 2)) ); // strong closure
@@ -50,5 +56,12 @@ TEST_CASE("unit:adl/oct/cpu/closure_oper.hpp", "[unit][oper][adl][adl/oct][adl/o
             }
         }
     }
+}
+
+TEST_CASE("unit:adl/oct/cpu/closure_oper.hpp", "[unit][oper][adl][adl/oct][adl/oct/cpu]") {
+
+    do_test<int>();
+    do_test<float>();
+    do_test<float_int>();
 }
 
