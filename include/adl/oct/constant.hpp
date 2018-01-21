@@ -21,6 +21,17 @@
 adl_BEGIN_ROOT_MODULE
 namespace oct {
 
+namespace {
+    template <typename T, bool is_floating_point = std::is_floating_point<T>::value>
+    struct is_pair_ {
+        constexpr static bool is_pair(T const& n) { return n % 2 == 0; }
+    };
+
+    template <typename T>
+    struct is_pair_<T, true> {
+        constexpr static bool is_pair(T const& n) { return std::fmod(n, 2) == 0; }
+    };
+}
 
 /**
  * An increment of `std::numeric_limits` to define the values and functions needed for matrix calculations.
@@ -37,6 +48,9 @@ public:
     static_assert(numeric_limits_::is_specialized,
           "The constant_limits class is not valid. Please, specialize it correctly for the provided value type.");
 
+    static_assert(!numeric_limits_::is_integer,
+          "This current implementation of the octagon domain algorithms does not support raw integer types. Please use basic_float_int instead.");
+
     constexpr static const bool valid = numeric_limits_::is_specialized;
     constexpr static const bool integer = numeric_limits_::is_integer;
     constexpr static const bool native_integer = numeric_limits_::is_integer;
@@ -52,7 +66,7 @@ public:
     template <typename ConstantType_, typename = std::enable_if_t<!std::numeric_limits<ConstantType_>::is_integer>>
     constexpr static constant_type floor(ConstantType_ b) { return std::floor(b); }
     static std::string to_string(constant_type value) { return std::to_string(value); }
-    constexpr static bool is_pair(constant_type const& c) { return c % 2 == 0; }
+    constexpr static bool is_pair(constant_type const& c) { return is_pair_<constant_type>::is_pair(c); }
 };
 
 
@@ -68,7 +82,7 @@ private:
 
 public:
     using raw_type = RawType;
-    
+
 public:
     constexpr basic_float_int() noexcept = default;
     constexpr basic_float_int(basic_float_int const&) noexcept = default;
@@ -103,8 +117,8 @@ public:
     // properties and methods
 
     constexpr raw_type const& value() const noexcept { return value_; }
-    constexpr basic_float_int floor() const { return basic_float_int(std::floor(value_)); }
-    constexpr basic_float_int& floor() { value_ = std::floor(value_); return *this; }
+    constexpr basic_float_int to_floor() const { return basic_float_int(std::floor(value_)); }
+    constexpr basic_float_int& as_floor() { value_ = std::floor(value_); return *this; }
 
     // operators
 
@@ -142,7 +156,7 @@ public:
     constexpr bool operator <  (basic_float_int const& v) const { return value_  < v.value_; }
     constexpr bool operator >= (basic_float_int const& v) const { return value_ >= v.value_; }
     constexpr bool operator <= (basic_float_int const& v) const { return value_ <= v.value_; }
-    
+
 private:
     raw_type value_ = raw_type();
 };
@@ -167,7 +181,7 @@ public:
     constexpr static bool is_null(constant_type value) noexcept { return value >= top(); }
     constexpr static constant_type const& min(constant_type const& a, constant_type const& b) { return std::min(a, b); }
     constexpr static constant_type min(std::initializer_list<constant_type> list) { return std::min(list); }
-    constexpr static constant_type floor(constant_type const& b) { return b.floor(); }
+    constexpr static constant_type floor(constant_type const& b) { return b.to_floor(); }
     static std::string to_string(constant_type value) { return std::to_string(value.value()); }
     constexpr static bool is_pair(constant_type const& c) { return c % 2 == 0; }
 };
@@ -191,6 +205,14 @@ template <typename NumberType, typename RawType> using float_int_result_t_ = std
 
 adl_END_ROOT_MODULE
 
+template <typename RawType, typename CharType, typename CharTraits>
+std::basic_ostream<CharType, CharTraits>& operator<<(
+    std::basic_ostream<CharType, CharTraits>& os,
+    adl::oct::basic_float_int<RawType> const& n
+) {
+    os << n.value();
+    return os;
+};
 
 template <typename NumberType, typename RawType> constexpr adl::oct::number_float_int_result_t_<NumberType, RawType>& operator += (NumberType& v, adl::oct::basic_float_int<RawType> const& f) { v += f.value(); return v; }
 template <typename NumberType, typename RawType> constexpr adl::oct::number_float_int_result_t_<NumberType, RawType>& operator -= (NumberType& v, adl::oct::basic_float_int<RawType> const& f) { v -= f.value(); return v; }

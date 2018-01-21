@@ -17,7 +17,7 @@ using namespace adl::operators;
 using namespace adl::dsl;
 
 template <typename FloatType>
-static void do_test() {
+static void do_test(char const* type_name) {
 
     using limits = constant_limits<FloatType>;
 
@@ -41,6 +41,7 @@ static void do_test() {
     auto closure = queue.make_oper<cpu::closure_oper>(dbm);
     auto satisfiable = closure.get();
 
+    INFO( "type_name = " << type_name << ", dbm = " << dbm.to_string() );
     REQUIRE( (satisfiable) );
     // dbm.at(xi, -xi) = 3; // IT WORKS! \o/
 
@@ -60,8 +61,12 @@ static void do_test() {
 
 TEST_CASE("unit:adl/oct/cpu/closure_oper.hpp", "[unit][oper][adl][adl/oct][adl/oct/cpu]") {
 
-    do_test<int>();
-    do_test<float>();
-    do_test<float_int>();
+    //do_test<int>("int"); // TBD
+    do_test<float>("float");
+    do_test<double>("double");
+    do_test<long double>("long double");
+    do_test<float_int>("float_int");
+    do_test<double_int>("double_int");
+    do_test<ldouble_int>("ldouble_int");
 }
 

@@ -164,7 +164,7 @@ template <domain_space Domain, typename ConstantType, typename ValueLimits>
 adl_IMPL std::string system_base_<Domain, ConstantType, ValueLimits>::to_string() const {
     std::string repr = "{";
     char const* sep = "";
-    for (auto& constraint : constraints_) {
+    for (auto& constraint : this->constraints_) {
         repr += sep;
         repr += constraint.to_string();
         sep = ", ";

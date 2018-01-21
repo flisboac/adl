@@ -377,8 +377,9 @@ cons_base_<ConstantType, VarType>::to_identity_vexpr() const noexcept {
 
 template <typename ConstantType, typename VarType>
 std::string cons_base_<ConstantType, VarType>::to_string() const {
+    using limits_ = typename cons_base_<ConstantType, VarType>::constant_limits;
     std::string repr = vexpr_.to_string();
-    repr += " <= " + constant_limits::to_string(c_);
+    repr += " <= " + limits_::to_string(c_);
     return repr;
 }
 

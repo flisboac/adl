@@ -46,17 +46,18 @@ public:
         using namespace adl::operators;
         auto &dbm = *dbm_;
         for (auto k = dbm.first_var(); k < dbm.end_var(); k.increment_oct()) {
-            auto const v_kK = dbm.at(k, -k);
-            auto const v_Kk = dbm.at(-k, k);
+            auto const K = -k;
+            auto const v_kK = dbm.at(k, K);
+            auto const v_Kk = dbm.at(K, k);
 
             for (auto i = dbm.first_var(); i < dbm.end_var(); i++) {
                 auto const v_ik = dbm.at(i, k);
-                auto const v_iK = dbm.at(i, -k);
+                auto const v_iK = dbm.at(i, K);
 
                 for (auto j = dbm.first_var(); j < dbm.end_var(); j++) {
                     auto const v_ij = dbm.at(i, j);
                     auto const v_kj = dbm.at(k, j);
-                    auto const v_Kj = dbm.at(-k, j);
+                    auto const v_Kj = dbm.at(K, j);
                     auto const val = constant_limits::min({
                         v_ij,
                         v_ik + v_kj,
