@@ -27,10 +27,11 @@ namespace oct {
 template <>
 struct context_traits<cpu::seq_context> {
 
-    template <template <typename, typename, typename> class DbmClass,
+    template <template <typename, typename, typename, typename> class DbmClass,
             typename ConstantType,
-            typename ValueLimits = constant_limits<ConstantType>>
-        using dbm_type = DbmClass<cpu::seq_context, ConstantType, ValueLimits>;
+            typename ConstantLimits = constant_limits<ConstantType>,
+            typename Allocator = std::allocator<ConstantType>>
+        using dbm_type = DbmClass<cpu::seq_context, ConstantType, ConstantLimits, Allocator>;
 };
 
 namespace cpu {
