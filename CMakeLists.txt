@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.6)
 
 project(adl
-        VERSION 0.1.0
+        VERSION 0.2.0
         LANGUAGES CXX)
 set(GLOBAL PROPERTY SONAME 0)
 set(GLOBAL PROPERTY PROJECT_BRIEF "Abstract Domain Library, a C++ library implementing the octagon domain in CPU and GPU.")
