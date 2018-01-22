@@ -67,17 +67,6 @@ struct dbm_traits {
 #endif
 };
 
-template <typename ConstantType, typename ValueLimits, typename Allocator>
-struct dbm_traits<oct::dense_dbm<ConstantType, ValueLimits, Allocator>> : public dbm_types_<ConstantType, ValueLimits> {
-    using dbm_type = dense_dbm<ConstantType, ValueLimits, Allocator>;
-    constexpr const static bool valid = true;
-
-    constexpr const static dbm_major default_major = dbm_major::row;
-    constexpr const static bool is_always_dense = true;
-    constexpr const static bool is_always_autocoherent = false;
-    constexpr const static bool is_always_default_major = false;
-};
-
 } // namespace oct
 adl_END_ROOT_MODULE
 

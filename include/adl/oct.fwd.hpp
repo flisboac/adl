@@ -157,7 +157,6 @@ template <typename Subclass, typename ConstantType, typename ValueLimits = const
 
 // dbm/dense_dbm.hpp
 template <typename Subclass, typename ConstantType, typename ValueLimits = constant_limits<ConstantType>> class dense_dbm_base_;
-template <typename ConstantType, typename ValueLimits = constant_limits<ConstantType>, typename Allocator = std::allocator<ConstantType>> class dense_dbm;
 
 //
 // context.hpp
@@ -181,7 +180,7 @@ namespace cpu {
         template <typename SubType, typename DbmType, typename ContextType, typename ResultType> class oper_base_;
     }
 
-    template <typename ContextType, typename ConstantType, typename ValueLimits = constant_limits<ConstantType>> class dense_dbm;
+    template <typename ContextType, typename ConstantType, typename ValueLimits = constant_limits<ConstantType>, typename Allocator = std::allocator<ConstantType>> class dense_dbm;
 
     // Specific
     template <typename DbmType, typename ContextType> class null_oper;

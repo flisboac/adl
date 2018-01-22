@@ -15,9 +15,8 @@
 adl_BEGIN_ROOT_MODULE
 namespace oct {
 
-template <typename ContextType, typename ConstantType, typename ValueLimits>
-struct dbm_traits<cpu::dense_dbm<ContextType, ConstantType, ValueLimits>> : public dbm_types_<ConstantType, ValueLimits> {
-    using dbm_type = cpu::dense_dbm<ContextType, ConstantType, ValueLimits>;
+template <typename ContextType, typename ConstantType, typename ValueLimits, typename Allocator>
+struct dbm_traits<cpu::dense_dbm<ContextType, ConstantType, ValueLimits, Allocator>> : public dbm_types_<ConstantType, ValueLimits> {
     constexpr const static bool valid = true;
 
     constexpr const static dbm_major default_major = dbm_major::row;
@@ -28,7 +27,7 @@ struct dbm_traits<cpu::dense_dbm<ContextType, ConstantType, ValueLimits>> : publ
 
 namespace cpu {
 
-template <typename ContextType, typename ConstantType, typename ValueLimits>
+template <typename ContextType, typename ConstantType, typename ValueLimits, typename Allocator>
 class dense_dbm : public dense_dbm_base_<dense_dbm<ContextType, ConstantType, ValueLimits>, ConstantType, ValueLimits> {
 private:
     using superclass_ = dense_dbm_base_<dense_dbm, ConstantType, ValueLimits>;
@@ -85,13 +84,11 @@ public:
     context_type const& context() const;
     context_type & context();
 
-    void initialize(constant_type value);
-    void resize(octdiff_var new_last_var, constant_type value = constant_limits::top());
     template <typename CharType, typename CharTraits = std::char_traits<CharType>>
         void print(std::basic_ostream<CharType, CharTraits> &os) const;
     std::string to_string() const;
 
-    // NOTE These are NOT a substitute for the `add_cons` operations!
+    // NOTE These are NOT substitutes for the `add_cons` operations!
     // They do NOT verify other constraints or implement any specific incremental algorithm.
     // They just assign values to the constraints' indexes in the matrix. They're supposed to be used
     // as means to prepare a DBM without an octdiff_system (primarily for tests, for "poking holes"). Use
@@ -102,6 +99,7 @@ public:
     void assign(std::initializer_list<identity_cons_type> list);
 
     // Consider `clear` as an `assign` to `this->top()` (infinity).
+    void clear(); // Clears the entire DBM, removing all constraints. The DBM effectively becomes top.
     void clear(counterpart_identity_vexpr_type oct_vexpr);
     void clear(std::initializer_list<counterpart_identity_vexpr_type> list);
     void clear(identity_vexpr_type vexpr);
@@ -111,15 +109,19 @@ public:
     constant_type& constant_(std::size_t index);
     constant_type const& constant_(std::size_t index) const;
 
+protected:
+    void clear(constant_type value); // Clears the entire DBM, assigning `value` to all constraints, including the diagonals
+    void resize(octdiff_var new_last_var, constant_type value = constant_limits::top());
+
 private:
     container_type_ data_;
     context_type * context_;
 };
 
 // TODO Async-enabled dense_dbm
-template <typename ConstantType, typename ValueLimits>
-class dense_dbm<async_context, ConstantType, ValueLimits>
-    : public dense_dbm<seq_context, ConstantType, ValueLimits>,
+template <typename ConstantType, typename ValueLimits, typename Allocator>
+class dense_dbm<async_context, ConstantType, ValueLimits, Allocator>
+    : public dense_dbm<seq_context, ConstantType, ValueLimits, Allocator>,
       public std::enable_shared_from_this<dense_dbm<async_context, ConstantType, ValueLimits>>
 {
     // ...
@@ -140,19 +142,19 @@ namespace cpu {
 //
 // dense_dbm
 //
-template <typename ContextType, typename ConstantType, typename ValueLimits>
-constexpr typename dense_dbm<ContextType, ConstantType, ValueLimits>::constant_type
-dense_dbm<ContextType, ConstantType, ValueLimits>::default_constant() noexcept {
+template <typename ContextType, typename ConstantType, typename ValueLimits, typename Allocator>
+constexpr typename dense_dbm<ContextType, ConstantType, ValueLimits, Allocator>::constant_type
+dense_dbm<ContextType, ConstantType, ValueLimits, Allocator>::default_constant() noexcept {
     return constant_limits::top();
 };
 
-template <typename ContextType, typename ConstantType, typename ValueLimits>
-inline dense_dbm<ContextType, ConstantType, ValueLimits>::dense_dbm()
+template <typename ContextType, typename ConstantType, typename ValueLimits, typename Allocator>
+inline dense_dbm<ContextType, ConstantType, ValueLimits, Allocator>::dense_dbm()
     : superclass_(default_major), context_(nullptr) {};
 
-template <typename ContextType, typename ConstantType, typename ValueLimits>
+template <typename ContextType, typename ConstantType, typename ValueLimits, typename Allocator>
 template <typename ConstantType_, typename ValueLimits_, typename>
-inline dense_dbm<ContextType, ConstantType, ValueLimits>::dense_dbm(
+inline dense_dbm<ContextType, ConstantType, ValueLimits, Allocator>::dense_dbm(
     dbm_tags::create_from_octdiff_system_tag tag,
     context_type& context,
     octdiff_system<ConstantType_, ValueLimits_> const& rhs,
@@ -166,9 +168,9 @@ inline dense_dbm<ContextType, ConstantType, ValueLimits>::dense_dbm(
     }
 };
 
-template <typename ContextType, typename ConstantType, typename ValueLimits>
+template <typename ContextType, typename ConstantType, typename ValueLimits, typename Allocator>
 template <typename ConstantType_, typename VarType_, typename>
-inline dense_dbm<ContextType, ConstantType, ValueLimits>::dense_dbm(
+inline dense_dbm<ContextType, ConstantType, ValueLimits, Allocator>::dense_dbm(
     dbm_tags::create_from_last_var_tag tag,
     context_type& context,
     VarType_ last_var,
@@ -178,49 +180,54 @@ inline dense_dbm<ContextType, ConstantType, ValueLimits>::dense_dbm(
     resize(last_var, value);
 };
 
-template <typename ContextType, typename ConstantType, typename ValueLimits>
-inline std::size_t dense_dbm<ContextType, ConstantType, ValueLimits>::size() const noexcept {
+template <typename ContextType, typename ConstantType, typename ValueLimits, typename Allocator>
+inline std::size_t dense_dbm<ContextType, ConstantType, ValueLimits, Allocator>::size() const noexcept {
     return static_cast<std::size_t>( std::sqrt(data_.size()) );
 };
 
-template <typename ContextType, typename ConstantType, typename ValueLimits>
-inline void dense_dbm<ContextType, ConstantType, ValueLimits>::initialize(constant_type value) {
+template <typename ContextType, typename ConstantType, typename ValueLimits, typename Allocator>
+inline void dense_dbm<ContextType, ConstantType, ValueLimits, Allocator>::clear() {
+    this->clear(this->default_constant());
+};
+
+template <typename ContextType, typename ConstantType, typename ValueLimits, typename Allocator>
+inline void dense_dbm<ContextType, ConstantType, ValueLimits, Allocator>::clear(constant_type value) {
     data_.assign(data_.size(), value);
 };
 
-template <typename ContextType, typename ConstantType, typename ValueLimits>
-inline void dense_dbm<ContextType, ConstantType, ValueLimits>::resize(octdiff_var new_last_var, constant_type value) {
+template <typename ContextType, typename ConstantType, typename ValueLimits, typename Allocator>
+inline void dense_dbm<ContextType, ConstantType, ValueLimits, Allocator>::resize(octdiff_var new_last_var, constant_type value) {
     auto new_size = to_end_index_(new_last_var);
     data_.resize(new_size * new_size, value);
 };
 
-template <typename ContextType, typename ConstantType, typename ValueLimits>
-inline typename dense_dbm<ContextType, ConstantType, ValueLimits>::constant_type&
-dense_dbm<ContextType, ConstantType, ValueLimits>::constant_(std::size_t index) {
+template <typename ContextType, typename ConstantType, typename ValueLimits, typename Allocator>
+inline typename dense_dbm<ContextType, ConstantType, ValueLimits, Allocator>::constant_type&
+dense_dbm<ContextType, ConstantType, ValueLimits, Allocator>::constant_(std::size_t index) {
     return data_.at(index);
 };
 
-template <typename ContextType, typename ConstantType, typename ValueLimits>
-inline typename dense_dbm<ContextType, ConstantType, ValueLimits>::constant_type const&
-dense_dbm<ContextType, ConstantType, ValueLimits>::constant_(std::size_t index) const {
+template <typename ContextType, typename ConstantType, typename ValueLimits, typename Allocator>
+inline typename dense_dbm<ContextType, ConstantType, ValueLimits, Allocator>::constant_type const&
+dense_dbm<ContextType, ConstantType, ValueLimits, Allocator>::constant_(std::size_t index) const {
     return data_.at(index);
 };
 
-template <typename ContextType, typename ConstantType, typename ValueLimits>
-inline typename dense_dbm<ContextType, ConstantType, ValueLimits>::context_type const&
-dense_dbm<ContextType, ConstantType, ValueLimits>::context() const {
+template <typename ContextType, typename ConstantType, typename ValueLimits, typename Allocator>
+inline typename dense_dbm<ContextType, ConstantType, ValueLimits, Allocator>::context_type const&
+dense_dbm<ContextType, ConstantType, ValueLimits, Allocator>::context() const {
     return *this->context_;
 };
 
-template <typename ContextType, typename ConstantType, typename ValueLimits>
-inline typename dense_dbm<ContextType, ConstantType, ValueLimits>::context_type&
-dense_dbm<ContextType, ConstantType, ValueLimits>::context() {
+template <typename ContextType, typename ConstantType, typename ValueLimits, typename Allocator>
+inline typename dense_dbm<ContextType, ConstantType, ValueLimits, Allocator>::context_type&
+dense_dbm<ContextType, ConstantType, ValueLimits, Allocator>::context() {
     return *this->context_;
 };
 
-template <typename ContextType, typename ConstantType, typename ValueLimits>
+template <typename ContextType, typename ConstantType, typename ValueLimits, typename Allocator>
 template <typename CharType, typename CharTraits>
-inline void dense_dbm<ContextType, ConstantType, ValueLimits>::print(std::basic_ostream<CharType, CharTraits> &os) const {
+inline void dense_dbm<ContextType, ConstantType, ValueLimits, Allocator>::print(std::basic_ostream<CharType, CharTraits> &os) const {
     char const* sep = "";
     os << "{";
     for (auto x = 0; x < data_.size(); x++) {
@@ -230,62 +237,62 @@ inline void dense_dbm<ContextType, ConstantType, ValueLimits>::print(std::basic_
     os << "}";
 };
 
-template <typename ContextType, typename ConstantType, typename ValueLimits>
-inline std::string dense_dbm<ContextType, ConstantType, ValueLimits>::to_string() const {
+template <typename ContextType, typename ConstantType, typename ValueLimits, typename Allocator>
+inline std::string dense_dbm<ContextType, ConstantType, ValueLimits, Allocator>::to_string() const {
     std::stringstream ss;
     this->print(ss);
     return ss.str();
 };
 
-template <typename ContextType, typename ConstantType, typename ValueLimits>
-inline void dense_dbm<ContextType, ConstantType, ValueLimits>::assign(counterpart_identity_cons_type oct_cons) {
+template <typename ContextType, typename ConstantType, typename ValueLimits, typename Allocator>
+inline void dense_dbm<ContextType, ConstantType, ValueLimits, Allocator>::assign(counterpart_identity_cons_type oct_cons) {
     auto pair = oct_cons.split();
     this->assign(pair.di());
     if (!pair.unit()) this->assign(pair.dj());
 };
 
-template <typename ContextType, typename ConstantType, typename ValueLimits>
-inline void dense_dbm<ContextType, ConstantType, ValueLimits>::assign(
+template <typename ContextType, typename ConstantType, typename ValueLimits, typename Allocator>
+inline void dense_dbm<ContextType, ConstantType, ValueLimits, Allocator>::assign(
     std::initializer_list<counterpart_identity_cons_type> list
 ) {
     for (auto& cons : list) assign(cons);
 };
 
-template <typename ContextType, typename ConstantType, typename ValueLimits>
-inline void dense_dbm<ContextType, ConstantType, ValueLimits>::assign(identity_cons_type cons) {
+template <typename ContextType, typename ConstantType, typename ValueLimits, typename Allocator>
+inline void dense_dbm<ContextType, ConstantType, ValueLimits, Allocator>::assign(identity_cons_type cons) {
     if (cons.last_var() > this->last_var()) throw std::logic_error("Variable overflow.");
     this->at(cons) = cons.c();
 };
 
-template <typename ContextType, typename ConstantType, typename ValueLimits>
-inline void dense_dbm<ContextType, ConstantType, ValueLimits>::assign(
+template <typename ContextType, typename ConstantType, typename ValueLimits, typename Allocator>
+inline void dense_dbm<ContextType, ConstantType, ValueLimits, Allocator>::assign(
     std::initializer_list<identity_cons_type> list
 ) {
     for (auto& cons : list) assign(cons);
 };
 
-template <typename ContextType, typename ConstantType, typename ValueLimits>
-inline void dense_dbm<ContextType, ConstantType, ValueLimits>::clear(counterpart_identity_vexpr_type oct_vexpr) {
+template <typename ContextType, typename ConstantType, typename ValueLimits, typename Allocator>
+inline void dense_dbm<ContextType, ConstantType, ValueLimits, Allocator>::clear(counterpart_identity_vexpr_type oct_vexpr) {
     auto pair = oct_cons<ConstantType>(oct_vexpr, 0).split();
     this->clear(pair.di());
     if (!pair.unit()) this->clear(pair.dj());
 };
 
-template <typename ContextType, typename ConstantType, typename ValueLimits>
-inline void dense_dbm<ContextType, ConstantType, ValueLimits>::clear(
+template <typename ContextType, typename ConstantType, typename ValueLimits, typename Allocator>
+inline void dense_dbm<ContextType, ConstantType, ValueLimits, Allocator>::clear(
     std::initializer_list<counterpart_identity_vexpr_type> list
 ) {
     for (auto& cons : list) clear(cons);
 };
 
-template <typename ContextType, typename ConstantType, typename ValueLimits>
-inline void dense_dbm<ContextType, ConstantType, ValueLimits>::clear(identity_vexpr_type vexpr) {
+template <typename ContextType, typename ConstantType, typename ValueLimits, typename Allocator>
+inline void dense_dbm<ContextType, ConstantType, ValueLimits, Allocator>::clear(identity_vexpr_type vexpr) {
     if (vexpr.last_var() > this->last_var()) throw std::logic_error("Variable overflow.");
     this->at(vexpr) = this->top();
 };
 
-template <typename ContextType, typename ConstantType, typename ValueLimits>
-inline void dense_dbm<ContextType, ConstantType, ValueLimits>::clear(
+template <typename ContextType, typename ConstantType, typename ValueLimits, typename Allocator>
+inline void dense_dbm<ContextType, ConstantType, ValueLimits, Allocator>::clear(
     std::initializer_list<identity_vexpr_type> list
 ) {
     for (auto& cons : list) clear(cons);

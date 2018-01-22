@@ -33,12 +33,13 @@ static std::string dbm_to_string_(T const& dbm) {
 }
 
 template <
-    template <typename, typename, typename> class DbmClass,
+    template <typename, typename, typename, typename> class DbmClass,
     typename ContextType,
     typename ConstantType,
-    typename ValueLimits>
+    typename ValueLimits,
+    typename Allocator>
 static void require_dbm_size_(
-    DbmClass<ContextType, ConstantType, ValueLimits> const& dbm,
+    DbmClass<ContextType, ConstantType, ValueLimits, Allocator> const& dbm,
     octdiff_var last_var
 ) {
     const auto end_var = last_var + 1;
@@ -49,14 +50,15 @@ static void require_dbm_size_(
 }
 
 template <
-    template <typename, typename, typename> class DbmClass,
+    template <typename, typename, typename, typename> class DbmClass,
     typename ContextType,
     typename ConstantType,
     typename ValueLimits,
+    typename Allocator,
     typename CheckFunction,
     typename = std::enable_if_t<!std::is_arithmetic<CheckFunction>::value>>
 static void require_dbm_values_(
-    DbmClass<ContextType, ConstantType, ValueLimits> const& dbm,
+    DbmClass<ContextType, ConstantType, ValueLimits, Allocator> const& dbm,
     CheckFunction check
 ) {
     for (auto i = dbm.first_var(); i < dbm.end_var(); ++i) {
@@ -71,14 +73,15 @@ static void require_dbm_values_(
 }
 
 template <
-    template <typename, typename, typename> class DbmClass,
+    template <typename, typename, typename, typename> class DbmClass,
     typename ContextType,
     typename ConstantType,
     typename ValueLimits,
+    typename Allocator,
     typename = std::enable_if_t<std::is_arithmetic<ConstantType>::value>>
 static void require_dbm_values_(
-    DbmClass<ContextType, ConstantType, ValueLimits> const& dbm,
-    ConstantType value = DbmClass<ContextType, ConstantType, ValueLimits>::default_constant()
+    DbmClass<ContextType, ConstantType, ValueLimits, Allocator> const& dbm,
+    ConstantType value = DbmClass<ContextType, ConstantType, ValueLimits, Allocator>::default_constant()
 ) {
     require_dbm_values_(dbm, [value](ConstantType v, octdiff_var, octdiff_var) -> bool { return value == v; });
 }
@@ -89,6 +92,8 @@ static void test_dbm_creation_by_size_(cpu::seq_context & seq_ctx) {
     constexpr auto initial_value = 1.11;
 
     using constant_type_ = std::remove_const<decltype(initial_value)>::type;
+
+    static_assert(dbm_traits<seq_context::dbm_type<cpu::dense_dbm, constant_type_>>::is_always_dense, "oops");
 
     SECTION("Making DBM with fixed size and NO initial value") {
         auto dbm = seq_ctx.make_dbm<cpu::dense_dbm, constant_type_>(size_var);

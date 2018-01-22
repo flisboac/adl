@@ -29,26 +29,17 @@ private:
 public:
     using context_traits = oct::context_traits<subclass_>;
     template <
-            template <typename, typename, typename> class DbmClass,
+            template <typename, typename, typename, typename> class DbmClass,
             typename ConstantType,
-            typename ValueLimits = constant_limits<ConstantType>>
-        using dbm_type = typename context_traits::template dbm_type<DbmClass, ConstantType, ValueLimits>;
+            typename ConstantLimits = constant_limits<ConstantType>,
+            typename Allocator = std::allocator<ConstantType>>
+        using dbm_type = DbmClass<subclass_, ConstantType, ConstantLimits, Allocator>;
 
-    template <template <typename, typename, typename> class DbmClass,
+    template <template <typename, typename, typename, typename> class DbmClass,
             typename ConstantType,
-            typename ValueLimits = constant_limits<ConstantType>,
-            typename = std::enable_if_t<
-                std::is_constructible<DbmClass<subclass_, ConstantType, ValueLimits>,
-                    dbm_tags::create_from_last_var_tag, subclass_&, octdiff_var, ConstantType, dbm_major>::value>>
-        using dense_dbm_return_type = dbm_type<DbmClass, ConstantType, ValueLimits>;
-
-    template <template <typename, typename, typename> class DbmClass,
-            typename ConstantType,
-            typename ValueLimits = constant_limits<ConstantType>,
-            typename = std::enable_if_t<
-                std::is_constructible<DbmClass<subclass_, ConstantType, ValueLimits>,
-                    dbm_tags::create_from_last_var_tag, subclass_&, octdiff_var, ConstantType>::value>>
-        using default_dbm_return_type = dbm_type<DbmClass, ConstantType, ValueLimits>;
+            typename ConstantLimits = constant_limits<ConstantType>,
+            typename Allocator = std::allocator<ConstantType>>
+        using default_dbm_return_type = dbm_type<DbmClass, ConstantType, ConstantLimits, Allocator>;
 
     using queue_type = cpu::seq_queue;
 
@@ -58,18 +49,32 @@ public:
     context_base_& operator=(context_base_ const&) = delete;
     context_base_& operator=(context_base_ &&) noexcept = default;
 
-    //
-    // DENSE-LIKE DBM FACTORY FUNCTIONS
-    //
 
-    template <template <typename, typename, typename> class DbmClass,
+    template <template <typename, typename, typename, typename> class DbmClass,
             typename ConstantType,
-            typename ValueLimits = constant_limits<ConstantType>>
-    dense_dbm_return_type<DbmClass, ConstantType, ValueLimits> make_dbm(
+            typename ConstantLimits = constant_limits<ConstantType>,
+            typename Allocator = std::allocator<ConstantType>>
+    default_dbm_return_type<DbmClass, ConstantType, ConstantLimits, Allocator> make_dbm(
+            octdiff_var last_var
+    ) {
+        using return_type_ = default_dbm_return_type<DbmClass, ConstantType, ConstantLimits, Allocator>;
+        return return_type_(
+                dbm_tags::create_from_last_var_tag(),
+                this->as_subclass_(),
+                last_var,
+                return_type_::default_constant()
+        );
+    }
+
+    template <template <typename, typename, typename, typename> class DbmClass,
+            typename ConstantType,
+            typename ConstantLimits = constant_limits<ConstantType>,
+            typename Allocator = std::allocator<ConstantType>>
+    default_dbm_return_type<DbmClass, ConstantType, ConstantLimits, Allocator> make_dbm(
         octdiff_var last_var,
         dbm_major major
     ) {
-        using return_type_ = dense_dbm_return_type<DbmClass, ConstantType, ValueLimits>;
+        using return_type_ = default_dbm_return_type<DbmClass, ConstantType, ConstantLimits, Allocator>;
         return return_type_(
             dbm_tags::create_from_last_var_tag(),
             this->as_subclass_(),
@@ -79,15 +84,33 @@ public:
         );
     }
 
-    template <template <typename, typename, typename> class DbmClass,
+    template <template <typename, typename, typename, typename> class DbmClass,
             typename ConstantType,
-            typename ValueLimits = constant_limits<ConstantType>>
-    dense_dbm_return_type<DbmClass, ConstantType, ValueLimits> make_dbm(
+            typename ConstantLimits = constant_limits<ConstantType>,
+            typename Allocator = std::allocator<ConstantType>>
+    default_dbm_return_type<DbmClass, ConstantType, ConstantLimits, Allocator> make_dbm(
+            octdiff_var last_var,
+            ConstantType default_value
+    ) {
+        using return_type_ = default_dbm_return_type<DbmClass, ConstantType, ConstantLimits, Allocator>;
+        return return_type_(
+                dbm_tags::create_from_last_var_tag(),
+                this->as_subclass_(),
+                last_var,
+                default_value
+        );
+    }
+
+    template <template <typename, typename, typename, typename> class DbmClass,
+            typename ConstantType,
+            typename ConstantLimits = constant_limits<ConstantType>,
+            typename Allocator = std::allocator<ConstantType>>
+    default_dbm_return_type<DbmClass, ConstantType, ConstantLimits, Allocator> make_dbm(
         octdiff_var last_var,
         ConstantType default_value,
         dbm_major major
     ) {
-        using return_type_ = dense_dbm_return_type<DbmClass, ConstantType, ValueLimits>;
+        using return_type_ = default_dbm_return_type<DbmClass, ConstantType, ConstantLimits, Allocator>;
         return return_type_(
             dbm_tags::create_from_last_var_tag(),
             this->as_subclass_(),
@@ -97,14 +120,31 @@ public:
         );
     }
 
-    template <template <typename, typename, typename> class DbmClass,
+    template <template <typename, typename, typename, typename> class DbmClass,
             typename ConstantType,
-            typename ValueLimits = constant_limits<ConstantType>>
-    dense_dbm_return_type<DbmClass, ConstantType, ValueLimits> make_dbm(
-        octdiff_system<ConstantType, ValueLimits> system,
+            typename ConstantLimits = constant_limits<ConstantType>,
+            typename Allocator = std::allocator<ConstantType>>
+    default_dbm_return_type<DbmClass, ConstantType, ConstantLimits, Allocator> make_dbm(
+            octdiff_system<ConstantType, ConstantLimits> system
+    ) {
+        using return_type_ = default_dbm_return_type<DbmClass, ConstantType, ConstantLimits, Allocator>;
+        return return_type_(
+                dbm_tags::create_from_octdiff_system_tag(),
+                this->as_subclass_(),
+                system,
+                return_type_::default_constant()
+        );
+    }
+
+    template <template <typename, typename, typename, typename> class DbmClass,
+            typename ConstantType,
+            typename ConstantLimits = constant_limits<ConstantType>,
+            typename Allocator = std::allocator<ConstantType>>
+    default_dbm_return_type<DbmClass, ConstantType, ConstantLimits, Allocator> make_dbm(
+        octdiff_system<ConstantType, ConstantLimits> system,
         dbm_major major
     ) {
-        using return_type_ = dense_dbm_return_type<DbmClass, ConstantType, ValueLimits>;
+        using return_type_ = default_dbm_return_type<DbmClass, ConstantType, ConstantLimits, Allocator>;
         return return_type_(
             dbm_tags::create_from_octdiff_system_tag(),
             this->as_subclass_(),
@@ -114,88 +154,22 @@ public:
         );
     }
 
-    template <template <typename, typename, typename> class DbmClass,
+    template <template <typename, typename, typename, typename> class DbmClass,
             typename ConstantType,
-            typename ValueLimits = constant_limits<ConstantType>>
-    dense_dbm_return_type<DbmClass, ConstantType, ValueLimits> make_dbm(
-        octdiff_system<ConstantType, ValueLimits> system,
+            typename ConstantLimits = constant_limits<ConstantType>,
+            typename Allocator = std::allocator<ConstantType>>
+    default_dbm_return_type<DbmClass, ConstantType, ConstantLimits, Allocator> make_dbm(
+        octdiff_system<ConstantType, ConstantLimits> system,
         ConstantType default_value,
         dbm_major major
     ) {
-        using return_type_ = dense_dbm_return_type<DbmClass, ConstantType, ValueLimits>;
+        using return_type_ = default_dbm_return_type<DbmClass, ConstantType, ConstantLimits, Allocator>;
         return return_type_(
             dbm_tags::create_from_octdiff_system_tag(),
             this->as_subclass_(),
             system,
             default_value,
             major
-        );
-    }
-
-    //
-    // GENERIC (NON-DENSE-LIKE) DBM FACTORY FUNCTIONS
-    //
-
-
-    template <template <typename, typename, typename> class DbmClass,
-            typename ConstantType,
-            typename ValueLimits = constant_limits<ConstantType>>
-    default_dbm_return_type<DbmClass, ConstantType, ValueLimits> make_dbm(
-        octdiff_var last_var
-    ) {
-        using return_type_ = default_dbm_return_type<DbmClass, ConstantType, ValueLimits>;
-        return return_type_(
-            dbm_tags::create_from_last_var_tag(),
-            this->as_subclass_(),
-            last_var,
-            return_type_::default_constant()
-        );
-    }
-
-    template <template <typename, typename, typename> class DbmClass,
-            typename ConstantType,
-            typename ValueLimits = constant_limits<ConstantType>>
-    default_dbm_return_type<DbmClass, ConstantType, ValueLimits> make_dbm(
-        octdiff_var last_var,
-        ConstantType default_value
-    ) {
-        using return_type_ = default_dbm_return_type<DbmClass, ConstantType, ValueLimits>;
-        return return_type_(
-            dbm_tags::create_from_last_var_tag(),
-            this->as_subclass_(),
-            last_var,
-            default_value
-        );
-    }
-
-    template <template <typename, typename, typename> class DbmClass,
-            typename ConstantType,
-            typename ValueLimits = constant_limits<ConstantType>>
-    default_dbm_return_type<DbmClass, ConstantType, ValueLimits> make_dbm(
-        octdiff_system<ConstantType, ValueLimits> system
-    ) {
-        using return_type_ = default_dbm_return_type<DbmClass, ConstantType, ValueLimits>;
-        return return_type_(
-            dbm_tags::create_from_octdiff_system_tag(),
-            this->as_subclass_(),
-            system,
-            return_type_::default_constant()
-        );
-    }
-
-    template <template <typename, typename, typename> class DbmClass,
-            typename ConstantType,
-            typename ValueLimits = constant_limits<ConstantType>>
-    default_dbm_return_type<DbmClass, ConstantType, ValueLimits> make_dbm(
-        octdiff_system<ConstantType, ValueLimits> system,
-        ConstantType default_value
-    ) {
-        using return_type_ = default_dbm_return_type<DbmClass, ConstantType, ValueLimits>;
-        return return_type_(
-            dbm_tags::create_from_octdiff_system_tag(),
-            this->as_subclass_(),
-            system,
-            default_value
         );
     }
 
