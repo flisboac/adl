@@ -205,7 +205,7 @@ namespace dsl {
                     typename VarType,
                     typename = std::enable_if_t<
                             adl::oct::common_var<VarType>::is_oct_space
-                            && std::is_arithmetic<ConstantType>::value>>
+                            && adl::oct::constant_limits<ConstantType>::valid>>
             constexpr adl::oct::basic_oct_cons<ConstantType, VarType> operator>=(VarType var, ConstantType rhs) noexcept {
                 return adl::oct::make_lower_unit(var, rhs);
             };
@@ -215,7 +215,7 @@ namespace dsl {
                     typename VarType,
                     typename = std::enable_if_t<
                             adl::oct::common_var<VarType>::is_oct_space
-                            && std::is_arithmetic<ConstantType>::value>>
+                            && adl::oct::constant_limits<ConstantType>::valid>>
             constexpr adl::oct::basic_oct_cons<ConstantType, VarType> operator<=(VarType var, ConstantType rhs) noexcept {
                 return adl::oct::make_upper_unit(var, rhs);
             };
@@ -225,7 +225,7 @@ namespace dsl {
                     typename VarType,
                     typename = std::enable_if_t<
                             adl::oct::common_var<VarType>::is_oct_space
-                            && std::is_arithmetic<ConstantType>::value>>
+                            && adl::oct::constant_limits<ConstantType>::valid>>
             constexpr adl::oct::basic_oct_cons<ConstantType, VarType> operator>=(
                 adl::oct::basic_oct_vexpr<VarType> vexpr,
                 ConstantType rhs
@@ -238,7 +238,7 @@ namespace dsl {
                     typename VarType,
                     typename = std::enable_if_t<
                             adl::oct::common_var<VarType>::is_oct_space
-                            && std::is_arithmetic<ConstantType>::value>>
+                            && adl::oct::constant_limits<ConstantType>::valid>>
             constexpr adl::oct::basic_oct_cons<ConstantType, VarType> operator<=(
                 adl::oct::basic_oct_vexpr<VarType> vexpr,
                 ConstantType rhs

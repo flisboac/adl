@@ -49,14 +49,12 @@ namespace cpu {
         static std::enable_if_t<!has_ ## FunctionName ## _function_v<U>, ReturnType> \
         do_ ## FunctionName(U& oper, Args...) { return (ReturnType) 0; }
 
-
 namespace detail_ {
 
 template <typename DbmType, typename ContextType, typename ResultType>
 class oper_base_traits_ {
 public:
     adl_MAKE_FUNCTION_CHECK_CLASS(void, on_prepare_);
-    adl_MAKE_FUNCTION_CHECK_CLASS(ResultType, on_execute_);
     adl_MAKE_FUNCTION_CHECK_CLASS(void, on_finished_);
 };
 
@@ -64,7 +62,6 @@ template <typename DbmType, typename ContextType>
 class oper_base_traits_<DbmType, ContextType, void> {
 public:
     adl_MAKE_FUNCTION_CHECK_CLASS(void, on_prepare_);
-    adl_MAKE_FUNCTION_CHECK_CLASS(void, on_execute_);
     adl_MAKE_FUNCTION_CHECK_CLASS(void, on_finished_);
 };
 
@@ -74,6 +71,9 @@ protected:
     using subtype_ = SubType;
     using traits_ = oper_base_traits_<DbmType, ContextType, ResultType>;
     using timer_type_ = static_mark_timer<5>;
+
+    //static_assert(traits_::template has_on_execute__function_v<SubType>,
+    //    "Please provide an implementation for a function named 'on_execute_' for this operator.");
 
 public:
     using context_type = ContextType;
@@ -142,16 +142,16 @@ public:
                 this->state_ = oper_state::queued;
                 this->timer_.mark(); // 1
             case oper_state::queued:
-                traits_::do_on_prepare_(static_cast<SubType&>(*this));
+                traits_::do_on_prepare_(this->as_subclass_());
                 this->state_ = oper_state::prepared;
                 this->timer_.mark(); // 2
                 // non-stop
             case oper_state::prepared: {
                 this->state_ = oper_state::started;
                 this->timer_.mark(); // 3
-                auto ret = traits_::do_on_execute_(static_cast<SubType&>(*this));
+                auto ret = this->as_subclass_().on_execute_();
                 this->state_ = oper_state::finished;
-                traits_::do_on_finished_(static_cast<SubType&>(*this));
+                traits_::do_on_finished_(this->as_subclass_());
                 this->timer_.mark(); // 4
                 return ret;
             }
@@ -162,7 +162,7 @@ public:
 
     subtype_& discard() {
         get();
-        return static_cast<SubType&>(*this);
+        return this->as_subclass_();
     }
 };
 
@@ -194,16 +194,16 @@ public:
                 this->state_ = oper_state::queued;
                 this->timer_.mark(); // 1
             case oper_state::queued:
-                traits_::do_on_prepare_(static_cast<SubType&>(*this));
+                traits_::do_on_prepare_(this->as_subclass_());
                 this->state_ = oper_state::prepared;
                 this->timer_.mark(); // 2
                 // non-stop
             case oper_state::prepared:
                 this->state_ = oper_state::started;
                 this->timer_.mark(); // 3
-                traits_::do_on_execute_(static_cast<SubType&>(*this));
+                this->as_subclass_().on_execute_();
                 this->state_ = oper_state::finished;
-                traits_::do_on_finished_(static_cast<SubType&>(*this));
+                traits_::do_on_finished_(this->as_subclass_());
                 this->timer_.mark(); // 4
                 break;
             default:
@@ -213,7 +213,7 @@ public:
 
     subtype_& discard() {
         get();
-        return static_cast<SubType&>(*this);
+        return this->as_subclass_();
     };
 };
 

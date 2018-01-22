@@ -23,13 +23,13 @@ namespace oct {
 
 namespace {
     template <typename T, bool is_floating_point = std::is_floating_point<T>::value>
-    struct is_pair_ {
-        constexpr static bool is_pair(T const& n) { return n % 2 == 0; }
+    struct is_even_ {
+        constexpr static bool is_even(T const& n) { return n % 2 == 0; }
     };
 
     template <typename T>
-    struct is_pair_<T, true> {
-        constexpr static bool is_pair(T const& n) { return std::fmod(n, 2) == 0; }
+    struct is_even_<T, true> {
+        constexpr static bool is_even(T const& n) { return std::fmod(n, 2) == 0; }
     };
 }
 
@@ -45,15 +45,15 @@ private:
 public:
     using constant_type = ConstantType;
 
-    static_assert(numeric_limits_::is_specialized,
-          "The constant_limits class is not valid. Please, specialize it correctly for the provided value type.");
+    //static_assert(numeric_limits_::is_specialized,
+    //    "The constant_limits class is not valid. Please, specialize it correctly for the provided value type.");
 
-    static_assert(!numeric_limits_::is_integer,
-          "This current implementation of the octagon domain algorithms does not support raw integer types. Please use basic_float_int instead.");
+    //static_assert(!numeric_limits_::is_integer,
+    //      "This current implementation of the octagon domain algorithms does not support raw integer types. Please use basic_float_int instead.");
 
-    constexpr static const bool valid = numeric_limits_::is_specialized;
-    constexpr static const bool integer = numeric_limits_::is_integer;
-    constexpr static const bool native_integer = numeric_limits_::is_integer;
+    constexpr static const bool valid = numeric_limits_::is_specialized && !numeric_limits_::is_integer;
+    constexpr static const bool is_integer = numeric_limits_::is_integer;
+    constexpr static const bool is_native_integer = numeric_limits_::is_integer;
 
     constexpr static constant_type top() noexcept { return numeric_limits_::has_infinity ? numeric_limits_::infinity() : numeric_limits_::max(); }
     constexpr static bool is_top(constant_type c) noexcept { return numeric_limits_::has_infinity ? numeric_limits_::infinity() <= c  : numeric_limits_::max() == c; }
@@ -66,7 +66,9 @@ public:
     template <typename ConstantType_, typename = std::enable_if_t<!std::numeric_limits<ConstantType_>::is_integer>>
     constexpr static constant_type floor(ConstantType_ b) { return std::floor(b); }
     static std::string to_string(constant_type value) { return std::to_string(value); }
-    constexpr static bool is_pair(constant_type const& c) { return is_pair_<constant_type>::is_pair(c); }
+    // TODO Verify if I can really consider infinity as an even number in the context of octdomain algorithms
+    constexpr static bool is_even(constant_type const& c) { return is_top(c) || is_even_<constant_type>::is_even(c); }
+    constexpr static constant_type raw_value(constant_type c) { return c; }
 };
 
 
@@ -172,8 +174,8 @@ public:
     using raw_type = RawType;
 
     constexpr static const bool valid = numeric_limits_::is_specialized;
-    constexpr static const bool integer = true; // This is the sole reason for basic_float_int. What a ride! :D
-    constexpr static const bool native_integer = false;
+    constexpr static const bool is_integer = true; // This is the sole reason for basic_float_int. What a ride! :D
+    constexpr static const bool is_native_integer = false;
 
     constexpr static constant_type top() noexcept { return constant_type(raw_constant_limits_::top()); }
     constexpr static bool is_top(constant_type c) noexcept { return raw_constant_limits_::is_top(c.value()); }
@@ -183,7 +185,9 @@ public:
     constexpr static constant_type min(std::initializer_list<constant_type> list) { return std::min(list); }
     constexpr static constant_type floor(constant_type const& b) { return b.to_floor(); }
     static std::string to_string(constant_type value) { return std::to_string(value.value()); }
-    constexpr static bool is_pair(constant_type const& c) { return c % 2 == 0; }
+    // TODO Verify if I can really consider infinity as an even number in the context of octdomain algorithms
+    constexpr static bool is_even(constant_type const& c) { return is_top(c) || c % 2 == 0; }
+    constexpr static raw_type raw_value(constant_type const& c) { return c.value(); }
 };
 
 template <typename NumberType, typename RawType> using number_float_int_result_t_ = std::enable_if_t<

@@ -71,6 +71,8 @@ public:
         constexpr std::size_t operator()(cons_type const& lhs) const noexcept;
     };
 
+    static_assert(constant_limits::valid, "Constant type is not valid for octagonal system construction."
+        " If you're using a primitive integer type, please use basic_float_int instead.");
 
 private:
     using subclass_ = cons_type;

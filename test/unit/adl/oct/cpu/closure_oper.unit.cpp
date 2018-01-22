@@ -47,7 +47,7 @@ static void do_test(char const* type_name) {
 
     for (auto k = dbm.first_var(); k <= dbm.last_var(); k++) {
         REQUIRE( (dbm.at(k, k) == 0) ); // closure
-        REQUIRE( (limits::is_pair(dbm.at(k, -k))) ); // tight closure
+        REQUIRE( (limits::is_even(dbm.at(k, -k))) ); // tight closure
 
         for (auto i = dbm.first_var(); i <= dbm.last_var(); i++) {
             REQUIRE( (dbm.at(k, i) <= (dbm.at(k, -k) / 2) + (dbm.at(-i, i) / 2)) ); // strong closure

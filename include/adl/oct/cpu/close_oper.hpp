@@ -40,7 +40,7 @@ public:
     close_oper& operator=(close_oper const&) = delete;
     close_oper& operator=(close_oper &&) noexcept = default;
 
-    explicit close_oper(queue_type&, dbm_type& dbm) : superclass_(), dbm_(&dbm) {}
+    close_oper(queue_type&, dbm_type& dbm) : superclass_(), dbm_(&dbm) {}
 
     void on_execute_() {
         using namespace adl::operators;

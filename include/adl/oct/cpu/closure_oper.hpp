@@ -30,7 +30,7 @@
 adl_BEGIN_MAIN_MODULE(oct)
 namespace cpu {
 
-template <typename DbmType, typename ContextType, bool UsingIntegerAlgorithm = DbmType::constant_limits::integer>
+template <typename DbmType, typename ContextType, bool UsingIntegerAlgorithm = DbmType::constant_limits::is_integer>
 class closure_oper_impl_ {};
 
 /*

@@ -22,14 +22,8 @@
 adl_BEGIN_MAIN_MODULE(oct)
 namespace cpu {
 
-template <typename DbmType, typename ContextType, bool UsingIntegerAlgorithm = DbmType::constant_limits::integer>
-class add_cons_close_oper_impl_ {};
-
-/*
- * REAL ALGORITHM IMPLEMENTATION
- */
 template <typename DbmType, typename ContextType>
-class add_cons_close_oper_impl_<DbmType, ContextType, false> :
+class add_cons_close_oper :
     public detail_::oper_base_<cpu::add_cons_close_oper<DbmType, ContextType>, DbmType, ContextType, bool>
 {
     using superclass_ = detail_::oper_base_<cpu::add_cons_close_oper<DbmType, ContextType>, DbmType, ContextType, bool>;
@@ -41,26 +35,32 @@ public:
     using constant_limits = typename dbm_type::constant_limits;
     using counterpart_cons_type = typename dbm_type::counterpart_identity_cons_type;
     using cons_type = typename dbm_type::identity_cons_type;
-    using octdiff_conjunction_type = typename dbm_type::octdiff_conjunction_type;
+    using octdiff_conjunction_type = typename dbm_type::identity_octdiff_conjunction_type;
 
-    add_cons_close_oper_impl_() = delete;
-    add_cons_close_oper_impl_(add_cons_close_oper_impl_ const&) = delete;
-    add_cons_close_oper_impl_(add_cons_close_oper_impl_ &&) noexcept = default;
-    add_cons_close_oper_impl_& operator=(add_cons_close_oper_impl_ const&) = delete;
-    add_cons_close_oper_impl_& operator=(add_cons_close_oper_impl_ &&) noexcept = default;
+    constexpr static const bool is_integer = constant_limits::is_integer;
 
-    add_cons_close_oper_impl_(queue_type&, dbm_type& dbm, cons_type di, cons_type dj) : superclass_(), dbm_(&dbm), di_(di), dj_(dj) {}
-    add_cons_close_oper_impl_(queue_type&, dbm_type& dbm, cons_type cons) : add_cons_close_oper_impl_(dbm, cons, cons_type::invalid()) {}
-    add_cons_close_oper_impl_(queue_type&, dbm_type& dbm, counterpart_cons_type oct_cons) : add_cons_close_oper_impl_(dbm, oct_cons.split()) {}
-    add_cons_close_oper_impl_(queue_type&, dbm_type& dbm, octdiff_conjunction_type conj) : add_cons_close_oper_impl_(dbm, conj.di(), conj.dj()) {}
+    add_cons_close_oper() = delete;
+    add_cons_close_oper(add_cons_close_oper const&) = delete;
+    add_cons_close_oper(add_cons_close_oper &&) noexcept = default;
+    add_cons_close_oper& operator=(add_cons_close_oper const&) = delete;
+    add_cons_close_oper& operator=(add_cons_close_oper &&) noexcept = default;
+
+    add_cons_close_oper(queue_type& queue, dbm_type& dbm, cons_type di, cons_type dj) : superclass_(), dbm_(&dbm), di_(di), dj_(dj) {}
+    add_cons_close_oper(queue_type& queue, dbm_type& dbm, cons_type cons) : add_cons_close_oper(queue, dbm, cons, cons_type::invalid()) {}
+    add_cons_close_oper(queue_type& queue, dbm_type& dbm, counterpart_cons_type oct_cons) : add_cons_close_oper(queue, dbm, oct_cons.split()) {}
+    add_cons_close_oper(queue_type& queue, dbm_type& dbm, octdiff_conjunction_type conj) : add_cons_close_oper(queue, dbm, conj.di(), conj.dj()) {}
 
     bool on_execute_() {
-        return add_cons_(di_) && (dj_.valid() && add_cons_(dj_));
+        return is_integer
+            ? add_cons_int_(di_) && (!dj_.valid() || add_cons_int_(dj_))
+            : add_cons_float_(di_) && (!dj_.valid() || add_cons_float_(dj_));
     }
 
 private:
-    bool add_cons_(cons_type cons) {
+
+    bool add_cons_float_(cons_type cons) {
         using namespace adl::operators;
+
         auto &dbm = *dbm_;
         auto const d = cons.constant();
         auto const a = cons.xi();
@@ -118,52 +118,15 @@ private:
                 }
             }
 
-            if (dbm.at(i, i) < 0) return false;
+            if (dbm.at(i, i) < 0) {
+                return false;
+            }
         }
 
         return true;
     }
 
-private:
-    dbm_type * dbm_;
-    cons_type di_;
-    cons_type dj_;
-};
-
-/*
- * INTEGER ALGORITHM IMPLEMENTATION
- */
-template <typename DbmType, typename ContextType>
-class add_cons_close_oper_impl_<DbmType, ContextType, true> :
-    public detail_::oper_base_<cpu::add_cons_close_oper<DbmType, ContextType>, DbmType, ContextType, bool>
-{
-    using superclass_ = detail_::oper_base_<add_cons_close_oper<DbmType, ContextType>, DbmType, ContextType, bool>;
-
-public:
-    using dbm_type = DbmType; //typename superclass_::dbm_type;
-    using context_type = ContextType; //typename superclass_::context_type;
-    using constant_limits = typename dbm_type::constant_limits;
-    using counterpart_cons_type = typename dbm_type::counterpart_identity_cons_type;
-    using cons_type = typename dbm_type::identity_cons_type;
-    using octdiff_conjunction_type = typename dbm_type::octdiff_conjunction_type;
-
-    add_cons_close_oper_impl_() = delete;
-    add_cons_close_oper_impl_(add_cons_close_oper_impl_ const&) = delete;
-    add_cons_close_oper_impl_(add_cons_close_oper_impl_ &&) noexcept = default;
-    add_cons_close_oper_impl_& operator=(add_cons_close_oper_impl_ const&) = delete;
-    add_cons_close_oper_impl_& operator=(add_cons_close_oper_impl_ &&) noexcept = default;
-
-    add_cons_close_oper_impl_(dbm_type& dbm, cons_type di, cons_type dj) : superclass_(), dbm_(&dbm), di_(di), dj_(dj) {}
-    add_cons_close_oper_impl_(dbm_type& dbm, cons_type cons) : add_cons_close_oper_impl_(dbm, cons, cons_type::invalid()) {}
-    add_cons_close_oper_impl_(dbm_type& dbm, counterpart_cons_type oct_cons) : add_cons_close_oper_impl_(dbm, oct_cons.split()) {}
-    add_cons_close_oper_impl_(dbm_type& dbm, octdiff_conjunction_type conj) : add_cons_close_oper_impl_(dbm, conj.di(), conj.dj()) {}
-
-    bool on_execute_() {
-        return add_cons_(di_) && (dj_.valid() && add_cons_(dj_));
-    }
-
-private:
-    bool add_cons_(cons_type cons) {
+    bool add_cons_int_(cons_type cons) {
         using namespace adl::operators;
         auto &dbm = *dbm_;
         auto const d = cons.constant();
@@ -223,22 +186,18 @@ private:
                 }
             }
 
-            if (dbm.at(i, i) < 0) return false;
+            if (dbm.at(i, i) < 0) {
+                return false;
+            }
         }
 
         return true;
     }
 
 private:
-    dbm_type * dbm_;
+    dbm_type * dbm_ = nullptr;
     cons_type di_;
     cons_type dj_;
-};
-
-template <typename DbmType, typename ContextType>
-class add_cons_close_oper : public add_cons_close_oper_impl_<DbmType, ContextType> {
-public:
-    using add_cons_close_oper_impl_<DbmType, ContextType>::add_cons_close_oper_impl_;
 };
 
 }
