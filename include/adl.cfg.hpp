@@ -15,7 +15,7 @@
 
 #define adl_CONFIG_NAME adl
 #define adl_CONFIG_VERSION_MAJOR 0
-#define adl_CONFIG_VERSION_MINOR 2
+#define adl_CONFIG_VERSION_MINOR 3
 #define adl_CONFIG_VERSION_PATCH 0
 #define adl_CONFIG_VERSION_ABI 0 // Increased at each breaking change, major bump certainly bumps ABI version, minor bump should not (but may?) lead to abi bump
 
