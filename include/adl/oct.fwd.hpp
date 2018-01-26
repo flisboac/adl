@@ -233,6 +233,22 @@ namespace cpu {
     template <typename DbmType, typename ContextType> class narrow_oper;
 }
 
+//
+// cl.hpp
+//
+namespace cl {
+    template <typename ConstantType, typename SvmTraits = ::cl::SVMTraitReadWrite<>> using svm_allocator = ::cl::SVMAllocator<ConstantType, SvmTraits>
+
+    template <typename DbmType> struct dbm_traits;
+
+    class config;
+    class context;
+    class queue;
+
+    template <typename ContextType, typename ConstantType, typename ValueLimits = constant_limits<ConstantType>, typename Allocator = std::allocator<ConstantType>> class dense_dbm;
+
+} // namespace cl
+
 adl_END_MAIN_MODULE
 
 #endif // adl__oct__fwd__hpp__

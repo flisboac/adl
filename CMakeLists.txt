@@ -144,6 +144,12 @@ target_sources(${api} INTERFACE
     "${api_dir_root}/adl/oct/cpu/is_int_consistent_oper.hpp"
     "${api_dir_root}/adl/oct/cpu/closure_oper.hpp"
     "${api_dir_root}/adl/oct/cpu/add_cons_close_oper.hpp"
+
+    #adl/oct/CL
+    "${api_dir_root}/adl/oct/cl.hpp"
+    "${api_dir_root}/adl/oct/cl/context.hpp"
+
+    #adl/oct/cl/operators
     )
 
 
@@ -218,6 +224,9 @@ add_executable(${test}
     "${test_dir_unit}/adl/oct/cpu/is_int_consistent_oper.unit.cpp"
     "${test_dir_unit}/adl/oct/cpu/closure_oper.unit.cpp"
     "${test_dir_unit}/adl/oct/cpu/add_cons_close_oper.unit.cpp"
+
+    # unit:adl/oct/cpu
+    "${test_dir_unit}/adl/oct/cl/context.unit.cpp"
 )
 target_link_libraries(${test} ${test_iapi})
 enable_testing()
