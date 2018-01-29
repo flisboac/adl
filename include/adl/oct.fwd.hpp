@@ -9,6 +9,7 @@
 #include <limits>
 
 #include "adl.cfg.hpp"
+#include "adl/cl.hpp"
 
 
 adl_BEGIN_MAIN_MODULE(oct)
@@ -237,15 +238,75 @@ namespace cpu {
 // cl.hpp
 //
 namespace cl {
-    template <typename ConstantType, typename SvmTraits = ::cl::SVMTraitReadWrite<>> using svm_allocator = ::cl::SVMAllocator<ConstantType, SvmTraits>
+    template <typename Trait = ::cl::detail::SVMTraitNull> using svm_trait_read_only = ::cl::SVMTraitReadOnly<Trait>;
+    template <typename Trait = ::cl::detail::SVMTraitNull> using svm_trait_read_write = ::cl::SVMTraitReadWrite<Trait>;
+    template <typename Trait = ::cl::detail::SVMTraitNull> using svm_trait_write_only= ::cl::SVMTraitWriteOnly<Trait>;
+    template <typename Trait = svm_trait_read_write<>> using svm_trait_atomic = ::cl::SVMTraitAtomic<Trait>;
+    template <typename Trait = svm_trait_read_write<>> using svm_trait_coarse = ::cl::SVMTraitCoarse<Trait>;
+    template <typename Trait = svm_trait_read_write<>> using svm_trait_fine = ::cl::SVMTraitFine<Trait>;
 
-    template <typename DbmType> struct dbm_traits;
+    template <typename ConstantType, typename SvmTraits = ::cl::SVMTraitReadWrite<>> using svm_allocator = ::cl::SVMAllocator<ConstantType, SvmTraits>;
+    template <typename AllocatorType> struct allocator_traits;
+    template <typename ConstantType> struct constant_traits;
+    template <typename OperType> struct oper_traits;
 
-    class config;
     class context;
     class queue;
 
-    template <typename ContextType, typename ConstantType, typename ValueLimits = constant_limits<ConstantType>, typename Allocator = std::allocator<ConstantType>> class dense_dbm;
+    template <typename ContextType, typename ConstantType, typename ValueLimits = constant_limits<ConstantType>, typename Allocator = std::allocator<ConstantType>>
+        class dense_dbm;
+    template <typename ContextType, typename ConstantType, typename ValueLimits = constant_limits<ConstantType>, typename SvmAllocator = svm_allocator<svm_trait_read_write<>>>
+        using svm_dense_dbm = dense_dbm<ContextType, ConstantType, ValueLimits, svm_allocator<ConstantType, SvmAllocator>>;
+
+    // Specific
+    template <typename DbmType, typename ContextType> class null_oper;
+
+    // Closure
+    template <typename DbmType, typename ContextType> class close_oper;
+    template <typename DbmType, typename ContextType> class strong_close_oper;
+    template <typename DbmType, typename ContextType> class strengthen_oper;
+    template <typename DbmType, typename ContextType> class tighten_oper;
+    template <typename DbmType, typename ContextType> class closure_oper;
+
+    // Validity
+    template <typename DbmType, typename ContextType> class is_coherent_oper;
+    template <typename DbmType, typename ContextType> class is_consistent_oper;
+    template <typename DbmType, typename ContextType> class is_int_consistent_oper;
+    template <typename DbmType, typename ContextType> class is_closed_oper;
+    template <typename DbmType, typename ContextType> class is_strongly_closed_oper;
+    template <typename DbmType, typename ContextType> class is_tightly_closed_oper;
+    template <typename DbmType, typename ContextType> class is_weakly_closed_oper;
+
+    // comparison
+    template <typename DbmType, typename ContextType> class equals_oper;
+    template <typename DbmType, typename ContextType> class not_equals_oper;
+    template <typename DbmType, typename ContextType> class is_proper_subset_oper;
+    template <typename DbmType, typename ContextType> class is_subset_oper;
+    template <typename DbmType, typename ContextType> class is_proper_superset_oper;
+    template <typename DbmType, typename ContextType> class is_superset_oper;
+    template <typename DbmType, typename ContextType> class is_top_oper;
+    template <typename DbmType, typename ContextType> class is_bottom_oper;
+
+    // set operations
+    template <typename DbmType, typename ContextType> class set_union_oper;
+    template <typename DbmType, typename ContextType> class set_intersection_oper;
+
+    // Basic system construction
+    template <typename DbmType, typename ContextType> class to_top_oper;
+    template <typename DbmType, typename ContextType> class to_bottom_oper;
+    template <typename DbmType, typename ContextType> class copy_oper;
+    template <typename DbmType, typename ContextType> class add_cons_oper;
+    template <typename DbmType, typename ContextType> class add_cons_close_oper;
+    template <typename DbmType, typename ContextType> class forget_var_oper;
+
+    // Abstraction-based system construction
+    template <typename DbmType, typename ContextType> class add_oct_test_oper;
+    template <typename DbmType, typename ContextType> class add_oct_assignment_oper;
+    template <typename DbmType, typename ContextType> class add_oct_backward_assignment_oper;
+
+    // Extrapolation
+    template <typename DbmType, typename ContextType> class widen_oper;
+    template <typename DbmType, typename ContextType> class narrow_oper;
 
 } // namespace cl
 

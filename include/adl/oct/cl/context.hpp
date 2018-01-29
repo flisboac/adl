@@ -19,6 +19,22 @@ adl_BEGIN_MAIN_MODULE(oct)
 
 namespace cl {
 
+class adl_CLASS context {
+public:
+    context() = delete;
+    context(context const&) = delete;
+    context(context &&) noexcept = default;
+    context& operator=(context const&) = delete;
+    context& operator=(context &&) noexcept = default;
+
+    explicit context(::cl::Context& context);
+
+    static context make();
+
+private:
+    ::cl::Context context_;
+};
+
 } // namespace cl
 
 adl_END_MAIN_MODULE
