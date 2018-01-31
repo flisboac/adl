@@ -251,7 +251,7 @@ namespace cl {
     template <typename OperType> struct oper_traits;
 
     class context;
-    class queue;
+    template <typename ContextType> class command_queue;
 
     template <typename ContextType, typename ConstantType, typename ValueLimits = constant_limits<ConstantType>, typename Allocator = std::allocator<ConstantType>>
         class dense_dbm;

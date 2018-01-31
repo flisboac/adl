@@ -8,6 +8,7 @@
 
 
 #include <type_traits>
+#include <memory>
 
 #include "adl.cfg.hpp"
 #include "adl/oct.fwd.hpp"
@@ -20,6 +21,20 @@
 
 adl_BEGIN_ROOT_MODULE
 namespace oct {
+
+class context_private_tag_ {};
+class queue_private_tag_ {};
+
+template <typename ContextType,
+        template <typename, typename, typename, typename> class DbmClass,
+        typename ConstantType,
+        typename ConstantLimits = constant_limits<ConstantType>,
+        typename Allocator = std::allocator<ConstantType>>
+using shared_dbm_return_type_ = std::shared_ptr<DbmClass<ContextType, ConstantType, ConstantLimits, Allocator>>;
+
+template <typename ContextType,
+        template <typename> class QueueClass>
+using shared_queue_return_type_ = std::shared_ptr<QueueClass<ContextType>>;
 
 template <typename SubClass>
 class context_base_ {

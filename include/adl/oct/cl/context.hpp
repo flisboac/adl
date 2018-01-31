@@ -11,6 +11,7 @@
 
 #include "adl.cfg.hpp"
 #include "adl/oct.fwd.hpp"
+#include "adl/oct/context/context_base_.hpp"
 
 /*
  * [[ API ]]
@@ -19,15 +20,15 @@ adl_BEGIN_MAIN_MODULE(oct)
 
 namespace cl {
 
-class context_private_tag_ {};
-
 class adl_CLASS context {
 private:
+    using thisclass_ = context;
+
     // (privately) Default-constructible
     context() = default;
 
 public:
-    // Doesn't work. Needs to have public constructors.
+    // `friend` doesn't work for std::shared<...>. Needs to have public constructors.
     // PLEASE, USE context::make instead of the constructors! :(
     //friend class std::shared_ptr<context>;
     explicit context(context_private_tag_, ::cl_context cl_ctx);
@@ -46,6 +47,12 @@ public:
     static std::shared_ptr<context> make(std::error_code& err) noexcept;
     static std::shared_ptr<context> make(::cl_context ctx);
     static std::shared_ptr<context> make(::cl::Context const& ctx);
+
+    template <template <typename> class QueueType, typename... Args>
+    shared_queue_return_type_<thisclass_, QueueType> make_queue(Args... args) {
+        using queue_type_ = shared_queue_return_type_<thisclass_, QueueType>;
+        return std::make_shared<queue_type_>(queue_private_tag_(), *this, std::forward(args)...);
+    }
 
 private:
     ::cl_context cl_context_ = nullptr;
