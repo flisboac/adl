@@ -7,19 +7,37 @@
 
 #include "adl.cfg.hpp"
 
+#include "CL/cl.h"
+
+#if !defined(CL_HPP_TARGET_OPENCL_VERSION)
+#   define CL_HPP_TARGET_OPENCL_VERSION 200
+#endif
+
 #if defined(CL_HPP_NO_STD_STRING) || defined(CL_HPP_NO_STD_VECTOR) || defined(CL_HPP_NO_STD_ARRAY) || defined(CL_HPP_NO_STD_UNIQUE_PTR)
 #   error "ADL is not compatible with non-standard string/vector/array/smart-pointer classes in the OpenCL C++ bindings."
+#endif
+
+#if adl_CONFIG_USE_CL_ERROR_CLASS
+#   if !defined(CL_HPP_ENABLE_EXCEPTIONS)
+#       error "OpenCL C++ bindinds' exceptions are not enabled. Be sure to activate it if you want ADL to use its Error class."
+#   endif
+#   define adl_CL_ERROR ::cl::Error
+#   define adl_MAKE_CL_ERROR_(error_code__) ::cl::Error(error_code__.value(), error_code__.message())
+#else
+#   define adl_CL_ERROR ::adl::cl_error
+#   define adl_MAKE_CL_ERROR_(error_code__) ::adl::cl_error(error_code__)
 #endif
 
 #include "CL/cl2.hpp"
 
 #include "adl.cfg.hpp"
 
+/*
+ * [[ API ]]
+ */
 adl_BEGIN_ROOT_MODULE
 
-namespace cl {
-
-enum class errc {
+enum class cl_errc {
 
     success = CL_SUCCESS,
     device_not_found = CL_DEVICE_NOT_FOUND,
@@ -84,101 +102,118 @@ enum class errc {
     #endif
 };
 
-struct error_category : public std::error_category {
-private:
-    error_category() noexcept = default;
+std::error_code make_error_code(cl_errc e);
 
-public:
-    const char* name() const noexcept override { 
-        return "opencl";
-    }
-
-    std::string message(int ev) const override {
-        switch (ev) {
-            case CL_SUCCESS: return "success";
-            case CL_DEVICE_NOT_FOUND: return "device not found";
-            case CL_DEVICE_NOT_AVAILABLE: return "device not available";
-            
-            #if !(defined(CL_PLATFORM_NVIDIA) && CL_PLATFORM_NVIDIA == 0x3001)
-                case CL_COMPILER_NOT_AVAILABLE: return "device compiler not available";
-            #endif
-
-            case CL_MEM_OBJECT_ALLOCATION_FAILURE: return "mem object allocation failure";
-            case CL_OUT_OF_RESOURCES: return "out of resources";
-            case CL_OUT_OF_HOST_MEMORY: return "out of host memory";
-            case CL_PROFILING_INFO_NOT_AVAILABLE: return "profiling info not available";
-            case CL_MEM_COPY_OVERLAP: return "mem copy overlap";
-            case CL_IMAGE_FORMAT_MISMATCH: return "image format mismatch";
-            case CL_IMAGE_FORMAT_NOT_SUPPORTED: return "image format not supported";
-            case CL_BUILD_PROGRAM_FAILURE: return "build program failure";
-            case CL_MAP_FAILURE: return "map failure";
-
-            case CL_INVALID_VALUE: return "invalid value";
-            case CL_INVALID_DEVICE_TYPE: return "invalid device type";
-            case CL_INVALID_PLATFORM: return "invalid platform";
-            case CL_INVALID_DEVICE: return "invalid device";
-            case CL_INVALID_CONTEXT: return "invalid context";
-            case CL_INVALID_QUEUE_PROPERTIES: return "invalid queue properties";
-            case CL_INVALID_COMMAND_QUEUE: return "invalid command queue";
-            case CL_INVALID_HOST_PTR: return "invalid host ptr";
-            case CL_INVALID_MEM_OBJECT: return "invalid mem object";
-            case CL_INVALID_IMAGE_FORMAT_DESCRIPTOR: return "invalid image format descriptor";
-            case CL_INVALID_IMAGE_SIZE: return "invalid image size";
-            case CL_INVALID_SAMPLER: return "invalid sampler";
-            case CL_INVALID_BINARY: return "invalid binary";
-            case CL_INVALID_BUILD_OPTIONS: return "invalid build options";
-            case CL_INVALID_PROGRAM: return "invalid program";
-            case CL_INVALID_PROGRAM_EXECUTABLE: return "invalid program executable";
-            case CL_INVALID_KERNEL_NAME: return "invalid kernel name";
-            case CL_INVALID_KERNEL_DEFINITION: return "invalid kernel definition";
-            case CL_INVALID_KERNEL: return "invalid kernel";
-            case CL_INVALID_ARG_INDEX: return "invalid arg index";
-            case CL_INVALID_ARG_VALUE: return "invalid arg value";
-            case CL_INVALID_ARG_SIZE: return "invalid arg size";
-            case CL_INVALID_KERNEL_ARGS: return "invalid kernel args";
-            case CL_INVALID_WORK_DIMENSION: return "invalid work dimension";
-            case CL_INVALID_WORK_GROUP_SIZE: return "invalid work group size";
-            case CL_INVALID_WORK_ITEM_SIZE: return "invalid work item size";
-            case CL_INVALID_GLOBAL_OFFSET: return "invalid global offset";
-            case CL_INVALID_EVENT_WAIT_LIST: return "invalid event wait list";
-            case CL_INVALID_EVENT: return "invalid event";
-            case CL_INVALID_OPERATION: return "invalid operation";
-            case CL_INVALID_GL_OBJECT: return "invalid gl object";
-            case CL_INVALID_BUFFER_SIZE: return "invalid buffer size";
-            case CL_INVALID_MIP_LEVEL: return "invalid mip level";
-
-            #if defined(cl_khr_gl_sharing) && (cl_khr_gl_sharing >= 1)
-                case CL_INVALID_GL_SHAREGROUP_REFERENCE_KHR: return "invalid gl sharegroup reference number";
-            #endif
-
-            #ifdef CL_VERSION_1_1
-                case CL_MISALIGNED_SUB_BUFFER_OFFSET: return "misaligned sub-buffer offset";
-                case CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST: return "exec status error for events in wait list";
-                case CL_INVALID_GLOBAL_WORK_SIZE: return "invalid global work size";
-            #endif
-
-            default: return std::string("invalid/unknown error code (") + std::to_string(ev) + ")";
-        }
-    }
-
-    static error_category instance() noexcept {
-        static error_category category;
-        return category;
-    }
+struct adl_CLASS cl_error : public std::system_error {
+    using std::system_error::system_error;
 };
 
-std::error_code make_error_code(errc e) {
-    return { static_cast<int>(e), error_category::instance() };
-}
+struct adl_CLASS cl_error_category : public std::error_category {
+private:
+    cl_error_category() noexcept = default;
 
-} // namespace cl
+public:
+    static cl_error_category const& instance() noexcept;
+
+    const char* name() const noexcept override;
+    std::string message(int ev) const override;
+};
 
 adl_END_ROOT_MODULE
 
 namespace std {
 
-template <> struct is_error_code_enum<adl::cl::errc> : true_type {};
+template <> struct adl_CLASS is_error_code_enum<adl::cl_errc> : true_type {};
 
 } // namespace std
+
+
+/*
+ * [[ IMPLEMENTATION ]]
+ */
+adl_BEGIN_ROOT_MODULE
+
+adl_IMPL std::error_code make_error_code(cl_errc e) {
+    return { static_cast<int>(e), cl_error_category::instance() };
+}
+
+adl_IMPL char const* cl_error_category::name() const noexcept {
+    return "opencl";
+}
+
+adl_IMPL cl_error_category const& cl_error_category::instance() noexcept {
+    static cl_error_category category;
+    return category;
+}
+
+adl_IMPL std::string cl_error_category::message(int ev) const {
+    switch (ev) {
+    case CL_SUCCESS: return "success";
+    case CL_DEVICE_NOT_FOUND: return "device not found";
+    case CL_DEVICE_NOT_AVAILABLE: return "device not available";
+
+    #if !(defined(CL_PLATFORM_NVIDIA) && CL_PLATFORM_NVIDIA == 0x3001)
+        case CL_COMPILER_NOT_AVAILABLE: return "device compiler not available";
+    #endif
+
+    case CL_MEM_OBJECT_ALLOCATION_FAILURE: return "mem object allocation failure";
+    case CL_OUT_OF_RESOURCES: return "out of resources";
+    case CL_OUT_OF_HOST_MEMORY: return "out of host memory";
+    case CL_PROFILING_INFO_NOT_AVAILABLE: return "profiling info not available";
+    case CL_MEM_COPY_OVERLAP: return "mem copy overlap";
+    case CL_IMAGE_FORMAT_MISMATCH: return "image format mismatch";
+    case CL_IMAGE_FORMAT_NOT_SUPPORTED: return "image format not supported";
+    case CL_BUILD_PROGRAM_FAILURE: return "build program failure";
+    case CL_MAP_FAILURE: return "map failure";
+
+    case CL_INVALID_VALUE: return "invalid value";
+    case CL_INVALID_DEVICE_TYPE: return "invalid device type";
+    case CL_INVALID_PLATFORM: return "invalid platform";
+    case CL_INVALID_DEVICE: return "invalid device";
+    case CL_INVALID_CONTEXT: return "invalid context";
+    case CL_INVALID_QUEUE_PROPERTIES: return "invalid queue properties";
+    case CL_INVALID_COMMAND_QUEUE: return "invalid command queue";
+    case CL_INVALID_HOST_PTR: return "invalid host ptr";
+    case CL_INVALID_MEM_OBJECT: return "invalid mem object";
+    case CL_INVALID_IMAGE_FORMAT_DESCRIPTOR: return "invalid image format descriptor";
+    case CL_INVALID_IMAGE_SIZE: return "invalid image size";
+    case CL_INVALID_SAMPLER: return "invalid sampler";
+    case CL_INVALID_BINARY: return "invalid binary";
+    case CL_INVALID_BUILD_OPTIONS: return "invalid build options";
+    case CL_INVALID_PROGRAM: return "invalid program";
+    case CL_INVALID_PROGRAM_EXECUTABLE: return "invalid program executable";
+    case CL_INVALID_KERNEL_NAME: return "invalid kernel name";
+    case CL_INVALID_KERNEL_DEFINITION: return "invalid kernel definition";
+    case CL_INVALID_KERNEL: return "invalid kernel";
+    case CL_INVALID_ARG_INDEX: return "invalid arg index";
+    case CL_INVALID_ARG_VALUE: return "invalid arg value";
+    case CL_INVALID_ARG_SIZE: return "invalid arg size";
+    case CL_INVALID_KERNEL_ARGS: return "invalid kernel args";
+    case CL_INVALID_WORK_DIMENSION: return "invalid work dimension";
+    case CL_INVALID_WORK_GROUP_SIZE: return "invalid work group size";
+    case CL_INVALID_WORK_ITEM_SIZE: return "invalid work item size";
+    case CL_INVALID_GLOBAL_OFFSET: return "invalid global offset";
+    case CL_INVALID_EVENT_WAIT_LIST: return "invalid event wait list";
+    case CL_INVALID_EVENT: return "invalid event";
+    case CL_INVALID_OPERATION: return "invalid operation";
+    case CL_INVALID_GL_OBJECT: return "invalid gl object";
+    case CL_INVALID_BUFFER_SIZE: return "invalid buffer size";
+    case CL_INVALID_MIP_LEVEL: return "invalid mip level";
+
+    #if defined(cl_khr_gl_sharing) && (cl_khr_gl_sharing >= 1)
+        case CL_INVALID_GL_SHAREGROUP_REFERENCE_KHR: return "invalid gl sharegroup reference number";
+    #endif
+
+    #ifdef CL_VERSION_1_1
+        case CL_MISALIGNED_SUB_BUFFER_OFFSET: return "misaligned sub-buffer offset";
+        case CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST: return "exec status error for events in wait list";
+        case CL_INVALID_GLOBAL_WORK_SIZE: return "invalid global work size";
+    #endif
+
+    default: return std::string("invalid/unknown error code (") + std::to_string(ev) + ")";
+    }
+}
+
+adl_END_ROOT_MODULE
 
 #endif //adl__cl__hpp__

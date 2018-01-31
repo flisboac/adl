@@ -28,14 +28,14 @@ public:
     context& operator=(context &&) noexcept = default;
     ~context();
 
-    explicit context(::cl_context context);
-    explicit context(::cl::Context& context);
+    explicit context(::cl_context cl_ctx);
+    explicit context(::cl::Context& cl_ctx);
 
     static context make();
-    static context make(adl::cl::errc& err);
+    static context make(std::error_code& err);
 
 private:
-    ::cl_context context_ = nullptr;
+    ::cl_context cl_context_ = nullptr;
 };
 
 } // namespace cl
@@ -50,20 +50,20 @@ adl_BEGIN_MAIN_MODULE(oct)
 
 namespace cl {
 
-adl_IMPL context::context(::cl_context context) : context_(context) { clRetainContext(context_); }
-adl_IMPL context::context(::cl::Context& context) : context(context.get()) {}
-adl_IMPL context::~context() { clReleaseContext(context_); }
+adl_IMPL context::context(::cl_context cl_ctx) : cl_context_(cl_ctx) { clRetainContext(cl_context_); }
+adl_IMPL context::context(::cl::Context& cl_ctx) : context(cl_ctx.get()) {}
+adl_IMPL context::~context() { clReleaseContext(cl_context_); }
 
 adl_IMPL context context::make() {
-    adl::cl::errc err;
+    std::error_code err;
     context ctx = make(err);
     if (!err) {
-        throw std::system_error(err);
+        throw adl_MAKE_CL_ERROR_(err);
     }
     return ctx;
 }
 
-adl_IMPL context context::make(adl::cl::errc& err) {
+adl_IMPL context context::make(std::error_code& err) {
     cl_platform_id platform_id = nullptr;
     cl_device_id device_id = nullptr;
     cl_context cl_ctx = nullptr;
@@ -78,7 +78,7 @@ adl_IMPL context context::make(adl::cl::errc& err) {
         cl_ctx = clCreateContext(nullptr, 1, &device_id, nullptr, nullptr, &ret);
     }
 
-    err = static_cast<adl::cl::errc>(ret);
+    err = static_cast<adl::cl_errc>(ret);
 
     if (CL_SUCCESS != ret) {
         context ctx(cl_ctx);

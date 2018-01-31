@@ -50,6 +50,11 @@
     #define adl_CONFIG_IS_STRIPPED_BINARY !adl_CONFIG_IS_DEBUG
 #endif
 
+#if defined(adl_USE_CL_ERROR_CLASS)
+    #define adl_CONFIG_USE_CL_ERROR_CLASS 1
+#else
+    #define adl_CONFIG_USE_CL_ERROR_CLASS 0
+#endif
 
 //
 // [[ FEATURE DETECTION ]]
