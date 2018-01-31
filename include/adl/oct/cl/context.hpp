@@ -23,6 +23,8 @@ class adl_CLASS context {
 private:
     // (privately) Default-constructible
     context() = default;
+    explicit context(::cl_context cl_ctx);
+    explicit context(::cl::Context const& cl_ctx);
 
 public:
     // Non-copyable
@@ -34,11 +36,10 @@ public:
     // Needs custom destructor
     ~context();
 
-    explicit context(::cl_context cl_ctx);
-    explicit context(::cl::Context& cl_ctx);
-
     static context && make();
-    static context && make(std::error_code& err);
+    static context && make(std::error_code& err) noexcept;
+    static context && make(::cl_context ctx);
+    static context && make(::cl::Context const& ctx);
 
 private:
     ::cl_context cl_context_ = nullptr;
@@ -60,7 +61,7 @@ adl_IMPL context::context(::cl_context cl_ctx) : cl_context_(cl_ctx) {
     clRetainContext(cl_context_);
 }
 
-adl_IMPL context::context(::cl::Context& cl_ctx) : context(cl_ctx.get()) {}
+adl_IMPL context::context(::cl::Context const& cl_ctx) : context(cl_ctx.get()) {}
 
 adl_IMPL context::context(context && ctx) noexcept : context(ctx.cl_context_) {}
 
@@ -85,7 +86,7 @@ adl_IMPL context && context::make() {
     return std::move(ctx);
 }
 
-adl_IMPL context && context::make(std::error_code& err) {
+adl_IMPL context && context::make(std::error_code& err) noexcept {
     cl_platform_id platform_id = nullptr;
     cl_device_id device_id = nullptr;
     cl_context cl_ctx = nullptr;
@@ -110,6 +111,14 @@ adl_IMPL context && context::make(std::error_code& err) {
         err = cl_errc::error;
         return {};
     }
+}
+
+adl_IMPL context && context::make(::cl_context ctx) {
+    return context(ctx);
+}
+
+adl_IMPL context && context::make(::cl::Context const& ctx) {
+    return context(ctx);
 }
 
 } // namespace cl
