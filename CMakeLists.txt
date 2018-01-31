@@ -30,6 +30,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "MinSizeRel")
     add_definitions(-Dadl_STRIPPED)
 endif()
 
+find_library(OPENCL OpenCL)
 
 #
 # [ TARGETS ]
@@ -231,7 +232,7 @@ add_executable(${test}
     # unit:adl/oct/cpu
     "${test_dir_unit}/adl/oct/cl/context.unit.cpp"
 )
-target_link_libraries(${test} ${test_iapi})
+target_link_libraries(${test} ${test_iapi} ${OPENCL})
 enable_testing()
 add_test(NAME ${test} COMMAND "./${test}")
 

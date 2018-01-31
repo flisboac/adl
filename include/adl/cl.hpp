@@ -39,6 +39,7 @@ adl_BEGIN_ROOT_MODULE
 
 enum class cl_errc {
 
+    error = INT16_MIN,
     success = CL_SUCCESS,
     device_not_found = CL_DEVICE_NOT_FOUND,
     device_not_available = CL_DEVICE_NOT_AVAILABLE,
