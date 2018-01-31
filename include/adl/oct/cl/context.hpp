@@ -19,14 +19,20 @@ adl_BEGIN_MAIN_MODULE(oct)
 
 namespace cl {
 
+class context_private_tag_ {};
+
 class adl_CLASS context {
 private:
     // (privately) Default-constructible
     context() = default;
-    explicit context(::cl_context cl_ctx);
-    explicit context(::cl::Context const& cl_ctx);
 
 public:
+    // Doesn't work. Needs to have public constructors.
+    // PLEASE, USE context::make instead of the constructors! :(
+    //friend class std::shared_ptr<context>;
+    explicit context(context_private_tag_, ::cl_context cl_ctx);
+    explicit context(context_private_tag_, ::cl::Context const& cl_ctx);
+
     // Non-copyable
     context(context const&) = delete;
     context& operator=(context const&) = delete;
@@ -36,10 +42,10 @@ public:
     // Needs custom destructor
     ~context();
 
-    static context && make();
-    static context && make(std::error_code& err) noexcept;
-    static context && make(::cl_context ctx);
-    static context && make(::cl::Context const& ctx);
+    static std::shared_ptr<context> make();
+    static std::shared_ptr<context> make(std::error_code& err) noexcept;
+    static std::shared_ptr<context> make(::cl_context ctx);
+    static std::shared_ptr<context> make(::cl::Context const& ctx);
 
 private:
     ::cl_context cl_context_ = nullptr;
@@ -57,13 +63,13 @@ adl_BEGIN_MAIN_MODULE(oct)
 
 namespace cl {
 
-adl_IMPL context::context(::cl_context cl_ctx) : cl_context_(cl_ctx) {
+adl_IMPL context::context(context_private_tag_, ::cl_context cl_ctx) : cl_context_(cl_ctx) {
     clRetainContext(cl_context_);
 }
 
-adl_IMPL context::context(::cl::Context const& cl_ctx) : context(cl_ctx.get()) {}
+adl_IMPL context::context(context_private_tag_ t, ::cl::Context const& cl_ctx) : context(t, cl_ctx.get()) {}
 
-adl_IMPL context::context(context && ctx) noexcept : context(ctx.cl_context_) {}
+adl_IMPL context::context(context && ctx) noexcept : context(context_private_tag_(), ctx.cl_context_) {}
 
 adl_IMPL context& context::operator=(context && ctx) noexcept {
     clRetainContext(cl_context_);
@@ -77,16 +83,16 @@ adl_IMPL context::~context() {
     }
 }
 
-adl_IMPL context && context::make() {
+adl_IMPL std::shared_ptr<context> context::make() {
     std::error_code err;
-    context && ctx = make(err);
+    std::shared_ptr<context> && ctx = make(err);
     if (err) {
         throw adl_MAKE_CL_ERROR_(err);
     }
     return std::move(ctx);
 }
 
-adl_IMPL context && context::make(std::error_code& err) noexcept {
+adl_IMPL std::shared_ptr<context> context::make(std::error_code& err) noexcept {
     cl_platform_id platform_id = nullptr;
     cl_device_id device_id = nullptr;
     cl_context cl_ctx = nullptr;
@@ -102,10 +108,10 @@ adl_IMPL context && context::make(std::error_code& err) noexcept {
     }
 
     if (CL_SUCCESS == ret) {
-        context ctx(cl_ctx);
+        std::shared_ptr<context> ctx = std::make_shared<context>(context_private_tag_(), cl_ctx);
         clReleaseContext(cl_ctx);
         err = static_cast<adl::cl_errc>(ret);
-        return std::move(ctx);
+        return ctx;
 
     } else {
         err = cl_errc::error;
@@ -113,12 +119,12 @@ adl_IMPL context && context::make(std::error_code& err) noexcept {
     }
 }
 
-adl_IMPL context && context::make(::cl_context ctx) {
-    return context(ctx);
+adl_IMPL std::shared_ptr<context> context::make(::cl_context ctx) {
+    return std::make_shared<context>(context_private_tag_(), ctx);
 }
 
-adl_IMPL context && context::make(::cl::Context const& ctx) {
-    return context(ctx);
+adl_IMPL std::shared_ptr<context> context::make(::cl::Context const& ctx) {
+    return std::make_shared<context>(context_private_tag_(), ctx);
 }
 
 } // namespace cl

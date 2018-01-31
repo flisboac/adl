@@ -152,6 +152,7 @@ target_sources(${api} INTERFACE
     #adl/oct/CL
     "${api_dir_root}/adl/oct/cl.hpp"
     "${api_dir_root}/adl/oct/cl/context.hpp"
+    "${api_dir_root}/adl/oct/cl/queue.hpp"
 
     #adl/oct/cl/operators
     )
@@ -229,8 +230,9 @@ add_executable(${test}
     "${test_dir_unit}/adl/oct/cpu/closure_oper.unit.cpp"
     "${test_dir_unit}/adl/oct/cpu/add_cons_close_oper.unit.cpp"
 
-    # unit:adl/oct/cpu
+    # unit:adl/oct/cl
     "${test_dir_unit}/adl/oct/cl/context.unit.cpp"
+    "${test_dir_unit}/adl/oct/cl/queue.unit.cpp"
 )
 target_link_libraries(${test} ${test_iapi} ${OPENCL})
 enable_testing()
