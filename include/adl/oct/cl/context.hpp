@@ -56,9 +56,9 @@ public:
     ::cl_context underlying_context() const noexcept;
 
     template <template <typename> class QueueType, typename... Args>
-    shared_queue_return_type_<thisclass_, QueueType> make_queue(Args... args) {
-        using queue_type_ = shared_queue_return_type_<thisclass_, QueueType>;
-        return std::make_shared<queue_type_>(queue_private_tag_(), *this, std::forward(args)...);
+    shared_queue_make_t_<thisclass_, QueueType> make_queue(Args... args) {
+        using queue_type_ = shared_queue_make_t_<thisclass_, QueueType>;
+        return std::make_shared<queue_type_>(queue_private_tag_(), this->ptr(), std::forward(args)...);
     }
 
 private:
@@ -160,6 +160,7 @@ adl_IMPL ::cl_context context::underlying_context() const noexcept {
 adl_IMPL bool context::valid() const {
     return cl_context_ != nullptr;
 }
+
 
 } // namespace cl
 

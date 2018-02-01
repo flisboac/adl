@@ -28,6 +28,25 @@
 #   define adl_MAKE_CL_ERROR_(error_code__) ::adl::cl_error(error_code__)
 #endif
 
+#define adl_CL_MEMBER_FN_P_(object, ptrToMember) ((object).*(ptrToMember))
+
+#define adl_CL_EXEC_BODY_V_(method, ...) \
+    do {\
+        std::error_code code; \
+        method(code, __VA_ARGS__); \
+        if (code) { \
+            throw adl_MAKE_CL_ERROR_(code); \
+        } \
+    } while (0)
+
+#define adl_CL_EXEC_BODY_(method, ...) \
+        std::error_code code; \
+        auto ret = method(code, __VA_ARGS__); \
+        if (code) { \
+            throw adl_MAKE_CL_ERROR_(code); \
+        } \
+        return ret; \
+
 #include "CL/cl2.hpp"
 
 #include "adl.cfg.hpp"
@@ -119,6 +138,49 @@ public:
     const char* name() const noexcept override;
     std::string message(int ev) const override;
 };
+
+template <class F, class... A>
+struct return_type;
+
+template <class R, class... A>
+struct return_type<R (*)(A...)>
+{
+    typedef R type;
+};
+
+template <class R, class... A>
+struct return_type<R (*)(A..., ...)> {
+    typedef R type;
+};
+
+template <typename R, typename... Args> using return_type_t = typename return_type<R, Args...>::type;
+template <typename R, typename... Args> using nonvoid_return_type_t = std::enable_if_t<!std::is_same<void, return_type_t<R, Args...>>::value, return_type_t<R, Args...>>;
+template <typename R, typename... Args> using void_return_type_t = std::enable_if_t<std::is_same<void, return_type_t<R, Args...>>::value, void>;
+
+template <typename ObjectType,
+    typename FunctionType,
+    typename... Args>
+void_return_type_t<FunctionType, Args...>
+cl_instance_call(ObjectType const& obj, FunctionType fn, Args... args) noexcept(false) {
+    std::error_code code;
+    adl_CL_MEMBER_FN_P_(obj, fn)(code, args...);
+    if (code) {
+        throw adl_MAKE_CL_ERROR_(code);
+    }
+}
+
+template <typename ObjectType,
+        typename FunctionType,
+        typename... Args>
+nonvoid_return_type_t<FunctionType, Args...>
+cl_instance_call(ObjectType const& obj, FunctionType fn, Args... args) noexcept(false) {
+    std::error_code code;
+    auto ret = adl_CL_MEMBER_FN_P_(obj, fn)(code, args...);
+    if (code) {
+        throw adl_MAKE_CL_ERROR_(code);
+    }
+    return ret;
+}
 
 adl_END_ROOT_MODULE
 

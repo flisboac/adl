@@ -30,11 +30,26 @@ template <typename ContextType,
         typename ConstantType,
         typename ConstantLimits = constant_limits<ConstantType>,
         typename Allocator = std::allocator<ConstantType>>
-using shared_dbm_return_type_ = std::shared_ptr<DbmClass<ContextType, ConstantType, ConstantLimits, Allocator>>;
+using shared_dbm_make_t_ = std::shared_ptr<DbmClass<ContextType, ConstantType, ConstantLimits, Allocator>>;
 
 template <typename ContextType,
-        template <typename> class QueueClass>
-using shared_queue_return_type_ = std::shared_ptr<QueueClass<ContextType>>;
+        template <typename> class QueueClass,
+        typename... Args>
+using queue_make_t_ = std::enable_if_t<
+        std::is_constructible<QueueClass<ContextType>, queue_private_tag_, std::shared_ptr<ContextType>, Args...>::value,
+        std::shared_ptr<QueueClass<ContextType>>>;
+
+template <typename ContextType,
+        template <typename> class QueueClass,
+        typename... Args>
+using shared_queue_make_t_ = std::enable_if_t<
+        std::is_constructible<QueueClass<ContextType>, queue_private_tag_, std::shared_ptr<ContextType>, Args...>::value,
+        std::shared_ptr<QueueClass<ContextType>>>;
+
+template <typename ContextType,
+        template <typename> class QueueClass,
+        typename... Args>
+using shared_queue_const_make_t_ = shared_queue_make_t_<ContextType const, QueueClass, Args...>;
 
 template <typename SubClass>
 class context_base_ {
