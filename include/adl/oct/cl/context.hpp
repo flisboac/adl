@@ -20,7 +20,7 @@ adl_BEGIN_MAIN_MODULE(oct)
 
 namespace cl {
 
-class adl_CLASS context {
+class adl_CLASS context : public std::enable_shared_from_this<context> {
 private:
     using thisclass_ = context;
 
@@ -47,6 +47,13 @@ public:
     static std::shared_ptr<context> make(std::error_code& err) noexcept;
     static std::shared_ptr<context> make(::cl_context ctx);
     static std::shared_ptr<context> make(::cl::Context const& ctx);
+
+    std::shared_ptr<context> ptr();
+    std::shared_ptr<context const> ptr() const;
+    std::shared_ptr<context const> const_ptr() const;
+
+    bool valid() const;
+    ::cl_context underlying_context() const noexcept;
 
     template <template <typename> class QueueType, typename... Args>
     shared_queue_return_type_<thisclass_, QueueType> make_queue(Args... args) {
@@ -132,6 +139,26 @@ adl_IMPL std::shared_ptr<context> context::make(::cl_context ctx) {
 
 adl_IMPL std::shared_ptr<context> context::make(::cl::Context const& ctx) {
     return std::make_shared<context>(context_private_tag_(), ctx);
+}
+
+adl_IMPL std::shared_ptr<context> context::ptr() {
+    return this->shared_from_this();
+}
+
+adl_IMPL std::shared_ptr<context const> context::ptr() const {
+    return this->shared_from_this();
+}
+
+adl_IMPL std::shared_ptr<context const> context::const_ptr() const {
+    return this->shared_from_this();
+}
+
+adl_IMPL ::cl_context context::underlying_context() const noexcept {
+    return cl_context_;
+}
+
+adl_IMPL bool context::valid() const {
+    return cl_context_ != nullptr;
 }
 
 } // namespace cl

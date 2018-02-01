@@ -234,7 +234,12 @@ add_executable(${test}
     "${test_dir_unit}/adl/oct/cl/context.unit.cpp"
     "${test_dir_unit}/adl/oct/cl/queue.unit.cpp"
 )
+
 target_link_libraries(${test} ${test_iapi} ${OPENCL})
+if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANGCXX)
+    target_link_libraries(${test} -lpthread)
+endif()
+
 enable_testing()
 add_test(NAME ${test} COMMAND "./${test}")
 
