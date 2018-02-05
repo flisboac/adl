@@ -5,6 +5,8 @@
 #ifndef adl__cl__hpp__
 #define adl__cl__hpp__
 
+#define CL_USE_DEPRECATED_OPENCL_1_2_APIS
+
 #include "adl.cfg.hpp"
 
 #include "CL/cl.h"

@@ -35,21 +35,16 @@ using shared_dbm_make_t_ = std::shared_ptr<DbmClass<ContextType, ConstantType, C
 template <typename ContextType,
         template <typename> class QueueClass,
         typename... Args>
-using queue_make_t_ = std::enable_if_t<
-        std::is_constructible<QueueClass<ContextType>, queue_private_tag_, std::shared_ptr<ContextType>, Args...>::value,
-        std::shared_ptr<QueueClass<ContextType>>>;
+using make_queue_t_ = QueueClass<ContextType>;
 
 template <typename ContextType,
         template <typename> class QueueClass,
         typename... Args>
-using shared_queue_make_t_ = std::enable_if_t<
+using make_shared_queue_t_ = std::enable_if_t<
         std::is_constructible<QueueClass<ContextType>, queue_private_tag_, std::shared_ptr<ContextType>, Args...>::value,
-        std::shared_ptr<QueueClass<ContextType>>>;
+        std::shared_ptr<make_queue_t_<ContextType, QueueClass, Args...>>
+    >;
 
-template <typename ContextType,
-        template <typename> class QueueClass,
-        typename... Args>
-using shared_queue_const_make_t_ = shared_queue_make_t_<ContextType const, QueueClass, Args...>;
 
 template <typename SubClass>
 class context_base_ {

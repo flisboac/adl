@@ -55,9 +55,9 @@ public:
     bool valid() const;
     ::cl_context underlying_context() const noexcept;
 
-    template <template <typename> class QueueType, typename... Args>
-    shared_queue_make_t_<thisclass_, QueueType> make_queue(Args... args) {
-        using queue_type_ = shared_queue_make_t_<thisclass_, QueueType>;
+    template <template <typename> class QueueClass, typename... Args>
+    make_shared_queue_t_<thisclass_, QueueClass> make_queue(Args... args) {
+        using queue_type_ = make_queue_t_<thisclass_, QueueClass, Args...>;
         return std::make_shared<queue_type_>(queue_private_tag_(), this->ptr(), std::forward(args)...);
     }
 
