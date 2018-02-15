@@ -81,7 +81,11 @@ target_sources(${api} INTERFACE
 
     # adl/stti
     "${api_dir_root}/adl/stti.hpp"
+    "${api_dir_root}/adl/stti.fwd.hpp"
     "${api_dir_root}/adl/stti/has_member_type.hpp"
+    "${api_dir_root}/adl/stti/has_template_member_type.hpp"
+    "${api_dir_root}/adl/stti/has_static_member_function.hpp"
+    "${api_dir_root}/adl/stti/has_member_function.hpp"
 
     # adl/cm
     "${api_dir_root}/adl/cm.fwd.hpp"
@@ -223,6 +227,9 @@ add_executable(${test}
     # unit:adl/stti
     "${test_dir_unit}/adl/stti/stti.unit.hpp"
     "${test_dir_unit}/adl/stti/has_member_type.unit.cpp"
+    "${test_dir_unit}/adl/stti/has_template_member_type.unit.cpp"
+    "${test_dir_unit}/adl/stti/has_static_member_function.unit.cpp"
+    "${test_dir_unit}/adl/stti/has_member_function.unit.cpp"
 
     # unit:adl/oct
     "${test_dir_unit}/adl/oct/constant.unit.cpp"
