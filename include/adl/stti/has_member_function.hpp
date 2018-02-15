@@ -14,6 +14,7 @@
 #define adl_NCREATE_HAS_MEMBER_FUNCTION(detector_name, member_name) adl_NDECL_HAS_MEMBER_FUNCTION(detector_name, member_name); adl_NDEFN_HAS_MEMBER_FUNCTION(detector_name, member_name)
 #define adl_NDECL_HAS_MEMBER_FUNCTION(detector_name, member_name) \
     template <typename T, typename... FArgs> struct detector_name; \
+    template <typename T, typename... FArgs> using detector_name ## _alias_ = detector_name<T, FArgs...>; \
     template <typename T, typename... FArgs> using detector_name ## _t = std::enable_if_t<detector_name<T, FArgs...>::detected, typename detector_name<T, FArgs...>::type>
 #define adl_NDEFN_HAS_MEMBER_FUNCTION(detector_name, member_name) \
     template <typename T, typename... FArgs> struct detector_name { \
@@ -31,16 +32,25 @@
         }; \
         template <typename U> using make_nonesuch_ = ::adl::nonesuch; \
         template <typename U> using make_nonesuch_type_ = make_type_<U, make_nonesuch_>; \
-        template <typename U> make_type<U, make_member_type, ::adl::lang_element_kind::member_function> detect_(make_type<U, make_member_type>*); \
-        template <typename U> make_type<U, make_static_type, ::adl::lang_element_kind::static_member_function> detect_(make_type<U, make_static_type>*); \
-        template <typename U> make_nonesuch_type_<U> detect_(U*); \
+        template <typename U> static make_type<U, make_member_type, ::adl::lang_element_kind::member_function> detect_(make_type<U, make_member_type>*); \
+        template <typename U> static make_type<U, make_static_type, ::adl::lang_element_kind::static_member_function> detect_(make_type<U, make_static_type>*); \
+        template <typename U> static make_nonesuch_type_<U> detect_(U*); \
         using type_ = decltype(detect_<T>(nullptr)); \
     public: \
         constexpr static char const* const name = #member_name; \
+        template <typename U> using detect_type = typename decltype(detect_<U>(nullptr))::type; \
+        using enclosing_type = T; \
         using type = typename type_::type; \
         constexpr static bool const detected = !std::is_same<type, ::adl::nonesuch>::value; \
-        constexpr static ::adl::lang_element_kind const kind = type_::kind; \
-        template <typename U> using detect_type = typename decltype(detect_<U>(nullptr))::type; \
+        constexpr static ::adl::lang_element_kind const kind = ::adl::conditional_lang_elem_kind_v<detected, type_::kind>; \
+        template <typename O, typename U = T, typename None = ::adl::nonesuch> using select_type = ::adl::common_select_type< \
+            detector_name ## _alias_<U, FArgs...>::detected, typename detector_name ## _alias_<U, FArgs...>::type, \
+            detector_name ## _alias_<O, FArgs...>::detected, typename detector_name ## _alias_<O, FArgs...>::type, \
+            None>; \
+        template <typename O, typename U = T, typename Empty = empty_type> using extend_type = ::adl::common_extend_type< \
+            detector_name ## _alias_<U, FArgs...>::detected, typename detector_name ## _alias_<U, FArgs...>::type, \
+            detector_name ## _alias_<O, FArgs...>::detected, typename detector_name ## _alias_<O, FArgs...>::type, \
+            Empty>; \
         template <typename U = T> constexpr static auto make_pointer() noexcept { return type_::make_pointer<U>(); } \
         template <typename U = T> using make_type = std::enable_if_t< \
             !std::is_same<detect_type<U>, ::adl::nonesuch>::value, \

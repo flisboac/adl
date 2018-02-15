@@ -11,6 +11,24 @@
 adl_BEGIN_ROOT_MODULE
 
 template <typename... Args> using nonesuch_t = nonesuch;
+class empty_such {};
+
+template <bool DetectedOnEnclosing, typename EnclosingType, bool DetectedOnFallback, typename FallbackType, typename NoneSuchType = nonesuch>
+using common_select_type = typename std::conditional<DetectedOnEnclosing,
+    EnclosingType,
+    typename std::conditional<DetectedOnFallback,
+        FallbackType,
+        NoneSuchType
+    >::type
+>::type;
+
+// Used when the enclosing class is somehow part of the inheritance tree from which we want to make sure a specific
+// member is present.
+template <bool DetectedOnEnclosing, typename EnclosingType, bool DetectedOnFallback, typename FallbackType, typename EmptyType = empty_such>
+using common_extend_type = typename std::conditional<DetectedOnEnclosing,
+    EmptyType,
+    std::enable_if_t<DetectedOnFallback, FallbackType>
+>::type;
 
 enum class lang_element_flag {
     type = 0x1,
@@ -40,6 +58,14 @@ enum class lang_element_kind {
     member_data = int(lang_element_flag::member) | int(lang_element_flag::data)
 };
 
+template <bool Found, lang_element_kind Kind, lang_element_kind FallbackKind = lang_element_kind::none> struct conditional_lang_elem_kind {
+    constexpr static auto const kind = Kind;
+};
+template <lang_element_kind Kind, lang_element_kind FallbackKind> struct conditional_lang_elem_kind<false, Kind, FallbackKind> {
+    constexpr static auto const kind = FallbackKind;
+};
+template <bool Found, lang_element_kind Kind, lang_element_kind FallbackKind = lang_element_kind::none>
+lang_element_kind const conditional_lang_elem_kind_v = conditional_lang_elem_kind<Found, Kind, FallbackKind>::kind;
 
 adl_END_ROOT_MODULE
 

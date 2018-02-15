@@ -14,19 +14,30 @@
 #define adl_NCREATE_HAS_TEMPLATE_MEMBER_TYPE(detector_name, member_name) adl_NDECL_HAS_TEMPLATE_MEMBER_TYPE(detector_name, member_name); adl_NDEFN_HAS_TEMPLATE_MEMBER_TYPE(detector_name, member_name)
 #define adl_NDECL_HAS_TEMPLATE_MEMBER_TYPE(detector_name, member_name) \
     template <typename T, template... TArgs> struct detector_name; \
+    template <typename T, typename... TArgs> using detector_name ## _alias_ = detector_name<T, TArgs...>; \
     template <typename T, template... TArgs> using detector_name ## _t = std::enable_if_t<detector_name<T>::detected, typename detector_name<T>::type>
 #define adl_NDEFN_HAS_TEMPLATE_MEMBER_TYPE(detector_name, member_name) \
     template <typename T, template... TArgs> struct detector_name { \
+        class empty_type {}; \
         template <typename U> using make_type = typename U::template member_name<TArgs...>; \
     private: \
-        template <typename U> make_type<U> detect_(make_type<U>*); \
-        template <typename U> ::adl::nonesuch detect_(U*); \
+        template <typename U> static make_type<U> detect_(make_type<U>*); \
+        template <typename U> static ::adl::nonesuch detect_(U*); \
     public: \
         constexpr static char const* const name = #member_name; \
         template <typename U> using detect_type = decltype(detect_<U>(nullptr)); \
+        using enclosing_type = T; \
         using type = detect_type<T>; \
-        constexpr static lang_element_kind kind = lang_element_kind::template_member_type; \
         constexpr static bool const detected = !std::is_same<type, ::adl::nonesuch>::value; \
+        constexpr static lang_element_kind kind = ::adl::conditional_lang_elem_kind_v<detected, lang_element_kind::template_member_type>; \
+        template <typename O, typename U = T, typename None = ::adl::nonesuch> using select_type = ::adl::common_select_type< \
+            detector_name ## _alias_<U, TArgs...>::detected, typename detector_name ## _alias_<U, TArgs...>::type, \
+            detector_name ## _alias_<O, TArgs...>::detected, typename detector_name ## _alias_<O, TArgs...>::type, \
+            None>; \
+        template <typename O, typename U = T, typename Empty = empty_type> using extend_type = ::adl::common_extend_type< \
+            detector_name ## _alias_<U, TArgs...>::detected, typename detector_name ## _alias_<U, TArgs...>::type, \
+            detector_name ## _alias_<O, TArgs...>::detected, typename detector_name ## _alias_<O, TArgs...>::type, \
+            Empty>; \
     }
 
 #endif //adl__stti__has_template_member_type__hpp__

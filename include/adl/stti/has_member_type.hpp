@@ -14,19 +14,29 @@
 #define adl_NCREATE_HAS_MEMBER_TYPE(detector_name, member_name) adl_NDECL_HAS_MEMBER_TYPE(detector_name, member_name); adl_NDEFN_HAS_MEMBER_TYPE(detector_name, member_name)
 #define adl_NDECL_HAS_MEMBER_TYPE(detector_name, member_name) \
     template <typename T> struct detector_name; \
+    template <typename T> using detector_name ## _alias_ = detector_name<T>; \
     template <typename T> using detector_name ## _t = std::enable_if_t<detector_name<T>::detected, typename detector_name<T>::type>
 #define adl_NDEFN_HAS_MEMBER_TYPE(detector_name, member_name) \
     template <typename T> struct detector_name { \
         template <typename U = T> using make_type = typename U::member_name; \
     private: \
-        template <typename U> make_type<U> detect_(make_type<U>*); \
-        template <typename U> ::adl::nonesuch detect_(U*); \
+        template <typename U> static make_type<U> detect_(make_type<U>*); \
+        template <typename U> static ::adl::nonesuch detect_(U*); \
     public: \
         constexpr static char const* const name = #member_name; \
         template <typename U> using detect_type = decltype(detect_<U>(nullptr)); \
+        using enclosing_type = T; \
         using type = detect_type<T>; \
-        constexpr static lang_element_kind kind = lang_element_kind::member_type; \
         constexpr static bool const detected = !std::is_same<type, ::adl::nonesuch>::value; \
+        constexpr static lang_element_kind kind = ::adl::conditional_lang_elem_kind_v<detected, lang_element_kind::member_type>; \
+        template <typename O, typename U = T, typename None = ::adl::nonesuch> using select_type = ::adl::common_select_type< \
+            detector_name ## _alias_<U>::detected, typename detector_name ## _alias_<U>::type, \
+            detector_name ## _alias_<O>::detected, typename detector_name ## _alias_<O>::type, \
+            None>; \
+        template <typename O, typename U = T, typename Empty = empty_type> using extend_type = ::adl::common_extend_type< \
+            detector_name ## _alias_<U>::detected, typename detector_name ## _alias_<U>::type, \
+            detector_name ## _alias_<O>::detected, typename detector_name ## _alias_<O>::type, \
+            Empty>; \
     }
 
 #endif //adl__stti__has_member_type__hpp__
