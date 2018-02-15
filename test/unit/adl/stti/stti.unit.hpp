@@ -2,8 +2,8 @@
 /**
  * @file stti.unit.hpp
  */
-#ifndef adl__stti__stti__unit__hpp__
-#define adl__stti__stti__unit__hpp__
+#ifndef adl__stti__stti__unit__hpp__test__
+#define adl__stti__stti__unit__hpp__test__
 
 #include "adl_catch.hpp"
 #include "adl/assert.hpp"
@@ -322,4 +322,4 @@ constexpr detection_state test_functor(E* dummy, ...) {
 
 } // namespace stti_test
 
-#endif //adl__stti__stti__unit__hpp__
+#endif //adl__stti__stti__unit__hpp__test__

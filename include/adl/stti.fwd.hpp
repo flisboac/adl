@@ -8,6 +8,16 @@
 #include "adl.cfg.hpp"
 #include "adl/std/detected.hpp"
 
+#define adl_STTI_STRIP_PARENS_(...) __VA_ARGS__
+
+#define define_function( template_args , function_name , function_args ) \
+    template< adl_STTI_STRIP_PARENS_ template_args >                               \
+    struct function_name##_impl;                                         \
+                                                                         \
+    template< strip_parens template_args >                               \
+    using function_name = typename function_name##_impl                  \
+                                   < strip_parens function_args >::type  // end
+
 adl_BEGIN_ROOT_MODULE
 
 template <typename... Args> using nonesuch_t = nonesuch;
@@ -58,12 +68,7 @@ enum class lang_element_kind {
     member_data = int(lang_element_flag::member) | int(lang_element_flag::data)
 };
 
-template <bool Found, lang_element_kind Kind, lang_element_kind FallbackKind = lang_element_kind::none> struct conditional_lang_elem_kind {
-    constexpr static auto const kind = Kind;
-};
-template <lang_element_kind Kind, lang_element_kind FallbackKind> struct conditional_lang_elem_kind<false, Kind, FallbackKind> {
-    constexpr static auto const kind = FallbackKind;
-};
+template <bool Found, lang_element_kind Kind, lang_element_kind FallbackKind = lang_element_kind::none> struct conditional_lang_elem_kind;
 template <bool Found, lang_element_kind Kind, lang_element_kind FallbackKind = lang_element_kind::none>
 lang_element_kind const conditional_lang_elem_kind_v = conditional_lang_elem_kind<Found, Kind, FallbackKind>::kind;
 

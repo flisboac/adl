@@ -82,6 +82,7 @@ target_sources(${api} INTERFACE
     # adl/stti
     "${api_dir_root}/adl/stti.hpp"
     "${api_dir_root}/adl/stti.fwd.hpp"
+    "${api_dir_root}/adl/stti/base.hpp"
     "${api_dir_root}/adl/stti/has_member_type.hpp"
     "${api_dir_root}/adl/stti/has_template_member_type.hpp"
     "${api_dir_root}/adl/stti/has_static_member_function.hpp"
