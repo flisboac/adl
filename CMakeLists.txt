@@ -76,6 +76,8 @@ target_sources(${api} INTERFACE
     "${api_dir_root}/adl/std/any.hpp"
     "${api_dir_root}/adl/std/impl/any.hpp"
     "${api_dir_root}/adl/std/string_view.hpp"
+    "${api_dir_root}/adl/std/void_t.hpp"
+    "${api_dir_root}/adl/std/detected.hpp"
 
     # adl/stti
     "${api_dir_root}/adl/stti.hpp"
