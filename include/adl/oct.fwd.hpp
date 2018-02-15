@@ -9,7 +9,7 @@
 #include <limits>
 
 #include "adl.cfg.hpp"
-#include "adl/cl.hpp"
+#include "adl/opencl.fwd.hpp"
 
 
 adl_BEGIN_MAIN_MODULE(oct)

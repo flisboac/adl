@@ -13,7 +13,7 @@
 #include "adl/std/string_view.hpp"
 
 // OpenCL polyfills
-#include "adl/cl.hpp"
+#include "adl/opencl.hpp"
 
 // Utility components/modules
 #include "adl/config.hpp"

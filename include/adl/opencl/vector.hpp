@@ -3,9 +3,7 @@
 /*
  * @file vector.hpp
  */
+#ifndef adl__opencl__vector__hpp__
+#define adl__opencl__vector__hpp__
 
-
-#ifndef ADL_VECTOR_HPP
-#define ADL_VECTOR_HPP
-
-#endif // ADL_VECTOR_HPP
+#endif // adl__opencl__vector__hpp__

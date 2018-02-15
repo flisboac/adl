@@ -4,8 +4,7 @@
  * @file scheduler.hpp
  */
 
+#ifndef adl__opencl__scheduler__hpp__
+#define adl__opencl__scheduler__hpp__
 
-#ifndef ADL_SCHEDULER_HPP
-#define ADL_SCHEDULER_HPP
-
-#endif // ADL_SCHEDULER_HPP
+#endif // adl__opencl__scheduler__hpp__

@@ -9,8 +9,8 @@
 #include <type_traits>
 
 #include "adl.cfg.hpp"
-#include "adl/cl.hpp"
 #include "adl/oct.fwd.hpp"
+#include "adl/opencl/error.hpp"
 
 #include "adl/oct/cl/context.hpp"
 
@@ -99,7 +99,7 @@ inline queue_cl1<ContextType>::queue_cl1(
     std::error_code code;
     this->initialize_(code, properties);
     if (code) {
-        throw adl_CL_ERROR(code);
+        throw adl_MAKE_OPENCL_ERROR_(code);
     }
 }
 
@@ -123,7 +123,6 @@ inline queue_cl1<ContextType>::queue_cl1(
 template <typename ContextType>
 void queue_cl1<ContextType>::initialize_(std::error_code& code, ::cl_command_queue_properties properties) {
     ::cl_context cl_context = context_->underlying_context();
-    clCreateCommandQueue
 }
 
 template <typename ContextType>
@@ -184,7 +183,7 @@ inline bool queue_cl1<ContextType>::has_underlying_property(
 
 template <typename ContextType>
 inline ::cl_command_queue_properties queue_cl1<ContextType>::underlying_properties() const {
-    return cl_instance_call(*this, (*this).*underlying_properties);
+    adl_CL_EXEC_BODY0_(this->underlying_properties);
 }
 
 template <typename ContextType>

@@ -4,8 +4,7 @@
  * @file backend.hpp
  */
 
+#ifndef adl__opencl__backend__hpp__
+#define adl__opencl__backend__hpp__
 
-#ifndef ADL_BACKEND_HPP
-#define ADL_BACKEND_HPP
-
-#endif // ADL_BACKEND_HPP
+#endif // adl__opencl__backend__hpp__

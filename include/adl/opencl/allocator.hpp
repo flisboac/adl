@@ -1,9 +1,8 @@
 // $flavio.lisboa @ 2018-02-05.
 //
 /*
- * @file memory.hpp
+ * @file allocator.hpp
  */
-
 
 #ifndef adl__opencl__allocator__hpp__
 #define adl__opencl__allocator__hpp__

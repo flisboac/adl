@@ -77,8 +77,24 @@ target_sources(${api} INTERFACE
     "${api_dir_root}/adl/std/impl/any.hpp"
     "${api_dir_root}/adl/std/string_view.hpp"
 
-    # adl/cl
-    "${api_dir_root}/adl/cl.hpp"
+    # adl/stti
+    "${api_dir_root}/adl/stti.hpp"
+    "${api_dir_root}/adl/stti/has_member_type.hpp"
+
+    # adl/cm
+    "${api_dir_root}/adl/cm.fwd.hpp"
+    "${api_dir_root}/adl/cm.hpp"
+
+    # adl/opencl
+    "${api_dir_root}/adl/opencl.fwd.hpp"
+    "${api_dir_root}/adl/opencl.hpp"
+    "${api_dir_root}/adl/opencl/impl/cl_.hpp"
+    "${api_dir_root}/adl/opencl/error.hpp"
+    "${api_dir_root}/adl/opencl/backend.hpp"
+    "${api_dir_root}/adl/opencl/allocator.hpp"
+    "${api_dir_root}/adl/opencl/vector.hpp"
+    "${api_dir_root}/adl/opencl/scheduler.hpp"
+    "${api_dir_root}/adl/opencl/task_template.hpp"
 
     # adl/oct
     "${api_dir_root}/adl/oct.hpp"
@@ -201,6 +217,10 @@ add_executable(${test}
     "${test_dir_unit}/adl/char_helper.unit.cpp"
     "${test_dir_unit}/adl/std/string_view.unit.cpp"
     "${test_dir_unit}/adl/timer.unit.cpp"
+
+    # unit:adl/stti
+    "${test_dir_unit}/adl/stti/stti.unit.hpp"
+    "${test_dir_unit}/adl/stti/has_member_type.unit.cpp"
 
     # unit:adl/oct
     "${test_dir_unit}/adl/oct/constant.unit.cpp"

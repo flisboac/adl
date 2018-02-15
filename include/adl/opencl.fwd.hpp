@@ -8,7 +8,8 @@
 #define adl__ocl__fwd__hpp__
 
 #include "adl.cfg.hpp"
-#include "adl/ocl/impl/cl_.hpp"
+#include "adl/cm.fwd.hpp"
+#include "adl/opencl/impl/cl_.hpp"
 
 adl_BEGIN_ROOT_MODULE
 
@@ -133,8 +134,8 @@ namespace svm_allocator_traits {
     template <typename TraitType = null> class fine;
 }
 
-template <typename ConstantType, typename Traits = allocator_traits::read_write> class allocator;
-template <typename ConstantType, typename Traits = svm_allocator_traits::read_write> class svm_allocator;
+template <typename ConstantType, typename Traits = allocator_traits::read_write<>> class allocator;
+template <typename ConstantType, typename Traits = svm_allocator_traits::read_write<>> class svm_allocator;
 
 
 //

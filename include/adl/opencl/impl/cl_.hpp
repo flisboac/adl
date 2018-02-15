@@ -4,8 +4,8 @@
  * @file cl.hpp
  */
 
-#ifndef adl__opencl__impl__OPENCL__hpp__
-#define adl__opencl__impl__OPENCL__hpp__
+#ifndef adl__opencl__impl__cl___hpp__
+#define adl__opencl__impl__cl___hpp__
 
 #ifndef CL_USE_DEPRECATED_OPENCL_1_2_APIS
 #   define CL_USE_DEPRECATED_OPENCL_1_2_APIS
@@ -31,7 +31,7 @@
 #   define adl_MAKE_OPENCL_ERROR_(error_code__) ::cl::Error(error_code__.value(), error_code__.message())
 #else
 #   define adl_OPENCL_ERROR ::adl::cl_error
-#   define adl_MAKE_OPENCL_ERROR_(error_code__) ::adl::cl_error(error_code__)
+#   define adl_MAKE_OPENCL_ERROR_(error_code__) ::adl::opencl::error(error_code__)
 #endif
 
 #define adl_OPENCL_FN_BODY_V_(method, ...) \
@@ -52,4 +52,4 @@
 #include "CL/cl.h"
 #include "CL/cl2.hpp"
 
-#endif // adl__opencl__impl__OPENCL__hpp__
+#endif // adl__opencl__impl__cl___hpp__

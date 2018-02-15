@@ -10,7 +10,10 @@
 #include <type_traits>
 
 #include "adl.cfg.hpp"
+
 #include "adl/oct.fwd.hpp"
+#include "adl/opencl.fwd.hpp"
+#include "adl/opencl/error.hpp"
 #include "adl/oct/context/context_base_.hpp"
 
 /*
@@ -101,7 +104,7 @@ adl_IMPL std::shared_ptr<context> context::make() {
     std::error_code err;
     std::shared_ptr<context> && ctx = make(err);
     if (err) {
-        throw adl_MAKE_CL_ERROR_(err);
+        throw adl_MAKE_OPENCL_ERROR_(err);
     }
     return std::move(ctx);
 }
@@ -124,11 +127,11 @@ adl_IMPL std::shared_ptr<context> context::make(std::error_code& err) noexcept {
     if (CL_SUCCESS == ret) {
         std::shared_ptr<context> ctx = std::make_shared<context>(context_private_tag_(), cl_ctx);
         clReleaseContext(cl_ctx);
-        err = static_cast<adl::cl_errc>(ret);
+        err = static_cast<adl::opencl::errc>(ret);
         return ctx;
 
     } else {
-        err = cl_errc::error;
+        err = opencl::errc::error;
         return {};
     }
 }

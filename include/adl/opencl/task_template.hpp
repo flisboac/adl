@@ -4,8 +4,7 @@
  * @file task_template.hpp
  */
 
+#ifndef adl__opencl__task_template__hpp__
+#define adl__opencl__task_template__hpp__
 
-#ifndef ADL_TASK_TEMPLATE_HPP
-#define ADL_TASK_TEMPLATE_HPP
-
-#endif // ADL_TASK_TEMPLATE_HPP
+#endif // adl__opencl__task_template__hpp__
