@@ -26,16 +26,20 @@
     private: \
         template <typename U, template <typename> class MT, ::adl::lang_element_kind Kind = ::adl::lang_element_kind::none> \
         struct make_type_ { \
-            using type = MT<U>; \
+            using type = U; \
             constexpr static ::adl::lang_element_kind const kind = Kind; \
             template <typename V> constexpr static MT<V> make_pointer() noexcept { return &V::member_name; } \
         }; \
         template <typename U> using make_nonesuch_ = ::adl::nonesuch; \
-        template <typename U> using make_nonesuch_type_ = make_type_<U, make_nonesuch_>; \
-        template <typename U> static make_type_<U, make_member_type, ::adl::lang_element_kind::member_function> detect_(make_type_<U, make_member_type>*); \
-        template <typename U> static make_type_<U, make_static_type, ::adl::lang_element_kind::static_member_function> detect_(make_type_<U, make_static_type>*); \
-        template <typename U> static make_nonesuch_type_<U> detect_(U*); \
-        using type_ = decltype(detect_<T>(nullptr)); \
+        template <typename U> using make_nonesuch_type_ = make_type_<::adl::nonesuch, make_nonesuch_>; \
+        template <typename U, typename... UArgs> \
+            static make_type_<make_member_type<U>, make_member_type, ::adl::lang_element_kind::member_function> \
+            detect_(decltype(std::declval<U>().member_name(std::declval<UArgs>()...)) (U::*)(UArgs...)); \
+        template <typename U, typename... UArgs> \
+            static make_type_<make_static_type<U>, make_static_type, ::adl::lang_element_kind::static_member_function> \
+            detect_(make_static_type<U>*); \
+        template <typename U, typename... UArgs> static make_nonesuch_type_<U> detect_(U*); \
+        using type_ = decltype(detect_<T, FArgs...>(nullptr)); \
     public: \
         constexpr static char const* const name = #member_name; \
         template <typename U> using detect_type = typename decltype(detector_name::detect_<U>(nullptr))::type; \

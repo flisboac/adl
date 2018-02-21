@@ -1,5 +1,7 @@
 // $flisboac 2018-02-15
 
+#include <typeinfo>
+
 #include "./stti.unit.hpp"
 #include "adl/stti/has_member_function.hpp"
 
@@ -16,7 +18,6 @@ namespace {
 
 TEST_CASE("unit:adl/stti/has_member_function.hpp", "") {
     // TODO Proper implementation
-    // TODO Fix `error: call of overloaded ‘detect_(std::nullptr_t)’ is ambiguous`
 
     SECTION("Test presence") {
         REQUIRE( ("name"s == has_member_function_name<stti_test::type>::name) );
