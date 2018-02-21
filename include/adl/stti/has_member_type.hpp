@@ -24,7 +24,7 @@
         template <typename U> static ::adl::nonesuch detect_(U*); \
     public: \
         constexpr static char const* const name = #member_name; \
-        template <typename U> using detect_type = decltype(detect_<U>(nullptr)); \
+        template <typename U> using detect_type = decltype(detector_name::detect_<U>(nullptr)); \
         using enclosing_type = T; \
         using type = detect_type<T>; \
         constexpr static bool const detected = !std::is_same<type, ::adl::nonesuch>::value; \

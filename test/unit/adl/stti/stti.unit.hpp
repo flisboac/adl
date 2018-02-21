@@ -26,6 +26,8 @@ struct empty {};
 //
 struct type { using name = int_literal; };
 struct template_type { template <typename T = int> using name = literal<T>; };
+struct templatepack_type { template <typename T = int, typename...> using name = literal<T>; };
+struct templatenum_type { template <typename T = int, int n = 0> using name = literal<T>; };
 
 //
 // STATIC DATA MEMBER
@@ -65,21 +67,21 @@ struct const_data { int_literal const name {2}; };
 //
 // FUNCTION MEMBER
 //
-struct function { static int_literal name() { return {1}; } };
+struct function { int_literal name() { return {1}; } };
 struct overloaded_function {
-    static int_literal name() { return {1}; }
-    static int_literal name(int v) { return {v}; }
-    static double_literal name(double v) { return {v}; }
+    int_literal name() { return {1}; }
+    int_literal name(int v) { return {v}; }
+    double_literal name(double v) { return {v}; }
 };
-struct template_function { template <typename T> static literal<T> name(T v) { return {v}; } };
+struct template_function { template <typename T> literal<T> name(T v) { return {v}; } };
 struct template_overloaded_function {
-    static int_literal name() { return {1}; }
-    template <typename T> static literal<T> name(T v) { return {v}; }
+    int_literal name() { return {1}; }
+    template <typename T> literal<T> name(T v) { return {v}; }
 };
 struct template_overloaded2_function {
-    static int_literal name() { return {1}; }
-    static int_literal name(int v) { return {v}; }
-    template <typename T> static literal<T> name(T v) { return {v}; }
+    int_literal name() { return {1}; }
+    int_literal name(int v) { return {v}; }
+    template <typename T> literal<T> name(T v) { return {v}; }
 };
 
 //
