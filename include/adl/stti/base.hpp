@@ -40,26 +40,34 @@ template <lang_element_kind Kind, lang_element_kind FallbackKind>
 struct conditional_lang_elem_kind<false, Kind, FallbackKind> {
     constexpr static auto const kind = FallbackKind;
 };
+template <bool Found, lang_element_flag Flags, lang_element_flag FallbackFlags>
+struct conditional_lang_elem_flag {
+    constexpr static auto const flags = Flags;
+};
+template <lang_element_flag Flags, lang_element_flag FallbackFlags>
+struct conditional_lang_elem_flag<false, Flags, FallbackFlags> {
+    constexpr static auto const flags = FallbackFlags;
+};
 
 adl_END_ROOT_MODULE
 
-adl_IMPL ::adl::lang_element_flag operator | (::adl::lang_element_flag const& a, ::adl::lang_element_flag b) {
+constexpr ::adl::lang_element_flag operator | (::adl::lang_element_flag const& a, ::adl::lang_element_flag b) {
     return static_cast<::adl::lang_element_flag>(int(a) | int(b));
 }
-adl_IMPL ::adl::lang_element_flag operator | (::adl::lang_element_flag const& a, ::adl::lang_element_kind b) {
+constexpr ::adl::lang_element_flag operator | (::adl::lang_element_flag const& a, ::adl::lang_element_kind b) {
     return static_cast<::adl::lang_element_flag>(int(a) | int(b));
 }
-adl_IMPL ::adl::lang_element_flag operator | (::adl::lang_element_kind const& a, ::adl::lang_element_flag b) {
+constexpr ::adl::lang_element_flag operator | (::adl::lang_element_kind const& a, ::adl::lang_element_flag b) {
     return static_cast<::adl::lang_element_flag>(int(a) | int(b));
 }
 
-adl_IMPL ::adl::lang_element_flag operator & (::adl::lang_element_flag const& a, ::adl::lang_element_flag b) {
+constexpr ::adl::lang_element_flag operator & (::adl::lang_element_flag const& a, ::adl::lang_element_flag b) {
     return static_cast<::adl::lang_element_flag>(int(a) & int(b));
 }
-adl_IMPL ::adl::lang_element_flag operator & (::adl::lang_element_flag const& a, ::adl::lang_element_kind b) {
+constexpr ::adl::lang_element_flag operator & (::adl::lang_element_flag const& a, ::adl::lang_element_kind b) {
     return static_cast<::adl::lang_element_flag>(int(a) & int(b));
 }
-adl_IMPL ::adl::lang_element_flag operator & (::adl::lang_element_kind const& a, ::adl::lang_element_flag b) {
+constexpr ::adl::lang_element_flag operator & (::adl::lang_element_kind const& a, ::adl::lang_element_flag b) {
     return static_cast<::adl::lang_element_flag>(int(a) & int(b));
 }
 

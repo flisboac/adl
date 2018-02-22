@@ -28,19 +28,23 @@
         template <typename U = T> constexpr static make_const_member_type<U> make_const_member_pointer() noexcept { return &U::member_name; } \
         template <typename U = T> constexpr static make_cv_member_type<U> make_cv_member_pointer() noexcept { return &U::member_name; } \
     private: \
-        template <typename U, template <typename> class MT, ::adl::lang_element_kind Kind = ::adl::lang_element_kind::none> \
+        template <typename U, \
+            template <typename> class MT, \
+            ::adl::lang_element_kind Kind = ::adl::lang_element_kind::none, \
+            ::adl::lang_element_flag AdditionalFlags = ::adl::lang_element_flag::none> \
         struct make_type_ { \
             using type = U; \
             template <typename V> using make_type = MT<V>; \
             constexpr static ::adl::lang_element_kind const kind = Kind; \
+            constexpr static ::adl::lang_element_flag const flags = AdditionalFlags | Kind; \
             template <typename V> constexpr static make_type<V> make_pointer() noexcept { return &V::member_name; } \
         }; \
         template <typename U> using make_nonesuch_ = ::adl::nonesuch; \
         template <typename U> using make_nonesuch_type_ = make_type_<::adl::nonesuch, make_nonesuch_>; \
         template<typename U, make_static_member_type<U>> struct detect_member_impl_static_ { using type = make_type_<make_static_member_type<U>, make_static_member_type, ::adl::lang_element_kind::static_member_function>; }; \
         template<typename U, make_mut_member_type<U>> struct detect_member_impl_mut_ { using type = make_type_<make_mut_member_type<U>, make_mut_member_type, ::adl::lang_element_kind::member_function>; }; \
-        template<typename U, make_const_member_type<U>> struct detect_member_impl_const_ { using type = make_type_<make_const_member_type<U>, make_const_member_type, ::adl::lang_element_kind::member_function>; }; \
-        template<typename U, make_cv_member_type<U>> struct detect_member_impl_cv_ { using type = make_type_<make_cv_member_type<U>, make_cv_member_type, ::adl::lang_element_kind::member_function>; }; \
+        template<typename U, make_const_member_type<U>> struct detect_member_impl_const_ { using type = make_type_<make_const_member_type<U>, make_const_member_type, ::adl::lang_element_kind::member_function, ::adl::lang_element_flag::const_qualified>; }; \
+        template<typename U, make_cv_member_type<U>> struct detect_member_impl_cv_ { using type = make_type_<make_cv_member_type<U>, make_cv_member_type, ::adl::lang_element_kind::member_function, ::adl::lang_element_flag::const_qualified | ::adl::lang_element_flag::volatile_qualified>; }; \
         template <typename U> static typename detect_member_impl_static_<U, &U::member_name>::type detect_member_static_(detect_member_impl_static_<U, &U::member_name>*); \
         template <typename U> static make_nonesuch_type_<U> detect_member_static_(U*); \
         template <typename U> static typename detect_member_impl_mut_<U, &U::member_name>::type detect_member_mut_(detect_member_impl_mut_<U, &U::member_name>*); \
@@ -71,6 +75,7 @@
         using type = typename type_::type; \
         constexpr static bool const detected = !std::is_same<type, ::adl::nonesuch>::value; \
         constexpr static ::adl::lang_element_kind const kind = ::adl::conditional_lang_elem_kind_v<detected, type_::kind>; \
+        constexpr static ::adl::lang_element_flag const flags = ::adl::conditional_lang_elem_flag_v<detected, type_::flags>; \
         template <typename U> using rebind = detector_name ## _alias_<U, FArgs...>; \
         template <typename O, typename U = T, typename None = ::adl::nonesuch> using select_type = ::adl::common_select_type< \
             detector_name ## _alias_<U, FArgs...>::detected, typename detector_name ## _alias_<U, FArgs...>::type, \

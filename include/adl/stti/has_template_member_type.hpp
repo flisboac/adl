@@ -32,6 +32,7 @@
         using type = detect_type<T>; \
         constexpr static bool const detected = !std::is_same<type, ::adl::nonesuch>::value; \
         constexpr static ::adl::lang_element_kind const kind = ::adl::conditional_lang_elem_kind_v<detected, ::adl::lang_element_kind::template_member_type>; \
+        constexpr static ::adl::lang_element_flag const flags = kind | ::adl::lang_element_flag::none; \
         template <typename U> using rebind = detector_name ## _alias_<U, adl_STTI_M_GEN_TARGS template_args, TArgs...>; \
         template <typename O, typename U = T, typename None = ::adl::nonesuch> using select_type = ::adl::common_select_type< \
             detector_name ## _alias_<U, adl_STTI_M_GEN_TARGS template_args, TArgs...>::detected, typename detector_name ## _alias_<U, adl_STTI_M_GEN_TARGS template_args, TArgs...>::type, \

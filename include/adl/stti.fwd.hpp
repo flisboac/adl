@@ -10,14 +10,6 @@
 
 #define adl_STTI_STRIP_PARENS_(...) __VA_ARGS__
 
-#define define_function( template_args , function_name , function_args ) \
-    template< adl_STTI_STRIP_PARENS_ template_args >                               \
-    struct function_name##_impl;                                         \
-                                                                         \
-    template< strip_parens template_args >                               \
-    using function_name = typename function_name##_impl                  \
-                                   < strip_parens function_args >::type  // end
-
 adl_BEGIN_ROOT_MODULE
 
 template <typename... Args> using nonesuch_t = nonesuch;
@@ -41,6 +33,7 @@ using common_extend_type = typename std::conditional<DetectedOnEnclosing,
 >::type;
 
 enum class lang_element_flag {
+    none = 0,
     type = 0x1,
     function = 0x2,
     data = 0x3,
@@ -50,14 +43,12 @@ enum class lang_element_flag {
 
     // The difficult (if not impossible?) ones
     const_qualified = 1 << 7,
-    volatile_qualified = 1 << 8,
-    noexcept_qualified = 1 << 9,
-    constexpr_qualified = 1 << 10
+    volatile_qualified = 1 << 8
 };
 
 enum class lang_element_kind {
     none = 0,
-    member_type = int(lang_element_flag::member) | int(lang_element_flag::type),
+    member_type = int(lang_element_flag::member) | int(lang_element_flag::static_qualified) | int(lang_element_flag::type),
     template_member_type = int(lang_element_flag::templated) | int(lang_element_flag::member) | int(lang_element_flag::type),
     static_member_function = int(lang_element_flag::static_qualified) | int(lang_element_flag::member) | int(lang_element_flag::function),
     static_template_member_function = int(lang_element_flag::static_qualified) | int(lang_element_flag::templated) | int(lang_element_flag::member) | int(lang_element_flag::function),
@@ -71,6 +62,10 @@ enum class lang_element_kind {
 template <bool Found, lang_element_kind Kind, lang_element_kind FallbackKind = lang_element_kind::none> struct conditional_lang_elem_kind;
 template <bool Found, lang_element_kind Kind, lang_element_kind FallbackKind = lang_element_kind::none>
 lang_element_kind const conditional_lang_elem_kind_v = conditional_lang_elem_kind<Found, Kind, FallbackKind>::kind;
+
+template <bool Found, lang_element_flag Flags, lang_element_flag FallbackFlags = lang_element_flag::none> struct conditional_lang_elem_flag;
+template <bool Found, lang_element_flag Flags, lang_element_flag FallbackFlags = lang_element_flag::none>
+lang_element_flag const conditional_lang_elem_flag_v = conditional_lang_elem_flag<Found, Flags, FallbackFlags>::flags;
 
 adl_END_ROOT_MODULE
 
