@@ -80,7 +80,7 @@ struct template_overloaded_function {
 };
 struct template_overloaded2_function {
     int_literal name() { return {1}; }
-    int_literal name(int v) { return {v}; }
+    //int_literal name(int v) { return {v}; }
     int_literal name(int v) const { return {v}; }
     template <typename T> literal<T> name(T v) { return {v}; }
 };

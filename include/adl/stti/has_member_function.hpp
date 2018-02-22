@@ -58,12 +58,12 @@
             (decltype(detector_name::detect_member_static_<U>(nullptr))::kind != ::adl::lang_element_kind::none), \
                 decltype(detector_name::detect_member_static_<U>(nullptr)), \
                 typename std::conditional< \
-                (decltype(detector_name::detect_member_mut_<U>(nullptr))::kind != ::adl::lang_element_kind::none), \
-                    decltype(detector_name::detect_member_mut_<U>(nullptr)), \
+                (decltype(detector_name::detect_member_cv_<U>(nullptr))::kind != ::adl::lang_element_kind::none), \
+                    decltype(detector_name::detect_member_cv_<U>(nullptr)), \
                     typename std::conditional< \
                     (decltype(detector_name::detect_member_const_<U>(nullptr))::kind != ::adl::lang_element_kind::none), \
                         decltype(detector_name::detect_member_const_<U>(nullptr)), \
-                        decltype(detector_name::detect_member_cv_<U>(nullptr)) \
+                        decltype(detector_name::detect_member_mut_<U>(nullptr)) \
                     >::type \
                 >::type \
             >::type; \

@@ -17,7 +17,8 @@ enum class task_state {
     queued,    // Command was called and queued. Waiting for definite execution (e.g. on a queue waiting for a thread to pick it up, CL_PROFILING_COMMAND_QUEUED)
     prepared,  // Prepared for execution (e.g. CL_PROFILING_COMMAND_SUBMIT)
     started,   // Operation has already started (and is currently in) execution.
-    finished   // Operation has finished its execution.
+    finished,  // Operation has finished its execution successfully.
+    failed     // Operation was aborted or failed mid-execution.
 };
 
 enum class task_timing {
@@ -107,6 +108,7 @@ template <typename BackendType> class backend_traits;
 
 // Uses std::allocator_traits, may do different things for different backends (e.g. OpenCL's SVM)
 template <typename ConstantType, typename BackendType> class basic_allocator;
+template <typename ConstantType, typename BackendType> class basic_svm_allocator;
 
 template <typename SchedulerType> class scheduler_traits;
 template <typename BackendType> class basic_scheduler;
@@ -117,12 +119,11 @@ template <typename ConstantType, typename BackendType, typename AllocatorType = 
 template <typename SubClass, typename ConstantType, typename BackendType, typename AllocatorType = basic_allocator<ConstantType, BackendType>> class basic_vector_template;
 
 template <typename VectorType> class task_traits;
+template <typename JobType> class job_traits;
 //template <typename ReturnType, typename BackendType> class basic_task;
-//template <typename ReturnType, typename BackendType, typename VectorType> class basic_vector_task;
 template <typename SubClass, typename ReturnType, typename BackendType> class basic_task_template;
-template <typename SubClass, typename ReturnType, typename BackendType, typename VectorType> class basic_vector_task_template;
 template <typename TaskType, typename ReturnType = typename task_traits<TaskType>::return_type, typename BackendType = typename task_traits<TaskType>::backend_type> class basic_job;
-template <typename SubClass, typename BackendType, typename TaskType> class basic_job_template;
+template <typename SubClass, typename TaskType, typename ReturnType = typename task_traits<TaskType>::return_type, typename BackendType = typename task_traits<TaskType>::backend_type> class basic_job_template;
 
 
 adl_END_ROOT_MODULE

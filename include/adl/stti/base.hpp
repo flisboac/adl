@@ -51,23 +51,23 @@ struct conditional_lang_elem_flag<false, Flags, FallbackFlags> {
 
 adl_END_ROOT_MODULE
 
-constexpr ::adl::lang_element_flag operator | (::adl::lang_element_flag const& a, ::adl::lang_element_flag b) {
+constexpr ::adl::lang_element_flag operator | (::adl::lang_element_flag a, ::adl::lang_element_flag b) {
     return static_cast<::adl::lang_element_flag>(int(a) | int(b));
 }
-constexpr ::adl::lang_element_flag operator | (::adl::lang_element_flag const& a, ::adl::lang_element_kind b) {
+constexpr ::adl::lang_element_flag operator | (::adl::lang_element_flag a, ::adl::lang_element_kind b) {
     return static_cast<::adl::lang_element_flag>(int(a) | int(b));
 }
-constexpr ::adl::lang_element_flag operator | (::adl::lang_element_kind const& a, ::adl::lang_element_flag b) {
+constexpr ::adl::lang_element_flag operator | (::adl::lang_element_kind a, ::adl::lang_element_flag b) {
     return static_cast<::adl::lang_element_flag>(int(a) | int(b));
 }
 
-constexpr ::adl::lang_element_flag operator & (::adl::lang_element_flag const& a, ::adl::lang_element_flag b) {
+constexpr ::adl::lang_element_flag operator & (::adl::lang_element_flag a, ::adl::lang_element_flag b) {
     return static_cast<::adl::lang_element_flag>(int(a) & int(b));
 }
-constexpr ::adl::lang_element_flag operator & (::adl::lang_element_flag const& a, ::adl::lang_element_kind b) {
+constexpr ::adl::lang_element_flag operator & (::adl::lang_element_flag a, ::adl::lang_element_kind b) {
     return static_cast<::adl::lang_element_flag>(int(a) & int(b));
 }
-constexpr ::adl::lang_element_flag operator & (::adl::lang_element_kind const& a, ::adl::lang_element_flag b) {
+constexpr ::adl::lang_element_flag operator & (::adl::lang_element_kind a, ::adl::lang_element_flag b) {
     return static_cast<::adl::lang_element_flag>(int(a) & int(b));
 }
 

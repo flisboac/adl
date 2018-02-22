@@ -57,9 +57,9 @@ TEST_CASE("unit:adl/stti/has_member_function.hpp", "") {
         REQUIRE( ( has_member_function_name<stti_test::template_overloaded_function, int>::detected && has_member_function_name<stti_test::template_overloaded_function>::kind == adl::lang_element_kind::member_function) );
         REQUIRE( ( has_member_function_name<stti_test::template_overloaded_function, double>::detected && has_member_function_name<stti_test::template_overloaded_function>::kind == adl::lang_element_kind::member_function) );
         REQUIRE( ( has_member_function_name<stti_test::template_overloaded2_function>::detected && has_member_function_name<stti_test::template_overloaded2_function>::kind == adl::lang_element_kind::member_function) );
-        REQUIRE( ( has_member_function_name<stti_test::template_overloaded2_function, int>::detected && has_member_function_name<stti_test::template_overloaded2_function>::kind == adl::lang_element_kind::member_function) );
+        REQUIRE( ( has_member_function_name<stti_test::template_overloaded2_function, float>::detected && has_member_function_name<stti_test::template_overloaded2_function>::kind == adl::lang_element_kind::member_function) );
         REQUIRE( ( has_member_function_name<stti_test::template_overloaded2_function const, int>::detected
-                   && has_member_function_name<stti_test::template_overloaded2_function const>::kind == adl::lang_element_kind::member_function
-                   && bool(has_member_function_name<stti_test::template_overloaded2_function const>::flags & adl::lang_element_flag::const_qualified)) );
+                   && has_member_function_name<stti_test::template_overloaded2_function const, int>::kind == adl::lang_element_kind::member_function
+                   && bool(has_member_function_name<stti_test::template_overloaded2_function const, int>::flags & adl::lang_element_flag::const_qualified)) );
     }
 }
