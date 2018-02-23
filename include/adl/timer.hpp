@@ -193,6 +193,7 @@ public:
     static_mark_timer& operator=(static_mark_timer &&) noexcept = default;
 
     void mark();
+    void mark_remaining();
     std::size_t max_size() const noexcept;
     std::size_t size() const noexcept;
 
@@ -501,6 +502,13 @@ template <std::size_t MeasurementsCount>
 inline void static_mark_timer<MeasurementsCount>::mark() {
     if (size_ >= MeasurementsCount) throw std::logic_error("Measurement overflow");
     measurements_[size_++] = clock_type_::now();
+}
+
+template <std::size_t MeasurementsCount>
+inline void static_mark_timer<MeasurementsCount>::mark_remaining() {
+    if (size_ >= MeasurementsCount) throw std::logic_error("Measurement overflow");
+    auto now = clock_type_::now();
+    while (size_ < MeasurementsCount) measurements_[size_++] = now;
 }
 
 template <std::size_t MeasurementsCount>

@@ -12,28 +12,34 @@
 adl_BEGIN_ROOT_MODULE
 
 
+enum class scheduler_flag {
+    async,    // Hint for the scheduler to launch kernels in an out-of-order fashion, e.g. CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE.
+    deferred, // Hint for the scheduler to defer execution of scheduled tasks until the result is needed. May not be possible to fulfill, depending on the backend or scheduler type
+    profiled, // Hint for the scheduler to profile task execution.
+    defaulted // Marks the queue as the default for a specific device
+};
+
 enum class task_state {
     created,   // Waiting to be queued or executed. Does not count to total timing because this represents a form of delayed execution, like std::launch::lazy or some delayed call to CL's enqueue
-    queued,    // Command was called and queued. Waiting for definite execution (e.g. on a queue waiting for a thread to pick it up, CL_PROFILING_COMMAND_QUEUED)
+    scheduled, // Command was called and queued. Waiting for definite execution (e.g. on a queue waiting for a thread to pick it up, CL_PROFILING_COMMAND_QUEUED)
     prepared,  // Prepared for execution (e.g. CL_PROFILING_COMMAND_SUBMIT)
     started,   // Operation has already started (and is currently in) execution.
     finished,  // Operation has finished its execution successfully.
-    failed     // Operation was aborted or failed mid-execution.
+    failed     // Operation was aborted or failed mid-execution or mid-scheduling.
 };
 
 enum class task_timing {
     total,    // Total execution time. Sum of queue, launch and execution.
     wait,     // Time elapsed in between oper_state::created and some starting state (oper_state::queued, oper_state::prepared or oper_state::started), if any. Must be zero if not applicable.
-    queue,    // Time elapsed in between oper_state::queued and the first (actual) operational state (oper_state::prepared or oper_state::started), if any. Must be zero if not applicable.
+    schedule, // Time elapsed in between oper_state::scheduled and the first (actual) operational state (oper_state::prepared or oper_state::started), if any. Must be zero if not applicable.
     launch,   // Time elapsed in between oper_state::prepared and oper_state::started, if any. Must be zero if not applicable.
     execution // Time elapsed in between oper_state::started and oper_state::finished (including "teardown" time, if any).
 };
 
-enum class vector_dirty_flag {
-    none,
-    host,
-    device,
-    queued
+enum class vector_cache_state {
+    clean,
+    dirty,
+    flushing
 };
 
 #if 0
@@ -96,22 +102,17 @@ enum class vector_dirty {
 };
 #endif
 
-enum class vector_state {
-    clean,
-    dirty,
-    flushing
-};
-
 
 template <typename BackendType> class backend_traits;
 // class backend; // Not a template!
 
 // Uses std::allocator_traits, may do different things for different backends (e.g. OpenCL's SVM)
 template <typename ConstantType, typename BackendType> class basic_allocator;
-template <typename ConstantType, typename BackendType> class basic_svm_allocator;
+template <typename ConstantType, typename BackendType> class basic_unified_allocator;
 
 template <typename SchedulerType> class scheduler_traits;
 template <typename BackendType> class basic_scheduler;
+template <typename BackendType> class basic_device_scheduler;
 template <typename SubClass, typename BackendType> class basic_scheduler_template;
 
 template <typename VectorType> class vector_traits;
