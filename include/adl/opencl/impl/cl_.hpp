@@ -17,10 +17,18 @@
 
 #if !defined(CL_HPP_TARGET_OPENCL_VERSION)
 #   define CL_HPP_TARGET_OPENCL_VERSION 200
+#else
+    #if CL_HPP_TARGET_OPENCL_VERSION < 200
+    #   error "Invalid OpenCL C++ header's target version; it must support at least OpenCL 2.0."
+    #endif
 #endif
 
 #if defined(CL_HPP_NO_STD_STRING) || defined(CL_HPP_NO_STD_VECTOR) || defined(CL_HPP_NO_STD_ARRAY) || defined(CL_HPP_NO_STD_UNIQUE_PTR)
 #   error "ADL is not compatible with non-standard string/vector/array/smart-pointer classes in the OpenCL C++ bindings."
+#endif
+
+#if adl_CONFIG_USE_OPENCL_CPP
+#include "CL/cl2.hpp"
 #endif
 
 #if adl_CONFIG_USE_OPENCL_ERROR_CLASS

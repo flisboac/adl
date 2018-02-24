@@ -52,8 +52,14 @@
 
 #if defined(adl_USE_OPENCL_ERROR_CLASS)
     #define adl_CONFIG_USE_OPENCL_ERROR_CLASS 1
+    #ifndef adl_CONFIG_USE_OPENCL_CPP
+        #define adl_CONFIG_USE_OPENCL_CPP 1
+    #endif
 #else
     #define adl_CONFIG_USE_OPENCL_ERROR_CLASS 0
+    #ifndef adl_CONFIG_USE_OPENCL_CPP
+        #define adl_CONFIG_USE_OPENCL_CPP 0
+    #endif
 #endif
 
 //

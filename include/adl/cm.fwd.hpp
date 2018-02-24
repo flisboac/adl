@@ -36,7 +36,15 @@ enum class task_timing {
     execution // Time elapsed in between oper_state::started and oper_state::finished (including "teardown" time, if any).
 };
 
-enum class vector_cache_state {
+enum class buffer_mem_state {
+    split,   // host and device memory are separate; explicit copies or mappings are needed to keep coherency
+    mapping, // host and device memory are being mapped; the buffer cannot be used right now
+    mapped,  // host and device memory are mapped; no copy is needed to keep coherency
+    unified  // host and device memory are unified; no copy or mapping will ever be needed to keep coherency
+};
+
+enum class buffer_cache_state {
+    zero_copy, // The buffer is SVM-allocated (or comes from a similar unified memory allocation model) or is currently mapped. Therefore, the buffer is always up to date.
     clean,
     dirty,
     flushing
@@ -46,32 +54,32 @@ enum class vector_cache_state {
 // Notes:
 // -
 // NOTE: "host*" and "device*" must never be flagged at the same time. When "host*"
-enum class vector_dirty {
-    /* Vector is not dirty. The contents on both host and scheduler's device(s) are the same.
+enum class buffer_dirty {
+    /* Buffer is not dirty. The contents on both host and scheduler's device(s) are the same.
      */
     none,
 
-    /** Vector was marked dirty on CPU.
+    /** Buffer was marked dirty on CPU.
      *
      * It probably has modifications on the host not committed to the device(s).
-     * Automatically marked by the paged_vector on any write operation.
+     * Automatically marked by the paged_buffer on any write operation.
      *
      * A memory write will automatically be issued BEFORE enqueuing any device operation (e.g. kernel execution).
      *
      * After marked dirty on host, any subsequent host-dirty marks will be ignored until a flush operation is issued,
-     * occasion on which the vector will be marked host-flushing.
+     * occasion on which the buffer will be marked host-flushing.
      */
     host,
 
-    /** Vector was marked dirty on device(s).
+    /** Buffer was marked dirty on device(s).
      *
-     * The vector will be marked device-dirty right after enqueuing a device kernel execution. The mark will always be
+     * The buffer will be marked device-dirty right after enqueuing a device kernel execution. The mark will always be
      * accompanied by the last (or all, in the case of out-of-order queues) kernel events.
      *
-     * The vector will store all kernel-enqueue events until a flush or host memory operation is issued. When
+     * The buffer will store all kernel-enqueue events until a flush or host memory operation is issued. When
      * that happens, a device-read command will be issued, and all the kernel events collected so far will used as
      * the read operation's synchronization point (e.g. all of them will be waited for). After issuing the read
-     * operation, the vector will be marked device-flushing.
+     * operation, the buffer will be marked device-flushing.
      */
     device,
 
@@ -81,14 +89,14 @@ enum class vector_dirty {
      * enqueues.
      *
      * Any subsequent writes on host or any operations on device MUST wait for the scheduler to process the write
-     * event. More specifically, while the vector is in the host-flushing state:
-     * - When a host memory operation is issued, the vector will force a synchronization on the host BEFORE performing
+     * event. More specifically, while the buffer is in the host-flushing state:
+     * - When a host memory operation is issued, the buffer will force a synchronization on the host BEFORE performing
      *   the operation. This is important because the device-write may happen at any time after the enqueuing.
      * - When a device operation is issued, the scheduler will mark
      *
      * After processing:
-     * - If the write operation succeeded, the vector will be marked clean.
-     * - If the write operation failed, the vector will be marked dirty on host.
+     * - If the write operation succeeded, the buffer will be marked clean.
+     * - If the write operation failed, the buffer will be marked dirty on host.
      */
     host_flushing,
 
@@ -102,30 +110,21 @@ enum class vector_dirty {
 };
 #endif
 
-
+// std::allocator_traits too
 template <typename BackendType> class backend_traits;
-// class backend; // Not a template!
-
-// Uses std::allocator_traits, may do different things for different backends (e.g. OpenCL's SVM)
-template <typename ConstantType, typename BackendType> class basic_allocator;
-template <typename ConstantType, typename BackendType> class basic_unified_allocator;
-
+template <typename DeviceType> class device_traits;
 template <typename SchedulerType> class scheduler_traits;
-template <typename BackendType> class basic_scheduler;
-template <typename BackendType> class basic_device_scheduler;
-template <typename SubClass, typename BackendType> class basic_scheduler_template;
-
-template <typename VectorType> class vector_traits;
-template <typename ConstantType, typename BackendType, typename AllocatorType = basic_allocator<ConstantType, BackendType>> class basic_vector;
-template <typename SubClass, typename ConstantType, typename BackendType, typename AllocatorType = basic_allocator<ConstantType, BackendType>> class basic_vector_template;
-
-template <typename VectorType> class task_traits;
+template <typename BufferType> class buffer_traits;
+template <typename TaskType> class task_traits;
 template <typename JobType> class job_traits;
-//template <typename ReturnType, typename BackendType> class basic_task;
-template <typename SubClass, typename ReturnType, typename BackendType> class basic_task_template;
-template <typename TaskType, typename ReturnType = typename task_traits<TaskType>::return_type, typename BackendType = typename task_traits<TaskType>::backend_type> class basic_job;
-template <typename SubClass, typename TaskType, typename ReturnType = typename task_traits<TaskType>::return_type, typename BackendType = typename task_traits<TaskType>::backend_type> class basic_job_template;
 
+template <typename BackendType> class basic_device;
+template <typename BackendType> class basic_scheduler;
+template <typename BackendType> class basic_in_device_scheduler;
+template <typename ConstantType, typename BackendType, typename AllocatorType> class basic_buffer;
+template <typename ConstantType, typename BackendType, typename AllocatorType> class basic_mapped_buffer;
+//template <typename ReturnType, typename BackendType, typename... BufferTypes> class basic_task;
+template <typename TaskType, typename BackendType = typename task_traits<TaskType>::backend_type> class basic_job;
 
 adl_END_ROOT_MODULE
 

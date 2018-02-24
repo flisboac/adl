@@ -91,7 +91,7 @@ class error_category;
 //
 // allocator.hpp
 //
-enum class svm_mem_flag {
+enum class unified_mem_flag {
     read_write = CL_MEM_READ_WRITE,
     write_only = CL_MEM_WRITE_ONLY,
     read_only = CL_MEM_READ_ONLY,
@@ -111,31 +111,40 @@ enum class mem_flag {
     host_no_access = CL_MEM_HOST_NO_ACCESS
 };
 
-namespace allocator_traits {
-    class null;
-    template <typename TraitType = null> class host_read_only;
-    template <typename TraitType = null> class host_write_only;
-    template <typename TraitType = null> class host_no_access;
-    template <typename TraitType = null> class read_only;
-    template <typename TraitType = null> class write_only;
-    template <typename TraitType = null> class read_write;
-    template <typename TraitType = null> class atomic;
-    template <typename TraitType = null> class coarse;
-    template <typename TraitType = null> class fine;
-}
+enum class allocator_flag {
+    none = 0,
+    read_write = CL_MEM_READ_WRITE,
+    write_only = CL_MEM_WRITE_ONLY,
+    read_only = CL_MEM_READ_ONLY,
+    host_write_only = CL_MEM_HOST_WRITE_ONLY,
+    host_read_only = CL_MEM_HOST_READ_ONLY,
+    host_no_access = CL_MEM_HOST_NO_ACCESS,
+    defaults = CL_MEM_READ_WRITE
+};
 
-namespace svm_allocator_traits {
-    class null;
-    template <typename TraitType = null> class read_only;
-    template <typename TraitType = null> class write_only;
-    template <typename TraitType = null> class read_write;
-    template <typename TraitType = null> class atomic;
-    template <typename TraitType = null> class coarse;
-    template <typename TraitType = null> class fine;
-}
+enum class unified_allocator_flag {
+    none = 0,
+    read_write = CL_MEM_READ_WRITE,
+    write_only = CL_MEM_WRITE_ONLY,
+    read_only = CL_MEM_READ_ONLY,
+    atomics = CL_MEM_SVM_ATOMICS,
+    fine = CL_MEM_SVM_FINE_GRAIN_BUFFER,
+    defaults = CL_MEM_READ_WRITE
+};
 
-template <typename ConstantType, typename Traits = allocator_traits::read_write<>> class allocator;
-template <typename ConstantType, typename Traits = svm_allocator_traits::read_write<>> class svm_allocator;
+
+namespace unified_mem {
+    class null_trait;
+    template <typename Trait = null_trait> class atomic_trait;
+    template <typename Trait = null_trait> class coarse_trait;
+    template <typename Trait = null_trait> class fine_trait;
+    template <typename Trait = null_trait> class read_only_trait;
+    template <typename Trait = null_trait> class write_only_trait;
+    template <typename Trait = null_trait> class read_write_trait;
+    template <typename Trait = null_trait> using default_traits = read_write_trait<Trait>;
+}
+template <typename ConstantType, typename Traits = unified_mem::default_traits> class unified_allocator;
+template <typename ConstantType> class mapped_mem_allocator; // Reduces the chances of failing memory mapping operations. Generally leaves host memory allocation to OpenCL, e.g. CL_MEM_ALLOC_HOST_PTR (implies CL_MEM_COPY_HOST_PTR), or fails right away if it's known that a memory map operation won't be possible given the buffer's state and/or construction arguments
 
 
 //
@@ -145,13 +154,19 @@ template <typename ConstantType, typename Traits = svm_allocator_traits::read_wr
 //
 // backend.hpp
 // scheduler.hpp
-// vector.hpp
+// buffer.hpp
 // task_template.hpp
 //
 class backend;
+using device = ::adl::basic_device<backend>;
 using scheduler = ::adl::basic_scheduler<backend>;
-template <typename ConstantType, typename AllocatorType = std::allocator<ConstantType>> using vector = ::adl::basic_vector<ConstantType, backend, AllocatorType>;
-template <typename SubClass, typename ReturnType> using task_template = ::adl::basic_task_template<SubClass, ReturnType, backend>;
+using in_device_scheduler = ::adl::basic_in_device_scheduler<backend>;
+template <typename ConstantType, typename AllocatorType = mapped_mem_allocator<ConstantType>> using buffer = basic_buffer<ConstantType, backend, AllocatorType>;
+template <typename ConstantType, typename AllocatorType = mapped_mem_allocator<ConstantType>> using mapped_buffer = basic_mapped_buffer<ConstantType, backend, AllocatorType>;
+template <typename TaskType> using job = basic_job<TaskType, backend>;
+
+template <typename SubClass, typename ReturnType, typename... BufferTypes> class task_template;
+template <typename SubClass, typename TaskType, typename ReturnType = typename task_traits<TaskType>::return_type> class job_template;
 
 
 } // namespace opencl
