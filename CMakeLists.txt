@@ -92,6 +92,20 @@ target_sources(${api} INTERFACE
     # adl/cm
     "${api_dir_root}/adl/cm.fwd.hpp"
     "${api_dir_root}/adl/cm.hpp"
+    "${api_dir_root}/adl/cm/error.hpp"
+    "${api_dir_root}/adl/cm/backend.hpp"
+    "${api_dir_root}/adl/cm/device.hpp"
+    "${api_dir_root}/adl/cm/mem.hpp"
+    "${api_dir_root}/adl/cm/buffer.hpp"
+    "${api_dir_root}/adl/cm/scheduler.hpp"
+    "${api_dir_root}/adl/cm/job.hpp"
+    "${api_dir_root}/adl/cm/task.hpp"
+
+    # adl/cpu
+    "${api_dir_root}/adl/cpu.fwd.hpp"
+    "${api_dir_root}/adl/cpu.hpp"
+    "${api_dir_root}/adl/cpu/error.hpp"
+    "${api_dir_root}/adl/cpu/async.hpp"
 
     # adl/opencl
     "${api_dir_root}/adl/opencl.fwd.hpp"

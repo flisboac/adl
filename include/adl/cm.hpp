@@ -9,5 +9,7 @@
 
 #include "adl.cfg.hpp"
 #include "adl/cm.fwd.hpp"
+#include "adl/cm/error.hpp"
+#include "adl/cm/scheduler.hpp"
 
 #endif // adl__cm__hpp__

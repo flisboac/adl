@@ -20,7 +20,11 @@ namespace opencl {
 // error.hpp
 //
 enum class errc {
+    // ADL-only code
     error = INT16_MIN,
+    not_finished = INT16_MIN + 1,
+
+    // OpenCL codes
     success = CL_SUCCESS,
     device_not_found = CL_DEVICE_NOT_FOUND,
     device_not_available = CL_DEVICE_NOT_AVAILABLE,
@@ -158,16 +162,16 @@ template <typename ConstantType> class mapped_mem_allocator; // Reduces the chan
 // task_template.hpp
 //
 class backend;
-using device = ::adl::basic_device<backend>;
-using scheduler = ::adl::basic_scheduler<backend>;
-using in_device_scheduler = ::adl::basic_in_device_scheduler<backend>;
-template <typename ConstantType, typename AllocatorType = mapped_mem_allocator<ConstantType>> using buffer = basic_buffer<ConstantType, backend, AllocatorType>;
-template <typename ConstantType, typename AllocatorType = mapped_mem_allocator<ConstantType>> using mapped_buffer = basic_mapped_buffer<ConstantType, backend, AllocatorType>;
-template <typename TaskType> using job = basic_job<TaskType, backend>;
+using device = cm::basic_device<backend>;
+using scheduler = cm::basic_scheduler<backend>;
+using in_device_scheduler = cm::basic_in_device_scheduler<backend>;
+using job_id = cm::basic_job_id<backend>;
+template <typename ConstantType, typename AllocatorType = mapped_mem_allocator<ConstantType>> using buffer = cm::basic_buffer<ConstantType, backend, AllocatorType>;
+template <typename ConstantType, typename AllocatorType = mapped_mem_allocator<ConstantType>> using device_buffer = cm::basic_device_buffer<ConstantType, backend, AllocatorType>;
+template <typename ConstantType, typename AllocatorType = mapped_mem_allocator<ConstantType>> using mapped_buffer = cm::basic_mapped_buffer<ConstantType, backend, AllocatorType>;
+template <typename TaskType, typename ReturnType = typename task_traits<TaskType>::return_type> using job = cm::basic_job<TaskType, ReturnType, backend>;
 
 template <typename SubClass, typename ReturnType, typename... BufferTypes> class task_template;
-template <typename SubClass, typename TaskType, typename ReturnType = typename task_traits<TaskType>::return_type> class job_template;
-
 
 } // namespace opencl
 
