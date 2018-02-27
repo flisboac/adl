@@ -167,7 +167,7 @@ using scheduler = cm::basic_scheduler<backend>;
 using in_device_scheduler = cm::basic_in_device_scheduler<backend>;
 using job_id = cm::basic_job_id<backend>;
 template <typename ConstantType, typename AllocatorType = mapped_mem_allocator<ConstantType>> using buffer = cm::basic_buffer<ConstantType, backend, AllocatorType>;
-template <typename ConstantType, typename AllocatorType = mapped_mem_allocator<ConstantType>> using device_buffer = cm::basic_device_buffer<ConstantType, backend, AllocatorType>;
+template <typename ConstantType, typename AllocatorType = mapped_mem_allocator<ConstantType>> using queued_buffer = cm::basic_queued_buffer<ConstantType, backend, AllocatorType>;
 template <typename ConstantType, typename AllocatorType = mapped_mem_allocator<ConstantType>> using mapped_buffer = cm::basic_mapped_buffer<ConstantType, backend, AllocatorType>;
 template <typename TaskType, typename ReturnType = typename task_traits<TaskType>::return_type> using job = cm::basic_job<TaskType, ReturnType, backend>;
 

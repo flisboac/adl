@@ -93,6 +93,7 @@ target_sources(${api} INTERFACE
     "${api_dir_root}/adl/cm.fwd.hpp"
     "${api_dir_root}/adl/cm.hpp"
     "${api_dir_root}/adl/cm/error.hpp"
+    "${api_dir_root}/adl/cm/allocator.hpp"
     "${api_dir_root}/adl/cm/backend.hpp"
     "${api_dir_root}/adl/cm/device.hpp"
     "${api_dir_root}/adl/cm/mem.hpp"

@@ -29,7 +29,7 @@ class error_category;
 // enabled, depending on the backend or scheduler type.
 enum class scheduling {
     async,     // Hint for the scheduler to launch kernels in another thread (NOT in the main thread). Maps directly to `std::launch::async`.
-    deferred,  // Hint for the scheduler to defer execution of scheduled tasks until the result is needed (deferred execution). Maps directly to `std::launch::deferred`.
+    deferred,  // Hint for the scheduler to defer execution of scheduled tasks until the result is needed (deferred execution). Maps directly to `std::launch::deferred`. For queue-based schedulers (e.g. OpenCL), this means "non-blocking".
     unordered, // Hint for the scheduler to launch kernels in an out-of-order fashion, e.g. CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE.
     profiled   // Hint for the scheduler to profile task execution.
 };
@@ -125,7 +125,7 @@ enum class buffer_dirty {
 //
 // TRAITS
 //
-// std::allocator_traits too
+template <typename AllocatorType> class allocator_traits; // Extends std::allocator_traits; Only needed because there's no way to guarantee the presence of a field indicating the use of a unified memory model for all possible allocator types.
 template <typename BackendType> class backend_traits;
 template <typename DeviceType> class device_traits;
 template <typename SchedulerType> class scheduler_traits;
@@ -141,9 +141,10 @@ template <typename BackendType> class basic_device;
 template <typename BackendType> class basic_scheduler;
 template <typename BackendType> class basic_in_device_scheduler;
 template <typename BackendType> class basic_job_id;
-template <typename ConstantType, typename BackendType, typename AllocatorType = std::allocator<ConstantType>> class basic_buffer; // A buffer that's accessible on host only, but is ready for device mapping/binding
-template <typename ConstantType, typename BackendType, typename AllocatorType = std::allocator<ConstantType>> class basic_device_buffer; // A basic_buffer that's accessible on both CPU and GPU. Memory is implied to be not "pinned" or mapped, and explicit transfers will be necessary. No-op for unified memory.
-template <typename ConstantType, typename BackendType, typename AllocatorType = std::allocator<ConstantType>> class basic_mapped_buffer; // A basic_buffer that's accessible on both CPU and GPU. Memory is actually "pinned", or mapped, and will be unmapped at object destruction. No-op for unified memory.
+template <typename ConstantType, typename BackendType> class basic_device_buffer; // A buffer that's accessible on host only, but is ready for device mapping/binding. Substitutes std::vector whenever possible. Capable of detecting unified memory allocation based on allocator. May employ lazy allocation. Does not necessarily represent a device-memory object.
+template <typename ConstantType, typename BackendType, typename AllocatorType = std::allocator<ConstantType>> class basic_host_buffer; // A buffer that's accessible on host only, but is ready for device mapping/binding. Substitutes/wraps/emulates std::vector whenever possible. Capable of detecting unified memory allocation based on allocator. May employ lazy allocation. Does not represent a device-memory object.
+template <typename ConstantType, typename BackendType, typename AllocatorType = std::allocator<ConstantType>> class basic_queued_buffer; // A basic_buffer that's accessible on both host and device. Memory is implied to be not "pinned" or mapped, and explicit transfers (enqueue reads/writes) will be necessary. No-op for fine-grained unified memory, if any.
+template <typename ConstantType, typename BackendType, typename AllocatorType = std::allocator<ConstantType>> class basic_mapped_buffer; // A basic_buffer that's accessible on both host and device. Memory is actually mapped ("pinned"?), and will be unmapped at object destruction. May have a different implementation for unified memory (e.g. clSvmEnqueueMap), may be no-op (a simple buffer wrapper) if not applicable or not needed.
 template <typename TaskType, typename ReturnType = typename task_traits<TaskType>::return_type, typename BackendType = typename task_traits<TaskType>::backend_type> class basic_job;
 
 
