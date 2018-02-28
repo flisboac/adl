@@ -15,7 +15,7 @@ adl_BEGIN_ROOT_MODULE
 
 namespace cm {
 
-enum class err {
+enum class errc {
     not_ready = -1,
     ok = 0,
     error
@@ -55,72 +55,46 @@ enum class task_timing {
     teardown   // Time elapsed after "execution" (either 'completed' or 'failed', including "teardown" time, if any). Must be zero if not applicable.
 };
 
-enum class buffer_cache_state {
-    zero_copy, // The buffer is SVM-allocated (or comes from a similar unified memory allocation model) or is currently mapped. Therefore, the buffer is always up to date.
-    clean,
-    dirty,
-    flushing
+enum class buffer_status {
+    clean,     // The buffer is clean, but not ready for use by the host. Some mapping and/or copying may be needed before that.
+    preparing, // The buffer is being prepared for use.
+    ready,     //
+    dirty,     // Indicate that the buffer was modified (either on the host or on the device), and an explicit synchronization is needed (e.g. unmap/map, copy) before another job is able to use this buffer
+    flushing   // Indicate that the buffer is currently synchronizing its contents with the device. Jobs wanting to use the buffer must wait until the synchronization finishes.
 };
 
-#if 0
-// Notes:
-// -
-// NOTE: "host*" and "device*" must never be flagged at the same time. When "host*"
-enum class buffer_dirty {
-    /* Buffer is not dirty. The contents on both host and scheduler's device(s) are the same.
-     */
+// Should be used as an int
+enum class mem_access : unsigned long int {
+    unspecified,
+    no_access = 1lu << 0lu,
+    read_only = 1lu << 1lu,
+    write_only = 1lu << 2lu,
+    read_write = (unsigned long int)(read_only) | (unsigned long int)(write_only)
+};
+
+enum class mem_feature : unsigned long int {
     none,
+    atomic = 1u << 0u,
+    unified = 1u << 1u,
+    coherent = 1u << 2u, // Applicable only when unified is given
+    sysalloc = 1u << 3u, // Applicable only when unified is given
 
-    /** Buffer was marked dirty on CPU.
-     *
-     * It probably has modifications on the host not committed to the device(s).
-     * Automatically marked by the paged_buffer on any write operation.
-     *
-     * A memory write will automatically be issued BEFORE enqueuing any device operation (e.g. kernel execution).
-     *
-     * After marked dirty on host, any subsequent host-dirty marks will be ignored until a flush operation is issued,
-     * occasion on which the buffer will be marked host-flushing.
-     */
-    host,
+    host_access = 0xfu << 4u,
+    host_no_access = (unsigned long int)(mem_access::no_access) << 4u,
+    host_read_only = (unsigned long int)(mem_access::read_only) << 4u,
+    host_write_only = (unsigned long int)(mem_access::write_only) << 4u,
+    host_read_write = (unsigned long int)(mem_access::read_write) << 4u,
 
-    /** Buffer was marked dirty on device(s).
-     *
-     * The buffer will be marked device-dirty right after enqueuing a device kernel execution. The mark will always be
-     * accompanied by the last (or all, in the case of out-of-order queues) kernel events.
-     *
-     * The buffer will store all kernel-enqueue events until a flush or host memory operation is issued. When
-     * that happens, a device-read command will be issued, and all the kernel events collected so far will used as
-     * the read operation's synchronization point (e.g. all of them will be waited for). After issuing the read
-     * operation, the buffer will be marked device-flushing.
-     */
-    device,
+    access = 0xfu << 8u,
+    no_access = (unsigned long int)(mem_access::no_access) << 8u,
+    read_only = (unsigned long int)(mem_access::read_only) << 8u,
+    write_only = (unsigned long int)(mem_access::write_only) << 8u,
+    read_write = (unsigned long int)(mem_access::read_write) << 8u,
 
-    /** The host is dirty, but a device-write was already enqueued.
-     *
-     * The event will be stored in the scheduler, so that it can be used as a synchronization point for further kernel
-     * enqueues.
-     *
-     * Any subsequent writes on host or any operations on device MUST wait for the scheduler to process the write
-     * event. More specifically, while the buffer is in the host-flushing state:
-     * - When a host memory operation is issued, the buffer will force a synchronization on the host BEFORE performing
-     *   the operation. This is important because the device-write may happen at any time after the enqueuing.
-     * - When a device operation is issued, the scheduler will mark
-     *
-     * After processing:
-     * - If the write operation succeeded, the buffer will be marked clean.
-     * - If the write operation failed, the buffer will be marked dirty on host.
-     */
-    host_flushing,
-
-    /** The device is dirty, but a device-read was already enqueued.
-     *
-     * The event will be stored in the scheduler, so that it can be used as a synchronization point for further kernel
-     * enqueues.
-     *
-     */
-    device_flushing
+    // unified -> coarse_grained
+    unified_coherent = (unsigned long int)(unified) | (unsigned long int)(coherent), // fine_grained
+    unified_system = (unsigned long int)(unified) | (unsigned long int)(coherent) | (unsigned long int)(sysalloc), // fine_grained + system
 };
-#endif
 
 //
 // TRAITS
@@ -137,14 +111,14 @@ template <typename JobType> class job_traits;
 //
 // MODEL CLASSES
 //
+template <typename ConstantType, typename BackendType> class allocator; // A wrapper over std::allocator. May be specialized by
 template <typename BackendType> class basic_device;
 template <typename BackendType> class basic_scheduler;
 template <typename BackendType> class basic_in_device_scheduler;
 template <typename BackendType> class basic_job_id;
-template <typename ConstantType, typename BackendType> class basic_device_buffer; // A buffer that's accessible on host only, but is ready for device mapping/binding. Substitutes std::vector whenever possible. Capable of detecting unified memory allocation based on allocator. May employ lazy allocation. Does not necessarily represent a device-memory object.
-template <typename ConstantType, typename BackendType, typename AllocatorType = std::allocator<ConstantType>> class basic_host_buffer; // A buffer that's accessible on host only, but is ready for device mapping/binding. Substitutes/wraps/emulates std::vector whenever possible. Capable of detecting unified memory allocation based on allocator. May employ lazy allocation. Does not represent a device-memory object.
-template <typename ConstantType, typename BackendType, typename AllocatorType = std::allocator<ConstantType>> class basic_queued_buffer; // A basic_buffer that's accessible on both host and device. Memory is implied to be not "pinned" or mapped, and explicit transfers (enqueue reads/writes) will be necessary. No-op for fine-grained unified memory, if any.
-template <typename ConstantType, typename BackendType, typename AllocatorType = std::allocator<ConstantType>> class basic_mapped_buffer; // A basic_buffer that's accessible on both host and device. Memory is actually mapped ("pinned"?), and will be unmapped at object destruction. May have a different implementation for unified memory (e.g. clSvmEnqueueMap), may be no-op (a simple buffer wrapper) if not applicable or not needed.
+template <typename ConstantType, typename BackendType, typename AllocatorType = allocator<ConstantType, BackendType>> class basic_buffer_mem; // An object representing a buffer associated with one or more devices. It doesn't provide access to any underlying buffer or memory pointer; for that, the user must either issue a mapped or staging buffer instead. AllocatorType is only used to identify the memory model (e.g. unified memory) and to pass it out to derived memory objects.
+template <typename ConstantType, typename BackendType, typename AllocatorType = allocator<ConstantType, BackendType>> class basic_staging_buffer; // A host-accessible memory buffer that's associated with a device buffer. It's associated with a scheduler and allows copying memory from the host to the device. The user may optionally provide a pointer for the buffer to use. To reflect changes, a synchronization point must be reached (e.g. copy, mapping). Most probably, and depending on the backend and object construction (e.g. passing a custom pointer), the allocator will be instantiated and used.
+template <typename ConstantType, typename BackendType, typename AllocatorType = allocator<ConstantType, BackendType>> class basic_mapped_buffer; // A host-accessible memory buffer, associated with a device buffer, that's either mapped (e.g. "pinned") or "locked" somehow (e.g. clSvmMapBuffer). Unlocking/unmapping happens either explicitly (possibly lazily) or right after destruction (always synchronously). Most probably, and depending on the backend, the allocator won't be instantiated and/or used.
 template <typename TaskType, typename ReturnType = typename task_traits<TaskType>::return_type, typename BackendType = typename task_traits<TaskType>::backend_type> class basic_job;
 
 
