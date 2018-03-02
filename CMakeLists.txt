@@ -108,6 +108,8 @@ target_sources(${api} INTERFACE
     "${api_dir_root}/adl/cpu.hpp"
     "${api_dir_root}/adl/cpu/error.hpp"
     "${api_dir_root}/adl/cpu/async.hpp"
+    "${api_dir_root}/adl/cpu/async/backend.hpp"
+    "${api_dir_root}/adl/cpu/async/allocator.hpp"
 
     # adl/opencl
     "${api_dir_root}/adl/opencl.fwd.hpp"
@@ -266,6 +268,10 @@ add_executable(${test}
     "${test_dir_unit}/adl/oct/cpu/seq_context.unit.cpp"
     "${test_dir_unit}/adl/oct/cpu/async_context.unit.cpp"
     "${test_dir_unit}/adl/oct/cpu/dense_dbm.unit.cpp"
+
+    # unit:adl/oct/cpu/async
+    "${test_dir_unit}/adl/oct/cpu/async/backend.unit.cpp"
+    "${test_dir_unit}/adl/oct/cpu/async/allocator.unit.cpp"
 
     # unit:adl/oct/cpu
     "${test_dir_unit}/adl/oct/cpu/close_oper.unit.cpp"

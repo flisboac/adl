@@ -147,7 +147,7 @@ namespace unified_mem {
     template <typename Trait = null_trait> class read_write_trait;
     template <typename Trait = null_trait> using default_traits = read_write_trait<Trait>;
 }
-template <typename ConstantType, typename Traits = unified_mem::default_traits> class unified_allocator;
+template <typename ConstantType, typename Traits = unified_mem::default_traits<>> class unified_allocator;
 template <typename ConstantType> class mapped_mem_allocator; // Reduces the chances of failing memory mapping operations. Generally leaves host memory allocation to OpenCL, e.g. CL_MEM_ALLOC_HOST_PTR (implies CL_MEM_COPY_HOST_PTR), or fails right away if it's known that a memory map operation won't be possible given the buffer's state and/or construction arguments
 
 
@@ -169,7 +169,7 @@ using job_id = cm::basic_job_id<backend>;
 template <typename ConstantType, typename AllocatorType = mapped_mem_allocator<ConstantType>> using buffer_mem = cm::basic_buffer_mem<ConstantType, backend, AllocatorType>;
 template <typename ConstantType, typename AllocatorType = mapped_mem_allocator<ConstantType>> using staging_buffer = cm::basic_staging_buffer<ConstantType, backend, AllocatorType>;
 template <typename ConstantType, typename AllocatorType = mapped_mem_allocator<ConstantType>> using mapped_buffer = cm::basic_mapped_buffer<ConstantType, backend, AllocatorType>;
-template <typename TaskType, typename ReturnType = typename task_traits<TaskType>::return_type> using job = cm::basic_job<TaskType, ReturnType, backend>;
+template <typename TaskType, typename ReturnType = typename cm::task_traits<TaskType>::return_type> using job = cm::basic_job<TaskType, ReturnType, backend>;
 
 template <typename SubClass, typename ReturnType, typename... BufferTypes> class task_template;
 

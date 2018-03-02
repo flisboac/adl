@@ -67,6 +67,9 @@ template <bool Found, lang_element_flag Flags, lang_element_flag FallbackFlags =
 template <bool Found, lang_element_flag Flags, lang_element_flag FallbackFlags = lang_element_flag::none>
 lang_element_flag const conditional_lang_elem_flag_v = conditional_lang_elem_flag<Found, Flags, FallbackFlags>::flags;
 
+struct invalid_type;
+struct valid_type;
+
 adl_END_ROOT_MODULE
 
 #endif //adl__stti__fwd__hpp__

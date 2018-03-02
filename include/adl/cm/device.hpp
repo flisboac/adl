@@ -9,12 +9,15 @@
 #define adl__cm__device__hpp__
 
 #include "adl.cfg.hpp"
+#include "adl/stti/base.hpp"
 #include "adl/cm.fwd.hpp"
 
 adl_BEGIN_ROOT_MODULE
 
 namespace cm {
 
+template <typename BackendType>
+class device_traits : public invalid_type {};
 
 } // namespace cm
 

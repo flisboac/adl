@@ -9,12 +9,13 @@
 #define adl__cm__buffer__hpp__
 
 #include "adl.cfg.hpp"
+#include "adl/stti/base.hpp"
 #include "adl/cm.fwd.hpp"
+#include "adl/cm/mem.hpp"
 
 adl_BEGIN_ROOT_MODULE
 
 namespace cm {
-
 
 } // namespace cm
 

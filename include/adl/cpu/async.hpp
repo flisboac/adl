@@ -8,4 +8,6 @@
 #ifndef adl__cpu__async__hpp__
 #define adl__cpu__async__hpp__
 
+#include "adl/cpu/async/allocator.hpp"
+
 #endif // adl__cpu__async__hpp__

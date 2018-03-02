@@ -27,7 +27,7 @@ class error_category;
 // Defined in `cm/scheduler.hpp`
 // All of the following flags are hints only. They may not be possible to fulfill, or may be automatically/forcibly
 // enabled, depending on the backend or scheduler type.
-enum class scheduling {
+enum class scheduling : unsigned int {
     async,     // Hint for the scheduler to launch kernels in another thread (NOT in the main thread). Maps directly to `std::launch::async`.
     deferred,  // Hint for the scheduler to defer execution of scheduled tasks until the result is needed (deferred execution). Maps directly to `std::launch::deferred`. For queue-based schedulers (e.g. OpenCL), this means "non-blocking".
     unordered, // Hint for the scheduler to launch kernels in an out-of-order fashion, e.g. CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE.
@@ -105,7 +105,7 @@ template <typename DeviceType> class device_traits;
 template <typename SchedulerType> class scheduler_traits;
 template <typename MemType> class mem_traits;
 template <typename TaskType> class task_traits;
-template <typename JobType> class job_traits;
+template <typename JobType> class job_id_traits;
 
 
 //

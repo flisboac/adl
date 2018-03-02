@@ -11,6 +11,7 @@
 #include <system_error>
 
 #include "adl.cfg.hpp"
+#include "adl/stti/base.hpp"
 #include "adl/cm.fwd.hpp"
 
 

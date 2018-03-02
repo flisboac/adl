@@ -49,6 +49,9 @@ struct conditional_lang_elem_flag<false, Flags, FallbackFlags> {
     constexpr static auto const flags = FallbackFlags;
 };
 
+struct invalid_type { constexpr static bool const valid = false; };
+struct valid_type { constexpr static bool const valid = true; };
+
 adl_END_ROOT_MODULE
 
 constexpr ::adl::lang_element_flag operator | (::adl::lang_element_flag a, ::adl::lang_element_flag b) {
