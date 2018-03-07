@@ -111,21 +111,31 @@ template <typename JobType> class job_id_traits;
 //
 // MODEL CLASSES
 //
-template <typename ConstantType, typename BackendType> class allocator; // A wrapper over std::allocator. May be specialized by
+// - backend: (expected to always be a complete type)
+// - device: backend_type
+// - job_id: backend_type
+// - scheduler: backend_type
+// - in_device_scheduler: backend_type
+// - allocator: constant_type, backend_type
+// - mem (buffer_mem, image_mem, etc): allocator_type -> (constant_type, backend_type)
+// - host_buffer (staging_buffer, mapped_buffer, etc): mem_type -> (constant_type, backend_type, allocator_type)
+// - task: return_type, scheduler_type -> (backend_type)
+// - job: task_type -> (return_type, backend_type)
+template <typename ConstantType, typename BackendType> class allocator; // A wrapper over std::allocator. May be specialized primarily based on the backend.
 template <typename BackendType> class basic_device;
 template <typename BackendType> class basic_scheduler;
 template <typename BackendType> class basic_in_device_scheduler;
 template <typename BackendType> class basic_job_id;
 template <typename ConstantType, typename BackendType, typename AllocatorType = allocator<ConstantType, BackendType>> class basic_buffer_mem; // An object representing a buffer associated with one or more devices. It doesn't provide access to any underlying buffer or memory pointer; for that, the user must either issue a mapped or staging buffer instead. AllocatorType is only used to identify the memory model (e.g. unified memory) and to pass it out to derived memory objects.
-template <typename ConstantType, typename BackendType, typename AllocatorType = allocator<ConstantType, BackendType>> class basic_staging_buffer; // A host-accessible memory buffer that's associated with a device buffer. It's associated with a scheduler and allows copying memory from the host to the device. The user may optionally provide a pointer for the buffer to use. To reflect changes, a synchronization point must be reached (e.g. copy, mapping). Most probably, and depending on the backend and object construction (e.g. passing a custom pointer), the allocator will be instantiated and used.
-template <typename ConstantType, typename BackendType, typename AllocatorType = allocator<ConstantType, BackendType>> class basic_mapped_buffer; // A host-accessible memory buffer, associated with a device buffer, that's either mapped (e.g. "pinned") or "locked" somehow (e.g. clSvmMapBuffer). Unlocking/unmapping happens either explicitly (possibly lazily) or right after destruction (always synchronously). Most probably, and depending on the backend, the allocator won't be instantiated and/or used.
+template <typename MemType, typename SchedulerType, typename ConstantType = typename mem_traits<MemType>::constant_type, typename BackendType = typename mem_traits<MemType>::backend_type, typename AllocatorType = typename mem_traits<MemType>::allocator_type> class basic_staging_buffer; // A host-accessible memory buffer that's associated with a device buffer. It's associated with a scheduler and allows copying memory from the host to the device. The user may optionally provide a pointer for the buffer to use. To reflect changes, a synchronization point must be reached (e.g. copy, mapping). Most probably, and depending on the backend and object construction (e.g. passing a custom pointer), the allocator will be instantiated and used.
+template <typename MemType, typename SchedulerType, typename ConstantType = typename mem_traits<MemType>::constant_type, typename BackendType = typename mem_traits<MemType>::backend_type, typename AllocatorType = typename mem_traits<MemType>::allocator_type> class basic_mapped_buffer; // A host-accessible memory buffer, associated with a device buffer, that's either mapped (e.g. "pinned") or "locked" somehow (e.g. clSvmMapBuffer). Unlocking/unmapping happens either explicitly (possibly lazily) or right after destruction (always synchronously). Most probably, and depending on the backend, the allocator won't be instantiated and/or used.
 template <typename TaskType, typename ReturnType = typename task_traits<TaskType>::return_type, typename BackendType = typename task_traits<TaskType>::backend_type> class basic_job;
 
 
 //
 // UTILITY CLASSEs
 //
-template <typename ReturnType, typename BackendType> class basic_task_template;
+template <typename ReturnType, typename SchedulerType, typename BackendType = typename scheduler_traits<SchedulerType>::backend_type> class basic_task_template;
 
 } // namespace cm
 

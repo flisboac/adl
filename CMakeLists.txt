@@ -110,6 +110,7 @@ target_sources(${api} INTERFACE
     "${api_dir_root}/adl/cpu/async.hpp"
     "${api_dir_root}/adl/cpu/async/backend.hpp"
     "${api_dir_root}/adl/cpu/async/allocator.hpp"
+    "${api_dir_root}/adl/cpu/async/device.hpp"
 
     # adl/opencl
     "${api_dir_root}/adl/opencl.fwd.hpp"
@@ -272,6 +273,7 @@ add_executable(${test}
     # unit:adl/oct/cpu/async
     "${test_dir_unit}/adl/oct/cpu/async/backend.unit.cpp"
     "${test_dir_unit}/adl/oct/cpu/async/allocator.unit.cpp"
+    "${test_dir_unit}/adl/oct/cpu/async/device.unit.cpp"
 
     # unit:adl/oct/cpu
     "${test_dir_unit}/adl/oct/cpu/close_oper.unit.cpp"

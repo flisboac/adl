@@ -162,16 +162,6 @@ template <typename ConstantType> class mapped_mem_allocator; // Reduces the chan
 // task_template.hpp
 //
 class backend;
-using device = cm::basic_device<backend>;
-using scheduler = cm::basic_scheduler<backend>;
-using in_device_scheduler = cm::basic_in_device_scheduler<backend>;
-using job_id = cm::basic_job_id<backend>;
-template <typename ConstantType, typename AllocatorType = mapped_mem_allocator<ConstantType>> using buffer_mem = cm::basic_buffer_mem<ConstantType, backend, AllocatorType>;
-template <typename ConstantType, typename AllocatorType = mapped_mem_allocator<ConstantType>> using staging_buffer = cm::basic_staging_buffer<ConstantType, backend, AllocatorType>;
-template <typename ConstantType, typename AllocatorType = mapped_mem_allocator<ConstantType>> using mapped_buffer = cm::basic_mapped_buffer<ConstantType, backend, AllocatorType>;
-template <typename TaskType, typename ReturnType = typename cm::task_traits<TaskType>::return_type> using job = cm::basic_job<TaskType, ReturnType, backend>;
-
-template <typename SubClass, typename ReturnType, typename... BufferTypes> class task_template;
 
 } // namespace opencl
 
