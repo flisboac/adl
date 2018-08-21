@@ -9,6 +9,7 @@
 
 #include "adl.cfg.hpp"
 #include "adl/opencl.fwd.hpp"
+#include "adl/opencl/impl/cl_.hpp"
 
 /*
  * [[ API ]]

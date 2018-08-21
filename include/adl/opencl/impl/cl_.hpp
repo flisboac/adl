@@ -49,12 +49,24 @@
         throw adl_MAKE_OPENCL_ERROR_(code); \
     }
 
-#define adl_OPENCL_FN_BODY_(method, ...) \
-    std::error_code code; \
-    auto ret = method(code, __VA_ARGS__); \
-    if (code) { \
+#define adl_OPENCL_EXPAND_(x) x
+
+#define adl_OPENCL_FN_BODY_(method, ...)                    \
+    std::error_code code;                                   \
+    auto ret = method(code, __VA_ARGS__);                   \
+    if (code)                                               \
+    {                                                       \
+        throw adl_MAKE_OPENCL_ERROR_(code);                 \
+    }                                                       \
+    return ret
+
+#define adl_OPENCL_FN_BODY0_(method, ...)   \
+    std::error_code code;                   \
+    auto ret = method(code);                \
+    if (code)                               \
+    {                                       \
         throw adl_MAKE_OPENCL_ERROR_(code); \
-    } \
+    }                                       \
     return ret
 
 #include "CL/cl.h"

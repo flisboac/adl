@@ -22,7 +22,7 @@ adl_BEGIN_MAIN_MODULE(oct)
 namespace cl {
 
 template <typename ContextType>
-class queue_cl1 : public std::enable_shared_from_this<queue_cl1<ContextType>> {
+class queue_cl1 : public queue_base_<queue_cl1<ContextType>, ContextType>, public std::enable_shared_from_this<queue_cl1<ContextType>> {
 private:
     using thisclass_ = queue_cl1;
 
@@ -95,7 +95,7 @@ inline queue_cl1<ContextType>::queue_cl1(
     queue_private_tag_,
     std::shared_ptr<context_type> ctx,
     ::cl_command_queue_properties properties
-) {
+) : context_(ctx) {
     std::error_code code;
     this->initialize_(code, properties);
     if (code) {
@@ -114,15 +114,41 @@ template <typename ContextType>
 inline queue_cl1<ContextType>::queue_cl1(
     queue_private_tag_,
     std::shared_ptr<context_type> ctx,
-    std::error_code& code,
+    std::error_code & code,
     ::cl_command_queue_properties properties
-) {
+) : context_(ctx) {
     this->initialize_(code, properties);
 }
 
 template <typename ContextType>
 void queue_cl1<ContextType>::initialize_(std::error_code& code, ::cl_command_queue_properties properties) {
+
+    ::cl_int errcode = CL_SUCCESS;
     ::cl_context cl_context = context_->underlying_context();
+    std::vector<::cl_device_id> devices;
+    size_t num_devices;
+    ::cl_command_queue queue;
+
+    errcode = clGetContextInfo(cl_context, CL_CONTEXT_DEVICES, 0, NULL, &num_devices);
+    if (errcode != CL_SUCCESS) {
+        code = static_cast<adl::opencl::errc>(errcode);
+        return;
+    }
+
+    devices.resize(num_devices / sizeof(::cl_device_id));
+    errcode = clGetContextInfo(cl_context, CL_CONTEXT_DEVICES, num_devices, devices.data(), &num_devices);
+    if (errcode != CL_SUCCESS) {
+        code = static_cast<adl::opencl::errc>(errcode);
+        return;
+    }
+
+    queue = clCreateCommandQueue(cl_context, devices[0], properties, &errcode);
+    if (errcode != CL_SUCCESS) {
+        code = static_cast<adl::opencl::errc>(errcode);
+        return;
+    }
+
+    this->cl_queue_ = queue;
 }
 
 template <typename ContextType>
@@ -183,7 +209,7 @@ inline bool queue_cl1<ContextType>::has_underlying_property(
 
 template <typename ContextType>
 inline ::cl_command_queue_properties queue_cl1<ContextType>::underlying_properties() const {
-    adl_CL_EXEC_BODY0_(this->underlying_properties);
+    adl_OPENCL_FN_BODY0_(this->underlying_properties);
 }
 
 template <typename ContextType>

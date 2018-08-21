@@ -45,6 +45,10 @@ build
 .idea
 cmake-build-*
 
+# Visual Studio Code
+/.vscode
+/build
+
 # Local stuff
 local
 /.ycm_extra_conf.py

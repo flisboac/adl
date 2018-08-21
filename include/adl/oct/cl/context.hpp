@@ -23,7 +23,7 @@ adl_BEGIN_MAIN_MODULE(oct)
 
 namespace cl {
 
-class adl_CLASS context : public std::enable_shared_from_this<context> {
+class adl_CLASS context : public context_base_<context>, public std::enable_shared_from_this<context> {
 private:
     using thisclass_ = context;
 
