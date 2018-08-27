@@ -12,15 +12,23 @@
             <input type="number" id="nvars" name="nvars" min="1" max="9999" step="1" value="0">
             <input type="checkbox" name="enableK" id="enableK">
 			<label for="k">k</label>
-			<input type="number" id="k" name="nvars" min="0" max="9999" step="2" value="0">
+			<input type="number" id="k" name="k" min="0" max="9999" step="2" value="0">
+			<label for="l">l</label>
+			<input type="number" id="l" name="l" min="0" max="9999" step="2" value="0">
 			<label for="algorithmChoice">Algorithm</label>
 			<select id="algorithmChoice" name="algorithmChoice">
-				<option value="counterpart">Counterpart</option>
-				<option value="close">Close</option>
-				<option value="consistencyCells">Consistency cells</option>
-				<option value="unaryConsCells">Unary-cons cells</option>
-				<option value="binaryConsCells">Binary-cons cells</option>
-				<option value="halfMatrixCells">Half-matrix cells</option>
+                <optgroup label="Operators' dependencies">
+                    <option value="close">Close/Strong-close</option>
+                    <option value="addConsIteration">Add Constraint (Float, Iteration cell)</option>
+                    <option value="addConsInsert">Add Constraint (Float, Inserted cell)</option>
+                </optgroup>
+                <optgroup label="Matrix sections">
+                    <option value="counterp5art">Counterpart (Coherency)</option>
+                    <option value="consistencyCells">Consistency cells</option>
+                    <option value="unaryConsCells">Unary-cons cells</option>
+                    <option value="binaryConsCells">Binary-cons cells</option>
+                    <option value="halfMatrixCells">Half-matrix cells</option>
+                </optgroup>
 			</select>
         </div>
         <hr>
@@ -54,6 +62,7 @@
 const config = { cellWidth: 10, cellHeight: 10};
 const model = {
     get k() { return document.getElementById("enableK").checked ? parseInt($('#k').val()) : null; },
+    get l() { return document.getElementById("enableK").checked ? parseInt($('#l').val()) : null; },
     get fontSize() { return parseInt(this.cellSize) * 0.50; },
     get cellSize() { return parseInt($('#cellSize').val()); },
     get cellWidth() { return this.cellSize; },
@@ -202,6 +211,52 @@ function generateHighlightCoordinates(datum) {
         binaryConsCells();
     }
 
+    function addCons(mode) {
+        function genCoords(k, l) {
+            let i, j, a, b;
+            if (mode === 'insertion') {
+                a = datum.xi;
+                b = datum.xj;
+                i = k;
+                j = l;
+            } else {
+                i = datum.xi;
+                j = datum.xj;
+                a = k;
+                b = l;
+            }
+            let I = negate(i);
+            let J = negate(j);
+            let A = negate(a);
+            let B = negate(b);
+            // coords
+            //     .add([i, I, '#eda7ab'])
+            //     .add([i, a, '#ada7ab']).add([b, I, '#ada7ab'])
+            //     .add([i, B, '#9da7ab']).add([A, a, '#9da7ab']).add([b, I, '#9da7ab'])
+            //     .add([i, a, '#8da7ab']).add([b, B, '#8da7ab']).add([A, I, '#8da7ab'])
+            //     ;
+            coords
+                .add([i, j, '#eda7ab'])
+                .add([i, a, '#ada7ab']).add([b, j, '#ada7ab'])
+                .add([i, B, '#9da7ab']).add([A, j, '#9da7ab'])
+                .add([i, B, '#8da7ab']).add([A, a, '#8da7ab']).add([b, j, '#8da7ab'])
+                .add([i, a, '#7da7ab']).add([b, B, '#7da7ab']).add([A, j, '#7da7ab'])
+                .add([i, I, '#dda7ab']).add([J, j, '#dda7db'])
+                ;
+        }
+        let hasK = typeof model.k === 'number';
+        let hasL = typeof model.l === 'number';
+        if (hasK && hasL) {
+            genCoords(model.k, model.l);
+        } else {
+            for (let k = 0; k < model.octsize; k = k + 2) {
+                for (let l = 0; l < model.octsize; l = l + 2) {
+                    genCoords(k, l);
+                }
+            }
+        }
+    }
+
     function close() {
         const genCoords = (k) => {
             let K = k + 1;
@@ -229,6 +284,8 @@ function generateHighlightCoordinates(datum) {
         case 'unaryConsCells': unaryConsCells(); break;
         case 'binaryConsCells': binaryConsCells(); break;
         case 'halfMatrixCells': halfMatrixCells(); break;
+        case 'addConsIteration': addCons('iteration'); break;
+        case 'addConsInsert': addCons('insertion'); break;
     }
 
     return coords;
