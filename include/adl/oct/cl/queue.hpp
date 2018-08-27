@@ -26,7 +26,7 @@ class queue_cl1 : public queue_base_<queue_cl1<ContextType>, ContextType>, publi
 private:
     using thisclass_ = queue_cl1;
 
-    constexpr static const ::cl_command_queue_properties default_cl_properties_ = 0;
+    constexpr static const ::cl_command_queue_properties default_cl_properties_ = CL_QUEUE_PROFILING_ENABLE;
 
     // (privately) Default-constructible
     queue_cl1() = default;
@@ -214,7 +214,13 @@ inline ::cl_command_queue_properties queue_cl1<ContextType>::underlying_properti
 
 template <typename ContextType>
 inline ::cl_command_queue_properties queue_cl1<ContextType>::underlying_properties(std::error_code& code) const {
-    ::cl_command_queue_properties properties = 0;
+    ::cl_int err;
+    ::cl_command_queue_properties properties;
+    err = clGetCommandQueueInfo(this->cl_queue_, CL_QUEUE_PROPERTIES, sizeof(properties), &properties, NULL);
+    if (CL_SUCCESS != err) {
+        code = (adl::opencl::errc) err;
+        return {0};
+    }
     return properties;
 }
 

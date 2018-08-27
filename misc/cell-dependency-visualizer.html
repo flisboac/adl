@@ -1,0 +1,251 @@
+<!doctype html>
+<html>
+    <head>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.min.js"></script>
+    </head>
+	<body>
+		<div id="options">
+            <label for="cellSize">Cell size</label>
+            <input type="number" id="cellSize" name="cellSize" min="10" max="9999" step="5" value="20">
+			<label for="nvars">Number of variables</label>
+            <input type="number" id="nvars" name="nvars" min="1" max="9999" step="1" value="0">
+            <input type="checkbox" name="enableK" id="enableK">
+			<label for="k">k</label>
+			<input type="number" id="k" name="nvars" min="0" max="9999" step="2" value="0">
+			<label for="algorithmChoice">Algorithm</label>
+			<select id="algorithmChoice" name="algorithmChoice">
+				<option value="counterpart">Counterpart</option>
+				<option value="close">Close</option>
+				<option value="consistencyCells">Consistency cells</option>
+				<option value="unaryConsCells">Unary-cons cells</option>
+				<option value="binaryConsCells">Binary-cons cells</option>
+				<option value="halfMatrixCells">Half-matrix cells</option>
+			</select>
+        </div>
+        <hr>
+        <div id="info">
+            <span>Info:</span>
+            <label for="nHighlightedCells">Qty. Highligted</label>
+            <input type="text" id="nHighlightedCells" name="nHighlightedCells" readonly style="width: 5em">
+        </div>
+        <div id="counts">
+            <span>Cell counts (compact mode):</span>
+            <label for="nConsistencyCells">Consistency</label>
+            <input type="text" id="nConsistencyCells" name="nConsistencyCells" readonly style="width: 5em">
+            <label for="nUnaryConsCells">Unary-cons</label>
+            <input type="text" id="nUnaryConsCells" name="nUnaryConsCells" readonly style="width: 5em">
+            <label for="nBinaryConsCells">Binary-cons</label>
+            <input type="text" id="nBinaryConsCells" name="nBinaryConsCells" readonly style="width: 5em">
+            <label for="nTotalCells">Total</label>
+            <input type="text" id="nTotalCells" name="nTotalCells" readonly style="width: 5em">
+        </div>
+        <hr>
+        <svg id="repr"></svg>
+	</body>
+
+    <style>
+        body {
+            font-size: 12px;
+        }
+    </style>
+    <script>
+
+const config = { cellWidth: 10, cellHeight: 10};
+const model = {
+    get k() { return document.getElementById("enableK").checked ? parseInt($('#k').val()) : null; },
+    get fontSize() { return parseInt(this.cellSize) * 0.50; },
+    get cellSize() { return parseInt($('#cellSize').val()); },
+    get cellWidth() { return this.cellSize; },
+    get cellHeight() { return this.cellSize; },
+    get octsize() { return parseInt($('#nvars').val()); },
+    get diffsize() { return parseInt($('#nvars').val()) * 2; },
+    get algorithm() { return $('#algorithmChoice').val(); },
+    get nRoundedConsistencyCells() { return this.octsize % 2 == 0 ? this.octsize : this.octsize + 1; },
+    get nConsistencyCells() { return this.octsize; },
+    get nUnaryConsCells() { return this.diffsize; },
+    get nBinaryConsCells() {
+        const calculate = (x) => x <= 0 ? 0 : calculate(x - 1) + (x - 1);
+        return calculate(this.octsize) * 4;
+    }
+};
+const cells = d3.select("#repr");
+
+$('#nvars').on('change', () => resizeCells());
+$('#cellSize').on('change', () => resizeCells());
+$('#fontSize').on('change', () => resizeCells());
+
+function resizeCells() {
+    cells
+        .attr('width', model.cellWidth * (model.diffsize + 1))
+        .attr('height', model.cellHeight * (model.diffsize + 1))
+        .selectAll('*')
+        .remove();
+    for (let i = 0; i < model.diffsize; i++) {
+        createHeaderCell(0, i + 1, `x${i}`);
+        createHeaderCell(i + 1, 0, `x${i}`);
+    }
+    for (let index of indexes()) {
+        cells
+            .append('rect')
+            .datum(index)
+            .attr('id', (datum) => `cell_${datum.xi}_${datum.xj}`)
+            .attr("x", (datum) => (datum.xi + 1) * model.cellWidth)
+            .attr("y", (datum) => (datum.xj + 1) * model.cellHeight)
+            .attr('class', 'cell')
+            .attr("height", model.cellHeight)
+            .attr("width", model.cellWidth)
+            .attr("fill", "#7d777b")
+            .attr("stroke", "#efefef")
+            .text((datum) => `${datum.xi},${datum.xj}`)
+            .style("text-anchor", 'middle')
+            .on("mouseover", highlightCell)
+            .on("mouseout", unhighlightCell)
+            ;
+    }
+    $('#nConsistencyCells').val(`${model.nConsistencyCells} (${model.nRoundedConsistencyCells})`);
+    $('#nUnaryConsCells').val(model.nUnaryConsCells);
+    $('#nBinaryConsCells').val(model.nBinaryConsCells);
+    $('#nTotalCells').val(
+        `${
+            model.nConsistencyCells + model.nUnaryConsCells + model.nBinaryConsCells
+        } (${
+            model.nRoundedConsistencyCells + model.nUnaryConsCells + model.nBinaryConsCells
+        })`);
+}
+
+function createHeaderCell(i, j, text, attrs) {
+    let x = i * model.cellWidth;
+    let y = j * model.cellHeight;
+    let groupElem = cells
+        .append('g')
+        .attr('class', 'header_cell')
+        .attr("transform", (d, i) => `translate(${x}, ${y})`)
+        .attr('width', model.cellWidth)
+        .attr('height', model.cellHeight);
+    let textElem = groupElem
+        .append('text')
+        .attr('x', model.cellWidth / 2)
+        .attr('y', model.cellHeight / 2)
+        .attr('font-size', model.fontSize)
+        .style('alignment-baseline', 'central')
+        .style("text-anchor", 'middle')
+        .style("font-weight", 'bold')
+        .text(text);
+}
+
+function highlightCell(datum, dataIndex, elem) {
+    let coords = generateHighlightCoordinates(datum);
+    this.setAttribute('stroke', '#ff0000');
+    cells
+        .selectAll(`#cell_${negate(datum.xj)}_${negate(datum.xi)}`)
+        .attr("stroke", '#ff0000')
+        ;
+    for (let coord of coords) {
+        let cell = cells
+            .selectAll(`#cell_${coord[0]}_${coord[1]}`)
+            .attr('fill', coord[2] || '#ada7ab')
+            ;
+    }
+    $('#nHighlightedCells').val(`${coords.size} (${coords.size / 2})`)
+}
+
+function unhighlightCell(datum, dataIndex, elem) {
+    cells
+        .selectAll('.cell')
+        .attr("stroke", "#efefef")
+        .attr("fill", "#7d777b")
+        ;
+    $('#nHighlightedCells').val(0)
+}
+
+function generateHighlightCoordinates(datum) {
+    let coords = new Set();
+    let i = datum.xi;
+    let j = datum.xj;
+    let I = negate(i);
+    let J = negate(j);
+
+    function counterpart() {
+        coords.add([i, j]).add([J, I]);
+    }
+
+    function consistencyCells() {
+        for (let i = 0; i < model.diffsize; i = i + 2) {
+            let I = negate(i);
+            coords.add([i, i, '#eda7ab']).add([I, I, '#ada7ab']);
+        }
+    }
+
+    function unaryConsCells() {
+        for (let i = 0; i < model.diffsize; i = i + 2) {
+            let I = negate(i);
+            coords.add([i, I, '#eda7ab']).add([I, i, '#eda7ab']);
+        }
+    }
+
+    function binaryConsCells() {
+        for (let i = 0; i < model.diffsize; i = i + 1) {
+            let I = negate(i);
+            for (let j = 0; j < I; j = j + 1) {
+                let J = negate(j);
+                if (i != j) {
+                    coords.add([i, j, '#ada7ab']).add([J, I, '#eda7ab']);
+                }
+            }
+        }
+    }
+
+    function halfMatrixCells() {
+        consistencyCells();
+        unaryConsCells();
+        binaryConsCells();
+    }
+
+    function close() {
+        const genCoords = (k) => {
+            let K = k + 1;
+            coords
+                .add([k, K])
+                .add([K, k])
+                .add([i, k])
+                .add([i, K])
+                .add([k, j])
+                .add([K, j])
+                ;
+        }
+        coords.add([i, j]);
+        if (typeof model.k === 'number') {
+            genCoords(model.k);
+        } else {
+            for (let k = 0; k < model.octsize; k = k + 2) genCoords(k);
+        }
+    }
+
+    switch(model.algorithm) {
+        case 'close': close(); break;
+        case 'counterpart': counterpart(); break;
+        case 'consistencyCells': consistencyCells(); break;
+        case 'unaryConsCells': unaryConsCells(); break;
+        case 'binaryConsCells': binaryConsCells(); break;
+        case 'halfMatrixCells': halfMatrixCells(); break;
+    }
+
+    return coords;
+}
+
+function *indexes(test) {
+	for (let xi = 0; xi < model.diffsize; xi++) {
+		for (let xj = 0; xj < model.diffsize; xj++) {
+            let f = (test ? test(xi, xj) : null);
+			yield { xi, xj, test: f };
+		}
+	}
+}
+
+function negate(v) {
+    return v % 2 == 0 ? v + 1 : v - 1;
+}
+
+	</script>
+</html>

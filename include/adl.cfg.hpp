@@ -140,7 +140,11 @@
 
 // Sorry dude, not supporting pre-C++14. So many goodies... C++14 allows the library to be what it is! :)
 #if __cplusplus < 201402L
-    #error Your compiler or toolkit does not properly support C++14.
+    #if !defined(_MSC_VER)
+        // The previous compiler check would already raise an error in case
+        // the MSVC version is not supported.
+        #error Your compiler or toolkit does not properly support C++14.
+    #endif
 #endif
 
 #if __cplusplus > 201402L
@@ -167,6 +171,8 @@
 #define adl_STRFY(s__) adl_STRFY_(s__)
 #define adl_TPASTE3_(a__, b__, c__) a__ ## b__ ## c__
 #define adl_TPASTE3(a__, b__, c__) adl_TPASTE3_(a__, b__, c__)
+
+#define adl_INCLUDE_STRFY(s__) adl_STRFY_(s__)
 
 #define adl_CONFIG_NAME_STR adl_STRFY(adl_CONFIG_NAME)
 #define adl_CONFIG_VERSION_STR adl_STRFY(adl_CONFIG_VERSION_MAJOR) "." adl_STRFY(adl_CONFIG_VERSION_MINOR) "." adl_STRFY(adl_CONFIG_VERSION_PATCH)

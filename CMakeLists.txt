@@ -21,11 +21,9 @@ endif()
 
 # Build flags
 add_definitions(-Dadl_BUILDING)
-
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_definitions(-Dadl_DEBUG)
 endif()
-
 if (CMAKE_BUILD_TYPE STREQUAL "MinSizeRel")
     add_definitions(-Dadl_STRIPPED)
 endif()
@@ -197,7 +195,11 @@ target_sources(${api} INTERFACE
     "${api_dir_root}/adl/oct/cl/context.hpp"
     "${api_dir_root}/adl/oct/cl/queue.hpp"
 
-    #adl/oct/cl/operators
+    #adl/oct/cl/kernel
+    "${api_dir_root}/adl/oct/cl/kernel/defs.inc.h"
+    "${api_dir_root}/adl/oct/cl/kernel/dbm/dense_dbm.inc.h"
+
+    #adl/oct/cl:operators
     )
 
 
@@ -287,8 +289,9 @@ add_executable(${test}
     "${test_dir_unit}/adl/oct/cpu/add_cons_close_oper.unit.cpp"
 
     # unit:adl/oct/cl
-    "${test_dir_unit}/adl/oct/cl/context.unit.cpp"
-    "${test_dir_unit}/adl/oct/cl/queue.unit.cpp"
+   "${test_dir_unit}/adl/oct/cl/context.unit.cpp"
+   "${test_dir_unit}/adl/oct/cl/queue.unit.cpp"
+   "${test_dir_unit}/adl/oct/cl/kernel/defs.unit.cpp"
 )
 
 target_link_libraries(${test} ${test_iapi} ${OPENCL})

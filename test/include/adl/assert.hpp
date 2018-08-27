@@ -164,12 +164,14 @@ template <typename T, typename T1>
 constexpr bool assignable() {
     static_assert(std::is_assignable<T, T1>::value,
         "Type is not assignable.");
+    return true;
 };
 
 template <typename T, typename T1>
 constexpr bool literal_assignable() {
     assignable<T, T1>();
     static_assert( (T() = T1(), true), "");
+    return true;
 };
 
 }
